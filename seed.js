@@ -16,15 +16,17 @@ function Seed(seed) {
         this.fruitEnergy = seed.fruitEnergy ? new RealGene(seed.fruitEnergy) : new RealGene();
         this.dispersal = seed.dispersal ? new RealGene(seed.dispersal) : new RealGene();
     } else {
-        this.weight = seed.weight ? new RealGene(seed.weight) : new RealGene({ value: 0 });
-        this.deepRoots = seed.deepRoots ? new RealGene(seed.deepRoots) : new RealGene({ value: 0 });
-        this.fecundity = seed.fecundity ? new RealGene(seed.fecundity) : new RealGene({ value: 0 });
+        this.weight = seed.weight ? new RealGene(seed.weight) : new RealGene({ value: 0.5 });
+        this.deepRoots = seed.deepRoots ? new RealGene(seed.deepRoots) : new RealGene();
+        this.fecundity = seed.fecundity ? new RealGene(seed.fecundity) : new RealGene({ value: 1 });
         this.fruitEnergy = seed.fruitEnergy ? new RealGene(seed.fruitEnergy) : new RealGene({ value: 0 });
         this.dispersal = seed.dispersal ? new RealGene(seed.dispersal) : new RealGene({ value: 0 });
     }
+    this.mutate();
 
-    this.penalty = this.weight.value + this.deepRoots.value + this.fecundity.value + this.fruitEnergy.value + (1 - this.dispersal.value);
-    this.energy = 5 - this.penalty + 2 * this.fruitEnergy.value;
+    this.penalty = this.weight.value + this.deepRoots.value + this.fecundity.value + this.fruitEnergy.value + this.dispersal.value;
+    this.energy = this.fruitEnergy.value + 1 - this.penalty / 5;
+    //this.energy = 1;
     //console.log(this.penalty);
 };
 
@@ -35,7 +37,7 @@ Seed.prototype.update = function () {
 
     var threshold = params.germThreshold + this.penalty * params.growthPenalty;
     if (this.growth > threshold && oldGrowth < threshold) { // germinate
-        var r = randomInt(range) + this.cell.water - params.riverWidth + this.fecundity.value * range;
+        var r = randomInt(range) + this.cell.water + this.fecundity.value * range - params.riverWidth;
         this.seeds = r < 0 ? 0 :
             r < 0.25 * range ? 1 :
             r < 0.5 * range ? 2 :
@@ -43,7 +45,7 @@ Seed.prototype.update = function () {
         if (this.seeds === 0) this.dead = true;
     }
 
-    if (this.growth > params.germThreshold + (params.fullgrown * this.dispersal.value) + (this.penalty * params.growthPenalty) || Math.random() < params.seedDeathChance) { // die
+    if (this.growth > threshold + (params.fullgrown * (1 - this.dispersal.value)) || Math.random() < params.seedDeathChance) { // die
         this.dead = true;
     }
 };
@@ -60,8 +62,6 @@ Seed.prototype.mutate = function () {
     this.fecundity.mutate();
     this.fruitEnergy.mutate();
     this.dispersal.mutate();
-    this.penalty = this.weight.value + this.deepRoots.value + this.fecundity.value + this.fruitEnergy.value;
-    this.energy = 4 - this.penalty + 2 * this.fruitEnergy.value;
 };
 
 Seed.prototype.pluckSeeds = function () {

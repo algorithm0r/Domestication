@@ -35,14 +35,20 @@ Human.prototype.spendEnergy = function () {
 Human.prototype.move = function(cell) {
     this.cell.removeHuman(this);
     cell.addHuman(this);
+    if (cell.shelter) {
+        cell.shelter.water += this.water;
+        cell.shelter.seeds.push(...this.seeds);
+        this.seeds = [];
+        this.water = 0;
+    }
 
-    if (this.seeds.length > 0 && Math.random() < this.dropRate) {
+    if (this.seeds.length > 0 && Math.random() < params.seedDropRate) {
         this.dropSeeds();
     }
 };
 
 Human.prototype.dropSeeds = function () {
-    var dropSize = Math.min(this.seeds.length, randomInt(this.maxDrop) + 1);
+    var dropSize = Math.min(this.seeds.length, randomInt(params.maxSeedDrop) + 1);
 
     var seeds = this.seeds.splice(0, dropSize);
     for (var i = 0; i < seeds.length; i++) {
@@ -57,19 +63,23 @@ Human.prototype.dropSeeds = function () {
 Human.prototype.rest = function () {
     var cell = this.cell;
 
-    this.tired -= params.metabolicUnit;
-
-    if (cell.shelter.water > 0) {
+    // sleep
+    this.tired = Math.max(this.tired - params.metabolicUnit, 0);
+    
+    //drink
+    if (cell.shelter.water > 0 && this.thirst > 0) {
         var val = Math.min(cell.shelter.water, params.metabolicUnit);
         cell.shelter.water -= val;
         this.thirst -= val;
     }
+
+    // eat
     if (cell.shelter.seeds.length > 0) {
         var val = Math.min(cell.shelter.seeds.length, params.metabolicUnit);
         for (var i = 0; i < val; i++) {
             var seed = cell.shelter.seeds.splice(0, 1)[0];
             //console.log(seed[0].penalty);
-            this.hunger -= params.seedsDiffMetabolism ? seed.energy : 4;
+            this.hunger -= params.seedsDiffMetabolism ? seed.energy : 1;
         }
     }
 }
@@ -90,11 +100,6 @@ Human.prototype.moveToShelter = function () {
     if (shelters.length > 0) {
         var cell = shelters[randomInt(shelters.length)];
         this.move(cell);
-        cell.shelter.water += this.water;
-        cell.shelter.seeds.push(...this.seeds);
-        this.seeds = [];
-        this.water = 0;
-        //if (this.tired > params.metabolicThreshold) this.rest();  // should this line be on?
         return;
     }
 
@@ -107,6 +112,10 @@ Human.prototype.moveToShelter = function () {
         if (c[0][2]) shelters.push(c[0][2]);
         if (c[1][2]) shelters.push(c[1][2]);
         if (c[2][2]) shelters.push(c[2][2]);
+    }
+    if (shelters.length === 0) {
+        if (c[0][1]) shelters.push(c[0][1]);
+        if (c[2][1]) shelters.push(c[2][1]);
     }
     var cell = shelters[randomInt(shelters.length)];
     this.move(cell);
@@ -121,7 +130,7 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if (c.seeds[j].seeds > 0) {
+                    if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -135,10 +144,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || (cell.length > 0 && c.seeds[j].seeds > cell[0].seeds[seed[0]].seeds)) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || (cell.length > 0 && c.seeds[j].seeds > cell[0].seeds[seed[0]].seeds))) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
+                    } else if (!c.seeds[j].dead &&  (cell.length > 0 && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds)) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -153,14 +162,14 @@ Human.prototype.selectSeed = function (cells) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
                     if (cell.length === 0) {
-                        if (c.seeds[j].seeds > 0) {
+                        if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
                             cell = [c];
                             seed = [j];
                         }
-                    } else if (c.seeds[j].seeds > 0 && c.seeds[j].seeds < cell[0].seeds[seed[0]].seeds) {
+                    } else if (!c.seeds[j].dead && c.seeds[j].seeds > 0 && c.seeds[j].seeds < cell[0].seeds[seed[0]].seeds) {
                         cell = [c];
                         seed = [j];
-                    } else if (c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
+                    } else if (!c.seeds[j].dead && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -174,10 +183,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty < cell[0].seeds[seed[0]].penalty) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty < cell[0].seeds[seed[0]].penalty)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -191,10 +200,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty > cell[0].seeds[seed[0]].penalty) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty > cell[0].seeds[seed[0]].penalty)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -208,10 +217,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value < cell[0].seeds[seed[0]].deepRoots.value) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value < cell[0].seeds[seed[0]].deepRoots.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -225,10 +234,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value > cell[0].seeds[seed[0]].deepRoots.value) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value > cell[0].seeds[seed[0]].deepRoots.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -242,10 +251,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value < cell[0].seeds[seed[0]].weight.value) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value < cell[0].seeds[seed[0]].weight.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -259,10 +268,112 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value > cell[0].seeds[seed[0]].weight.value) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value > cell[0].seeds[seed[0]].weight.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 9: // min dispersal
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value < cell[0].seeds[seed[0]].dispersal.value)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value === cell[0].seeds[seed[0]].dispersal.value) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 10: // max dispersal
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value > cell[0].seeds[seed[0]].dispersal.value)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value === cell[0].seeds[seed[0]].dispersal.value) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 11: // min energy
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value < cell[0].seeds[seed[0]].fruitEnergy.value)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value === cell[0].seeds[seed[0]].fruitEnergy.value) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 12: // max energy
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value > cell[0].seeds[seed[0]].fruitEnergy.value)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value === cell[0].seeds[seed[0]].fruitEnergy.value) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 13: // min seed energy
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].energy < cell[0].seeds[seed[0]].energy)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].energy === cell[0].seeds[seed[0]].energy) {
+                        cell.push(c);
+                        seed.push(j);
+                    }
+                }
+            }
+            break;
+        case 14: // max seed energy
+            cell = [];
+            seed = [];
+
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i];
+                for (var j = 0; j < c.seeds.length; j++) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].energy > cell[0].seeds[seed[0]].energy)) {
+                        cell = [c];
+                        seed = [j];
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].energy === cell[0].seeds[seed[0]].energy) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -372,22 +483,22 @@ Human.prototype.update = function () {
     var cell = this.cell;
     var birthRatio = 3;
 
+    //if (Math.random() < 0.001) this.dead = true;
+
     if (cell.shelter) {
-        if (this.thirst > params.metabolicThreshold || this.hunger > params.metabolicThreshold) {
-            this.dead = true;
-            return;
-        }
-        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > 0 && this.cell.shelter.seeds.length > 0)) {
+        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > -params.metabolicThreshold && cell.shelter.seeds.length > 0)) {
             this.rest();
             return;
         }
-        if (Math.abs(this.tired + this.thirst + this.hunger) > birthRatio * params.metabolicThreshold) {
+        if (this.hunger > 0 && cell.shelter.seeds.length === 0 || this.thirst > 0 && cell.shelter.water === 0) {
+            this.dead = true;
+            return;
+        }
+        if (this.hunger < -params.metabolicThreshold) {
             var h = new Human(this);
             this.game.board.humans.push(h);
             this.cell.addHuman(h);
-            this.tired += params.metabolicThreshold * birthRatio / 3;
-            this.thirst += params.metabolicThreshold * birthRatio / 3;
-            this.hunger += params.metabolicThreshold * birthRatio / 3;
+            this.hunger += params.metabolicThreshold;
             return;
         }
     }

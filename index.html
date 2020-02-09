@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>Domestication</title>
     <link rel="stylesheet" type="text/css" href="./style.css"></link>
+    <script type="text/javascript" src="http://24.16.255.56:8888/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./histogram.js"></script>
     <script type="text/javascript" src="./graph.js"></script>
@@ -29,21 +30,21 @@
     <div id="seeds">
         <p>Seeds</p>
         <input type="checkbox" id="random_seeds" checked/>Seeds Randomly Initialized<br />
-        <input type="text" id="germ_threshold" value="100" />Germinate Threshold<br />
-        <input type="text" id="full_growth" value="100" />Fully Grown<br />
+        <input type="text" id="germ_threshold" value="50" />Germinate Threshold<br />
+        <input type="text" id="full_growth" value="50" />Fully Grown<br />
         <input type="text" id="seed_death_chance" value="0.01" />Chance of Seed Death<br />
-        <input type="text" id="growth_penalty" value="100" />Max Penalty for Seed Growth<br />
+        <input type="text" id="growth_penalty" value="50" />Max Penalty for Seed Growth<br />
     </div>
     <div id="agent">
         <p>Agents</p>
         <input type="text" id="human_add_rate" value="0.05" />Human Add Rate<br />
         <input type="checkbox" id="seeds_metabolism" checked />Seeds Impact Metabolism<br />
-        <input type="text" id="metabolic_threshold" value="50" />Metabolic Threshold<br />
-        <input type="text" id="metabolic_unit" value="1" />Metabolic Unit<br />
-        <input type="text" id="skin_size" value="40" />Water Skin Size<br />
+        <input type="text" id="metabolic_threshold" value="30" />Metabolic Threshold<br />
+        <input type="text" id="metabolic_unit" value="5" />Metabolic Unit<br />
+        <input type="text" id="skin_size" value="30" />Water Skin Size<br />
         <input type="text" id="scoop_size" value="5" />Scoop Size<br />
-        <input type="text" id="basket_size" value="40" />Seed Basket Size<br />
-        <input type="text" id="seed_selection" value="0" />Seed Selection Strategy<br />
+        <input type="text" id="basket_size" value="400" />Seed Basket Size<br />
+        <input type="text" id="seed_selection" value="15" />Seed Selection Strategy<br />
     </div>
 	<button type="button" onclick=reset()>Reset</button>
 </body>

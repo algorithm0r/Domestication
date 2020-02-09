@@ -4,55 +4,25 @@ function Automata(game) {
     this.x = 0;
     this.y = 0;
     
-    this.day = 0;
-    this.season = 0; // 0 = winter, 1 = spring, 2 = summer, 3 = autumn
-    
-    // agents
-    this.seeds = [];
-    this.humans = [];
+    this.reset();
+};
 
-    // data gathering
-    this.weightData = [];
-    this.rootData = [];
-    this.seedData = [];
-    this.energyData = [];
-    this.dispersalData = [];
+Automata.prototype.createBoard = function () {
+    for (var i = 0; i < params.dimension; i++) {
+        this.board.push([]);
+        for (var j = 0; j < params.dimension; j++) {
+            this.board[i].push(new Cell(this.game, i, j, this));
+        }
+    }
 
-    this.seedPop = [];
-    this.humanPop = [];
-
-    // graphs
-    this.popGraph = new Graph(game, 810, 0, this, "Population");
-    this.game.addEntity(this.popGraph);
-    this.weightHist = new Histogram(game, 810, 200, "Seed Weight")
-    this.game.addEntity(this.weightHist);
-    this.rootHist = new Histogram(game, 810, 300, "Root Depth");
-    this.game.addEntity(this.rootHist);
-    this.seedHist = new Histogram(game, 810, 400, "Number of Seeds");
-    this.game.addEntity(this.seedHist);
-    this.energyHist = new Histogram(game, 810, 500, "Nutritional Value");
-    this.game.addEntity(this.energyHist);
-    this.dispersalHist = new Histogram(game, 810, 600, "Dispersal");
-    this.game.addEntity(this.dispersalHist);
-
-	// create board
-	this.board = [];
-	for (var i = 0; i < params.dimension; i++) {
-		this.board.push([]);
-		for (var j = 0; j < params.dimension; j++) {
-			this.board[i].push(new Cell(game,i,j, this));
-		}
-	}
-
-	for (var i = 0; i < params.dimension; i++) {
-	    for (var j = 0; j < params.dimension; j++) {
-	        this.board[i][j].init(this.board);
-	    }
-	}
-
-	this.generateRiver();
-	this.plantSeeds();
-	this.addShelters();
+    for (var i = 0; i < params.dimension; i++) {
+        for (var j = 0; j < params.dimension; j++) {
+            this.board[i][j].init(this.board);
+        }
+    }
+    this.generateRiver();
+    this.plantSeeds();
+    this.addShelters();
 };
 
 Automata.prototype.generateRiver = function () {
@@ -97,12 +67,13 @@ Automata.prototype.addHumans = function () {
 };
 
 Automata.prototype.addShelters = function () {
+    var prob = 1;
     for (var i = 0; i < params.dimension; i++) {
-        if (Math.random() < 1) {
+        if (Math.random() < prob) {
             var j = randomInt(1);
             this.board[j][i].shelter = { water: 0, seeds: [] };
         }
-        if (Math.random() < 1) {
+        if (Math.random() < prob) {
             var j = params.dimension - randomInt(1) - 1;
             this.board[j][i].shelter = { water: 0, seeds: [] };
         }
@@ -162,30 +133,116 @@ Automata.prototype.updateData = function () {
     this.humanPop.push(humanPop);
 }
 
+Automata.prototype.reset = function () {
+    // load next set of parameters in experiment
+    this.updateParams();
+
+    // delete all old entities (including this) so add this back in
+    this.game.entities = [];
+    this.game.addEntity(this);
+
+    this.day = 0;
+    //this.season = 0; // 0 = winter, 1 = spring, 2 = summer, 3 = autumn
+
+    // agents
+    this.seeds = [];
+    this.humans = [];
+
+    // data gathering
+    this.weightData = [];
+    this.rootData = [];
+    this.seedData = [];
+    this.energyData = [];
+    this.dispersalData = [];
+
+    this.seedPop = [];
+    this.humanPop = [];
+
+    // graphs
+    this.popGraph = new Graph(this.game, 810, 0, this, "Population");
+    this.game.addEntity(this.popGraph);
+    this.weightHist = new Histogram(this.game, 810, 200, "Seed Weight")
+    this.game.addEntity(this.weightHist);
+    this.rootHist = new Histogram(this.game, 810, 300, "Root Depth");
+    this.game.addEntity(this.rootHist);
+    this.seedHist = new Histogram(this.game, 810, 400, "Number of Seeds");
+    this.game.addEntity(this.seedHist);
+    this.energyHist = new Histogram(this.game, 810, 500, "Nutritional Value");
+    this.game.addEntity(this.energyHist);
+    this.dispersalHist = new Histogram(this.game, 810, 600, "Dispersal");
+    this.game.addEntity(this.dispersalHist);
+
+    this.board = [];
+
+    this.createBoard();
+};
+
+Automata.prototype.logData = function () {
+    var data = {
+        run: "testing",
+        params: params,
+        seedPop: this.seedPop,
+        humanPop: this.humanPop,
+        weightData: this.weightData,
+        rootData: this.rootData,
+        seedData: this.seedData,
+        energyData: this.energyData,
+        dispersalData: this.dispersalData
+    };
+
+    if (socket) socket.emit("saveDom", data);
+};
+
+Automata.prototype.updateParams = function () {
+    var val = parseInt(document.getElementById("seed_selection").value);
+
+    document.getElementById("seed_selection").value = (val + 1) % 16; // change seed selection strategy
+    if (val + 1 === 15) document.getElementById("human_add_rate").value = "0"; // last run has no humans
+    if (val === 15) document.getElementById("human_add_rate").value = "0.05"; // reset to add humans in next iteration
+
+    loadParameters();
+};
+
 Automata.prototype.update = function () {
     var flood = Math.random() < params.floodRate;
     var drought = Math.random() < params.droughtRate;
 
     this.day++;
     if (this.day === params.humansAdded) this.addHumans();
-    if (this.day % params.seasonLength === 0) this.season = (this.season + 1) % 4;
 
-    for (var i = 0; i < params.dimension; i++) {
-		for (var j = 0; j < params.dimension; j++) {
-		    if (this.season === 1 && flood) { // spring flood
-		        this.board[i][j].flood();
-		    }
-		    if (this.season === 3 && drought) { // autumn drought
-		        this.board[i][j].drought();
-		    }
+    if (this.day === params.epoch) {
+        this.logData();
+        this.reset();
+    }
+    //reenable below for floods/droughts
 
-		    this.board[i][j].update();
-		}
-	}
+    //if (this.day % params.seasonLength === 0) this.season = (this.season + 1) % 4;
+
+    //for (var i = 0; i < params.dimension; i++) {
+	//	for (var j = 0; j < params.dimension; j++) {
+	//	    if (this.season === 1 && flood) { // spring flood
+	//	        this.board[i][j].flood();
+	//	    }
+	//	    if (this.season === 3 && drought) { // autumn drought
+	//	        this.board[i][j].drought();
+	//	    }
+
+	//	    this.board[i][j].update();
+	//	}
+	//}
 
     for (var i = this.seeds.length - 1; i >= 0; i--) {
         var seed = this.seeds[i];
         seed.update();
+    }
+    
+    for (var i = this.humans.length - 1; i >= 0; i--) {
+        var human = this.humans[i];
+        human.update();
+        if (human.dead) {
+            this.humans.splice(i, 1);
+            human.cell.removeHuman(human);
+        }
     }
 
     for (var i = this.seeds.length - 1; i >= 0; i--) {
@@ -194,15 +251,6 @@ Automata.prototype.update = function () {
             this.seeds.splice(i, 1);
             seed.cell.removeSeed(seed);
             seed.spreadSeeds();
-        }
-    }
-
-    for (var i = this.humans.length - 1; i >= 0; i--) {
-        var human = this.humans[i];
-        human.update();
-        if (human.dead) {
-            this.humans.splice(i, 1);
-            human.cell.removeHuman(human);
         }
     }
 

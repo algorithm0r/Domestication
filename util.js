@@ -26,8 +26,8 @@ var params = {
     // seeds
     randomSeeds: false,
     germThreshold: 100,
-    fullGrown: 150,
-    seedDeathChance: 0.01,
+    fullGrown: 100,
+    seedDeathChance: 0,
     growthPenalty: 100,
 
     // humans
@@ -35,13 +35,16 @@ var params = {
     seedsDiffMetabolism: true,
     metabolicThreshold: 50,
     metabolicUnit: 1,
-    skinSize: 40,
+    skinSize: 20,
     scoopSize: 5,
-    basketSize: 40,
+    basketSize: 20,
     seedStrategy: 0,
+    seedDropRate: 0.1,
+    maxSeedDrop: 3,
 
     // data gathering
-    reportingPeriod: 100
+    reportingPeriod: 100,
+    epoch: 20000
 };
 
 function loadParameters() {

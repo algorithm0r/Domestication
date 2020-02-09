@@ -41,7 +41,6 @@ Cell.prototype.addSeed = function (seed) {
         s.cell = this;
         s.x = this.x;
         s.y = this.y;
-        s.mutate();
         this.seeds.push(s);
         this.game.board.seeds.push(s);
     }

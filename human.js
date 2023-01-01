@@ -12,6 +12,7 @@ function Human(human) {
     // resources carried
     this.water = 0;
     this.seeds = [];
+    this.toPlant = [];
 
     // behavioral properties
     this.dropRate = 0.1;
@@ -19,6 +20,8 @@ function Human(human) {
 
     // display properties
     this.color = "red";
+
+    this.parent = true;
 };
 
 Human.prototype.spendEnergy = function () {
@@ -45,11 +48,21 @@ Human.prototype.move = function(cell) {
     if (this.seeds.length > 0 && Math.random() < params.seedDropRate) {
         this.dropSeeds();
     }
+
+    if (this.toPlant.length > 0 && cell.seeds.length < 4) {
+        this.cultivate();
+    }
+};
+
+Human.prototype.cultivate = function () {
+    var [seed] = this.toPlant.splice(0, 1);
+    this.cell.addSeed(seed);
 };
 
 Human.prototype.dropSeeds = function () {
     var dropSize = Math.min(this.seeds.length, randomInt(params.maxSeedDrop) + 1);
 
+    // this.seeds.sort((s1,s2)=>(s1.energy>s2.energy) ? 1 : (s2.energy < s1.energy) ? -1 : 0);
     var seeds = this.seeds.splice(0, dropSize);
     for (var i = 0; i < seeds.length; i++) {
         seeds[i].cell = this.cell;
@@ -61,28 +74,35 @@ Human.prototype.dropSeeds = function () {
 };
 
 Human.prototype.rest = function () {
-    var cell = this.cell;
+    var shelter = this.cell.shelter;
 
     // sleep
     this.tired = Math.max(this.tired - params.metabolicUnit, 0);
     
     //drink
-    if (cell.shelter.water > 0 && this.thirst > 0) {
-        var val = Math.min(cell.shelter.water, params.metabolicUnit);
-        cell.shelter.water -= val;
+    if (shelter.water > 0 && this.thirst > 0) {
+        var val = Math.min(shelter.water, params.metabolicUnit);
+        shelter.water -= val;
         this.thirst -= val;
     }
 
     // eat
-    if (cell.shelter.seeds.length > 0) {
-        var val = Math.min(cell.shelter.seeds.length, params.metabolicUnit);
+    if (shelter.seeds.length > 0 || shelter.plantSeeds.length > 0) {
+        var seeds = shelter.seeds.length > 0 ? shelter.seeds : shelter.plantSeeds;
+        var val = Math.min(seeds.length, params.metabolicUnit);
         for (var i = 0; i < val; i++) {
-            var seed = cell.shelter.seeds.splice(0, 1)[0];
+            var seed = seeds.splice(0, 1)[0];
             //console.log(seed[0].penalty);
             this.hunger -= params.seedsDiffMetabolism ? seed.energy : 1;
         }
     }
-}
+
+    // fill planting seeds
+    if(this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
+        var diff = Math.min(params.scoopSize, params.plantBasketSize - this.toPlant.length);
+        this.toPlant.push(...shelter.plantSeeds.splice(0,diff));
+    }
+};
 
 Human.prototype.moveToShelter = function () {
     var cell = this.cell;
@@ -126,7 +146,7 @@ Human.prototype.selectSeed = function (cells) {
     var seed = [];
 
     switch (params.seedStrategy) {
-        case 0: // random seed
+        case "random": // random seed
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
@@ -210,7 +230,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 5: // min roots
+        case "mindeepRoots": // min roots
             cell = [];
             seed = [];
 
@@ -227,7 +247,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 6: // max roots
+        case "deepRoots": // max roots
             cell = [];
             seed = [];
 
@@ -244,7 +264,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 7: // min weight
+        case "minweight": // min weight
             cell = [];
             seed = [];
 
@@ -261,7 +281,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 8: // max weight
+        case "weight": // max weight
             cell = [];
             seed = [];
 
@@ -278,7 +298,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 9: // min dispersal
+        case "mindispersal": // min dispersal
             cell = [];
             seed = [];
 
@@ -295,7 +315,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 10: // max dispersal
+        case "dispersal": // max dispersal
             cell = [];
             seed = [];
 
@@ -312,7 +332,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 11: // min energy
+        case "minfruitEnergy": // min energy
             cell = [];
             seed = [];
 
@@ -329,7 +349,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 12: // max energy
+        case "fruitEnergy": // max energy
             cell = [];
             seed = [];
 
@@ -443,7 +463,7 @@ Human.prototype.moveToWater = function () {
     var c = [[cell.northwest, cell.north, cell.northeast], [cell.west, cell, cell.east], [cell.southwest, cell.south, cell.southeast]];
 
     var cells = [];
-    // if there are seeds in range move to it
+    // if there is water in range move to it
     for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
             if (c[i][j] && c[i][j].water > 0)
@@ -481,27 +501,28 @@ Human.prototype.moveToRiver = function () {
 
 Human.prototype.update = function () {
     var cell = this.cell;
-    var birthRatio = 3;
 
     //if (Math.random() < 0.001) this.dead = true;
 
     if (cell.shelter) {
-        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > -params.metabolicThreshold && cell.shelter.seeds.length > 0)) {
+        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > -params.metabolicThreshold && cell.shelter.seeds.length > 0 && !this.parent)) {
             this.rest();
             return;
         }
-        if (this.hunger > 0 && cell.shelter.seeds.length === 0 || this.thirst > 0 && cell.shelter.water === 0) {
-            this.dead = true;
-            return;
-        }
-        if (this.hunger < -params.metabolicThreshold) {
-            var h = new Human(this);
-            this.game.board.humans.push(h);
-            this.cell.addHuman(h);
-            this.hunger += params.metabolicThreshold;
-            return;
-        }
+        // if (this.hunger > 0 && cell.shelter.seeds.length === 0 || this.thirst > 0 && cell.shelter.water === 0) {
+        //     this.dead = true;
+        //     return;
+        // }
+        // if (this.hunger < -params.metabolicThreshold) {
+        //     var h = new Human(this);
+        //     this.game.board.humans.push(h);
+        //     this.cell.addHuman(h);
+        //     this.hunger += params.metabolicThreshold;
+        //     this.parent = true;
+        //     return;
+        // }
     }
+    this.parent = false;
     if (this.spendEnergy() || (this.water >= params.skinSize && this.seeds.length >= params.basketSize)) {
         this.moveToShelter();
         return;

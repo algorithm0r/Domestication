@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Division of Labor in Ants</title>
-    <script type="text/javascript" src="http://24.16.255.56:8888/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
     <script type="text/javascript" src="./util.js"></script>
     <script type="text/javascript" src="./graphs.js"></script>
     <script>
@@ -11,7 +11,38 @@
     </script>
 </head>
 <body>
-    <canvas id="chart" tabindex="1" width="1400" height="800"></canvas><br />
-    <input type="text" id="runToQuery" /> <button id="queryButton">Query</button><br />
+    <canvas id="chart" tabindex="1" width="2400" height="1000"></canvas><br />
+    <label for="seed_selection">Harvesting strategy:</label>
+    <select id="seed_selection">
+        <option value="none">No Harvest</option>
+        <option value="random">Harvest Randomly</option>
+        <option value="weight">Max Seed Weight</option>
+        <option value="deepRoots">Max Root Depth</option>
+        <option value="fecundity">Max Number of Seeds</option>
+        <option value="fruitEnergy">Max Nutritional Value</option>
+        <option value="dispersal">Max Dispersal</option>
+        <option value="minweight">Min Seed Weight</option>
+        <option value="mindeepRoots">Min Root Depth</option>
+        <option value="minfecundity">Min Number of Seeds</option>
+        <option value="minfruitEnergy">Min Nutritional Value</option>
+        <option value="mindispersal">Min Dispersal</option>
+    </select><br />
+    <label for="plant_selection">Planting strategy:</label>
+    <select id="plant_selection">
+        <option value="none">No Planting</option>
+        <option value="random">Random Seeds</option>
+        <option value="weight">Max Seed Weight</option>
+        <option value="deepRoots">Max Root Depth</option>
+        <option value="fecundity">Max Number of Seeds</option>
+        <option value="fruitEnergy">Max Nutritional Value</option>
+        <option value="dispersal">Max Dispersal</option>
+        <option value="minweight">Min Seed Weight</option>
+        <option value="mindeepRoots">Min Root Depth</option>
+        <option value="minfecundity">Min Number of Seeds</option>
+        <option value="minfruitEnergy">Min Nutritional Value</option>
+        <option value="mindispersal">Min Dispersal</option>
+    </select><br />    
+    <button id="query">Query</button><br />
+    <button id="download">Download</button><br />
 </body>
 </html>

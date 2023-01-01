@@ -11,6 +11,13 @@ function hsl(h, s, l) {
     return "hsl(" + h + "," + s + "%," + l + "%)";
 };
 
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    pom.click();
+};
+
 var params = {
     // environment
     size: 16,
@@ -25,10 +32,10 @@ var params = {
 
     // seeds
     randomSeeds: false,
-    germThreshold: 100,
-    fullGrown: 100,
+    germThreshold: 50,
+    fullGrown: 50,
     seedDeathChance: 0,
-    growthPenalty: 100,
+    growthPenalty: 50,
 
     // humans
     humanAddRate: 0.05,
@@ -38,8 +45,10 @@ var params = {
     skinSize: 20,
     scoopSize: 5,
     basketSize: 20,
+    plantBasketSize: 50,
     seedStrategy: 0,
-    seedDropRate: 0.1,
+    plantStrategy: "none",
+    seedDropRate: 0.02,
     maxSeedDrop: 3,
 
     // data gathering
@@ -48,10 +57,10 @@ var params = {
 };
 
 function loadParameters() {
-    params.size = parseInt(document.getElementById("cell_size").value);
-    params.dimension = parseInt(document.getElementById("dimension").value);
-    params.riverWidth = parseInt(document.getElementById("river_width").value);
-    params.dry = 1 - parseInt(document.getElementById("bank_size").value);
+    // params.size = parseInt(document.getElementById("cell_size").value);
+    // params.dimension = parseInt(document.getElementById("dimension").value);
+    // params.riverWidth = parseInt(document.getElementById("river_width").value);
+    // params.dry = 1 - parseInt(document.getElementById("bank_size").value);
 
     params.randomSeeds = document.getElementById("random_seeds").checked;
     params.germThreshold = parseInt(document.getElementById("germ_threshold").value);
@@ -66,7 +75,8 @@ function loadParameters() {
     params.skinSize = parseInt(document.getElementById("skin_size").value);
     params.scoopSize = parseInt(document.getElementById("scoop_size").value);
     params.basketSize = parseInt(document.getElementById("basket_size").value);
-    params.seedStrategy = parseInt(document.getElementById("seed_selection").value);
+    params.seedStrategy = document.getElementById("seed_selection").value;
+    params.plantStrategy = document.getElementById("plant_selection").value;
 
     console.log(params);
 };

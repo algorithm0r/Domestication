@@ -25,7 +25,7 @@ function Seed(seed) {
     this.mutate();
 
     this.penalty = this.weight.value + this.deepRoots.value + this.fecundity.value + this.fruitEnergy.value + this.dispersal.value;
-    this.energy = this.fruitEnergy.value + 1 - this.penalty / 5;
+    this.energy = this.fruitEnergy.value;
     //this.energy = 1;
     //console.log(this.penalty);
 };
@@ -38,11 +38,12 @@ Seed.prototype.update = function () {
     var threshold = params.germThreshold + this.penalty * params.growthPenalty;
     if (this.growth > threshold && oldGrowth < threshold) { // germinate
         var r = randomInt(range) + this.cell.water + this.fecundity.value * range - params.riverWidth;
-        this.seeds = r < 0 ? 0 :
-            r < 0.25 * range ? 1 :
-            r < 0.5 * range ? 2 :
-            r < 0.75 * range ? 3 : 4;
-        if (this.seeds === 0) this.dead = true;
+        // this.seeds = r < 0 ? 0 :
+            // r < 0.25 * range ? 1 :
+            // r < 0.5 * range ? 2 :
+            // r < 0.75 * range ? 3 : 4;
+        this.seeds = Math.max(0,Math.ceil(r/range*4));
+            if (this.seeds === 0) this.dead = true;
     }
 
     if (this.growth > threshold + (params.fullgrown * (1 - this.dispersal.value)) || Math.random() < params.seedDeathChance) { // die
@@ -51,7 +52,7 @@ Seed.prototype.update = function () {
 };
 
 Seed.prototype.draw = function (ctx, i) {
-    var penalty = Math.floor(this.penalty / 4 * 255);
+    var penalty = Math.floor(this.deepRoots.value * 255);
     ctx.fillStyle = rgb(0, 255 - penalty, 0);
     ctx.fillRect(this.x * params.size + (i % 2) * params.size * 3 / 4, this.y * params.size + Math.floor(i / 2) * params.size * 3 / 4, params.size / 4, params.size / 4);
 };

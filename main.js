@@ -4,14 +4,20 @@ var ASSET_MANAGER = new AssetManager();
 
 var socket = null;
 if (window.io !== undefined) {
-    console.log("Database connected!");
-    socket = io.connect('http://24.16.255.56:8888');
+	console.log("Database connected!");
+
+	socket = io.connect('http://73.225.31.4:8888');
+
+	socket.addEventListener("log", console.log);
 }
 
 function reset() {
-    gameEngine.entities = [];
-    var automata = new Automata(gameEngine);
-    gameEngine.addEntity(automata);
+	if (gameEngine.board) {
+		gameEngine.board.reset();
+	} else {
+		gameEngine.entities = [];
+		new Automata(gameEngine);
+	}
 };
 
 ASSET_MANAGER.downloadAll(function () {

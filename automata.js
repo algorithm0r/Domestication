@@ -3,8 +3,12 @@ function Automata(game) {
     this.game.board = this;
     this.x = 0;
     this.y = 0;
-    
-    this.reset();
+
+
+    this.shelter = { water: 0, seeds: [], plantSeeds: [] };
+
+    loadParameters();
+    this.buildAutomata();
 };
 
 Automata.prototype.createBoard = function () {
@@ -25,9 +29,48 @@ Automata.prototype.createBoard = function () {
     this.addShelters();
 };
 
+Automata.prototype.partitionSeeds = function () {
+    var seeds = this.shelter.seeds;
+    var plant = [];
+
+    // var selections = ["weight","deepRoots","fecundity","fruitEnergy","dispersal"];
+    // var selectionProperty = selections[randomInt(selections.length)];
+    var selectionProperty = params.plantStrategy;
+
+    if (seeds.length > 0 && this.shelter.plantSeeds.length < seeds.length / 4) {
+        if (selectionProperty == "none") {
+            // do nothing
+        } else if (selectionProperty == "random") {
+            this.shelter.plantSeeds.push(...seeds.splice(0, seeds.length / 4));
+        } else if (selectionProperty.substring(0, 3) == "min") {
+            selectionProperty = selectionProperty.slice(3);
+            var avg = seeds.reduce((p, c) => p + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), 0) / seeds.length;
+            var obj = seeds.reduce((p, c) => (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]) < avg
+                ? { sum: p.sum + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), num: p.num + 1 }
+                : p, { sum: 0, num: 0 });
+            var avg2 = obj.sum / obj.num;
+
+            [this.shelter.seeds, plant] = seeds.reduce(([k, p], c) => (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]) > avg2 ? [[...k, c], p] : [k, [...p, c]], [[], []]);
+            this.shelter.plantSeeds.push(...plant);
+        } else {
+            var avg = seeds.reduce((p, c) => p + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), 0) / seeds.length;
+            var obj = seeds.reduce((p, c) => (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]) > avg
+                ? { sum: p.sum + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), num: p.num + 1 }
+                : p, { sum: 0, num: 0 });
+            var avg2 = obj.sum / obj.num;
+
+            [this.shelter.seeds, plant] = seeds.reduce(([k, p], c) => (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]) < avg2 ? [[...k, c], p] : [k, [...p, c]], [[], []]);
+            this.shelter.plantSeeds.push(...plant);
+        }
+    }
+    if (this.shelter.seeds.length > 2000) {
+        this.shelter.seeds.splice(0, this.shelter.seeds.length - 2000);
+    }
+};
+
 Automata.prototype.generateRiver = function () {
     //var start = Math.floor(randomInt(params.dimension / 10) + params.dimension * 0.45);
-    var start = Math.floor(params.dimension/2);
+    var start = Math.floor(params.dimension / 2);
     for (var i = 0; i < params.dimension; i++) {
         this.board[start][i].water = params.riverWidth;
         for (var j = 1; j < params.dimension - start; j++) {
@@ -54,13 +97,15 @@ Automata.prototype.plantSeeds = function () {
     }
 };
 
-Automata.prototype.addHumans = function () {
+Automata.prototype.addHumans = function (numOfHumans) {
     for (var i = 0; i < params.dimension; i++) {
         for (var j = 0; j < params.dimension; j++) {
-            if (Math.random() < params.humanAddRate) {
-                var human = new Human({ game: this.game, x: i, y: j, cell: this.board[i][j] });
-                this.board[i][j].addHuman(human);
-                this.humans.push(human);
+            for (var k = 0; k < numOfHumans; k++) {
+                if (Math.random() < params.humanAddRate && this.board[i][j].shelter) {
+                    var human = new Human({ game: this.game, x: i, y: j, cell: this.board[i][j] });
+                    this.board[i][j].addHuman(human);
+                    this.humans.push(human);
+                }
             }
         }
     }
@@ -71,11 +116,11 @@ Automata.prototype.addShelters = function () {
     for (var i = 0; i < params.dimension; i++) {
         if (Math.random() < prob) {
             var j = randomInt(1);
-            this.board[j][i].shelter = { water: 0, seeds: [] };
+            this.board[j][i].shelter = this.shelter;
         }
         if (Math.random() < prob) {
             var j = params.dimension - randomInt(1) - 1;
-            this.board[j][i].shelter = { water: 0, seeds: [] };
+            this.board[j][i].shelter = this.shelter;
         }
     }
 };
@@ -101,7 +146,6 @@ Automata.prototype.updateData = function () {
             var cell = this.board[i][j];
             seedPop += cell.seeds.length;
             humanPop += cell.humans.length;
-            
         }
     }
 
@@ -134,10 +178,13 @@ Automata.prototype.updateData = function () {
 }
 
 Automata.prototype.reset = function () {
-    // load next set of parameters in experiment
+    this.nextRun();
     this.updateParams();
+    this.buildAutomata();
+};
 
-    // delete all old entities (including this) so add this back in
+Automata.prototype.buildAutomata = function () {
+    
     this.game.entities = [];
     this.game.addEntity(this);
 
@@ -179,26 +226,46 @@ Automata.prototype.reset = function () {
 
 Automata.prototype.logData = function () {
     var data = {
-        run: "testing",
-        params: params,
-        seedPop: this.seedPop,
-        humanPop: this.humanPop,
-        weightData: this.weightData,
-        rootData: this.rootData,
-        seedData: this.seedData,
-        energyData: this.energyData,
-        dispersalData: this.dispersalData
+        db: "test",
+        collection: "domestication",
+        data: {
+            run: "testing",
+            params: params,
+            seedPop: this.seedPop,
+            humanPop: this.humanPop,
+            weightData: this.weightData,
+            rootData: this.rootData,
+            seedData: this.seedData,
+            energyData: this.energyData,
+            dispersalData: this.dispersalData
+        }
     };
 
-    if (socket) socket.emit("saveDom", data);
+    if (socket) socket.emit("insert", data);
+};
+
+Automata.prototype.nextRun = function () {
+    const options = ["none", "random", "weight", "deepRoots", "fecundity", "fruitEnergy", "dispersal", "minweight", "mindeepRoots", "minfecundity", "minfruitEnergy", "mindispersal"];
+
+    const harvest = document.getElementById("seed_selection");
+    const plant = document.getElementById("plant_selection");
+    if (harvest.value === "none" && plant.value === "none") {
+        harvest.value = "random";
+    } else {
+        plant.value = options[(options.indexOf(plant.value) + 1) % options.length];
+        if (plant.value === "none") {
+            const harvestIndex = (options.indexOf(harvest.value) + 1) % options.length;
+            harvest.value = options[harvestIndex];
+        }
+    }
 };
 
 Automata.prototype.updateParams = function () {
-    var val = parseInt(document.getElementById("seed_selection").value);
+    // var val = parseInt(document.getElementById("seed_selection").value) % 16;
 
-    document.getElementById("seed_selection").value = (val + 1) % 16; // change seed selection strategy
-    if (val + 1 === 15) document.getElementById("human_add_rate").value = "0"; // last run has no humans
-    if (val === 15) document.getElementById("human_add_rate").value = "0.05"; // reset to add humans in next iteration
+    // document.getElementById("seed_selection").value = val; // change seed selection strategy
+    // if (val === 15) document.getElementById("human_add_rate").value = "0"; // last run has no humans
+    // if (val === 0) document.getElementById("human_add_rate").value = "0.05"; // reset to add humans in next iteration
 
     loadParameters();
 };
@@ -208,7 +275,7 @@ Automata.prototype.update = function () {
     var drought = Math.random() < params.droughtRate;
 
     this.day++;
-    if (this.day === params.humansAdded) this.addHumans();
+    if (this.day === params.humansAdded) this.addHumans(2);
 
     if (this.day === params.epoch) {
         this.logData();
@@ -219,23 +286,23 @@ Automata.prototype.update = function () {
     //if (this.day % params.seasonLength === 0) this.season = (this.season + 1) % 4;
 
     //for (var i = 0; i < params.dimension; i++) {
-	//	for (var j = 0; j < params.dimension; j++) {
-	//	    if (this.season === 1 && flood) { // spring flood
-	//	        this.board[i][j].flood();
-	//	    }
-	//	    if (this.season === 3 && drought) { // autumn drought
-	//	        this.board[i][j].drought();
-	//	    }
+    //	for (var j = 0; j < params.dimension; j++) {
+    //	    if (this.season === 1 && flood) { // spring flood
+    //	        this.board[i][j].flood();
+    //	    }
+    //	    if (this.season === 3 && drought) { // autumn drought
+    //	        this.board[i][j].drought();
+    //	    }
 
-	//	    this.board[i][j].update();
-	//	}
-	//}
+    //	    this.board[i][j].update();
+    //	}
+    //}
 
     for (var i = this.seeds.length - 1; i >= 0; i--) {
         var seed = this.seeds[i];
         seed.update();
     }
-    
+
     for (var i = this.humans.length - 1; i >= 0; i--) {
         var human = this.humans[i];
         human.update();
@@ -254,6 +321,8 @@ Automata.prototype.update = function () {
         }
     }
 
+    this.partitionSeeds();
+
     // data gathering
     if (this.day % params.reportingPeriod === 0) {
         this.updateData();
@@ -262,10 +331,10 @@ Automata.prototype.update = function () {
 };
 
 Automata.prototype.draw = function (ctx) {
-	for (var i = 0; i < params.dimension; i++) {
-		for (var j = 0; j < params.dimension; j++) {
-		    var cell = this.board[i][j];
-		    cell.draw(ctx);
-		}
-	}
+    for (var i = 0; i < params.dimension; i++) {
+        for (var j = 0; j < params.dimension; j++) {
+            var cell = this.board[i][j];
+            cell.draw(ctx);
+        }
+    }
 };

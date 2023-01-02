@@ -13,12 +13,18 @@ socket.on("connect", function () {
 
 document.addEventListener("DOMContentLoaded", function (event) {
     context = document.getElementById("chart").getContext("2d");
-    socket.emit("find", { db: "test", collection: "domestication", query: {"params.seedStrategy": "none", "params.plantStrategy": "none" }});
+    socket.emit("find", 
+        { db: params.db, 
+            collection: params.collection, 
+            query: {"params.seedStrategy": "none", "params.plantStrategy": "none" }});
 
     document.getElementById("query").addEventListener("click", function (e) {
         var query = document.getElementById("seed_selection").value;
         var drop = document.getElementById("plant_selection").value;
-        socket.emit("find", { db: "test", collection: "domestication", query: {"params.seedStrategy": query, "params.plantStrategy": drop }});
+        socket.emit("find", 
+            { db: params.db, 
+                collection: params.collection, 
+                query: {"params.seedStrategy": query, "params.plantStrategy": drop }});
     }, false);
 
     // document.getElementById("next").addEventListener("click", function (e) {

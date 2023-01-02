@@ -157,7 +157,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 1: // most seeds
+        case "fecundity": // most seeds
             cell = [];
             seed = [];
 
@@ -174,7 +174,7 @@ Human.prototype.selectSeed = function (cells) {
                 }
             }
             break;
-        case 2: // fewest seeds
+        case "minfecundity": // fewest seeds
             cell = [];
             seed = [];
 

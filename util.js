@@ -53,7 +53,11 @@ var params = {
 
     // data gathering
     reportingPeriod: 100,
-    epoch: 20000
+    epoch: 20000,
+
+    // database
+    db: "domestication",
+    collection: "runs"
 };
 
 function loadParameters() {

@@ -4,9 +4,6 @@ function Automata(game) {
     this.x = 0;
     this.y = 0;
 
-
-    this.shelter = { water: 0, seeds: [], plantSeeds: [] };
-
     loadParameters();
     this.buildAutomata();
 };
@@ -191,6 +188,8 @@ Automata.prototype.buildAutomata = function () {
     this.day = 0;
     //this.season = 0; // 0 = winter, 1 = spring, 2 = summer, 3 = autumn
 
+    this.shelter = { water: 0, seeds: [], plantSeeds: [] };
+
     // agents
     this.seeds = [];
     this.humans = [];
@@ -226,10 +225,10 @@ Automata.prototype.buildAutomata = function () {
 
 Automata.prototype.logData = function () {
     var data = {
-        db: "test",
-        collection: "domestication",
+        db: params.db,
+        collection: params.collection,
         data: {
-            run: "testing",
+            run: "X1",
             params: params,
             seedPop: this.seedPop,
             humanPop: this.humanPop,
@@ -337,4 +336,13 @@ Automata.prototype.draw = function (ctx) {
             cell.draw(ctx);
         }
     }
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#000000";
+    // ctx.textAlign = "center";
+    ctx.fillText(`Seeds in Shelter: ${this.shelter.seeds.length}`, 860, 710);
+    ctx.fillText(`Seeds to Plant: ${this.shelter.plantSeeds.length}`, 860, 724);
+    ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 860, 738);
+    ctx.font = "10px Arial";
+   
 };

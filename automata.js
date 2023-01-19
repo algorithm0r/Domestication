@@ -259,7 +259,6 @@ Automata.prototype.nextRun = function () {
             harvest.value = options[harvestIndex];
         }
     }
-    
 };
 
 Automata.prototype.updateParams = function () {

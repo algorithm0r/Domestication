@@ -35,7 +35,7 @@ Human.prototype.spendEnergy = function () {
     return false;
 };
 
-Human.prototype.move = function(cell) {
+Human.prototype.move = function (cell) {
     this.cell.removeHuman(this);
     cell.addHuman(this);
     if (cell.shelter) {
@@ -78,7 +78,7 @@ Human.prototype.rest = function () {
 
     // sleep
     this.tired = Math.max(this.tired - params.metabolicUnit, 0);
-    
+
     //drink
     if (shelter.water > 0 && this.thirst > 0) {
         var val = Math.min(shelter.water, params.metabolicUnit);
@@ -98,9 +98,9 @@ Human.prototype.rest = function () {
     }
 
     // fill planting seeds
-    if(this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
+    if (this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
         var diff = Math.min(params.scoopSize, params.plantBasketSize - this.toPlant.length);
-        this.toPlant.push(...shelter.plantSeeds.splice(0,diff));
+        this.toPlant.push(...shelter.plantSeeds.splice(0, diff));
     }
 };
 
@@ -164,10 +164,10 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || (cell.length > 0 && c.seeds[j].seeds > cell[0].seeds[seed[0]].seeds))) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value > cell[0].seeds[seed[0]].fecundity.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (!c.seeds[j].dead &&  (cell.length > 0 && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds)) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value === cell[0].seeds[seed[0]].fecundity.value) {
                         cell.push(c);
                         seed.push(j);
                     }
@@ -181,21 +181,55 @@ Human.prototype.selectSeed = function (cells) {
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];
                 for (var j = 0; j < c.seeds.length; j++) {
-                    if (cell.length === 0) {
-                        if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
-                            cell = [c];
-                            seed = [j];
-                        }
-                    } else if (!c.seeds[j].dead && c.seeds[j].seeds > 0 && c.seeds[j].seeds < cell[0].seeds[seed[0]].seeds) {
+                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value < cell[0].seeds[seed[0]].fecundity.value)) {
                         cell = [c];
                         seed = [j];
-                    } else if (!c.seeds[j].dead && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
+                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value === cell[0].seeds[seed[0]].fecundity.value) {
                         cell.push(c);
                         seed.push(j);
                     }
                 }
             }
             break;
+        // case "fecundity": // most seeds
+        //     cell = [];
+        //     seed = [];
+
+        //     for (var i = 0; i < cells.length; i++) {
+        //         var c = cells[i];
+        //         for (var j = 0; j < c.seeds.length; j++) {
+        //             if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || (cell.length > 0 && c.seeds[j].seeds > cell[0].seeds[seed[0]].seeds))) {
+        //                 cell = [c];
+        //                 seed = [j];
+        //             } else if (!c.seeds[j].dead && (cell.length > 0 && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds)) {
+        //                 cell.push(c);
+        //                 seed.push(j);
+        //             }
+        //         }
+        //     }
+        //     break;
+        // case "minfecundity": // fewest seeds
+        //     cell = [];
+        //     seed = [];
+
+        //     for (var i = 0; i < cells.length; i++) {
+        //         var c = cells[i];
+        //         for (var j = 0; j < c.seeds.length; j++) {
+        //             if (cell.length === 0) {
+        //                 if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
+        //                     cell = [c];
+        //                     seed = [j];
+        //                 }
+        //             } else if (!c.seeds[j].dead && c.seeds[j].seeds > 0 && c.seeds[j].seeds < cell[0].seeds[seed[0]].seeds) {
+        //                 cell = [c];
+        //                 seed = [j];
+        //             } else if (!c.seeds[j].dead && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
+        //                 cell.push(c);
+        //                 seed.push(j);
+        //             }
+        //         }
+        //     }
+        //     break;
         case 3: // min penalty
             cell = [];
             seed = [];
@@ -533,14 +567,14 @@ Human.prototype.update = function () {
         if (this.water < params.skinSize) {
             this.moveToWater();
         }
-    } 
+    }
 };
 
 Human.prototype.draw = function (ctx) {
     var size = params.size / 2;
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc((this.x *params.size) + (params.size / 2), (this.y * params.size) + (params.size / 2), (size / 2), 0, 2 * Math.PI, false);
+    ctx.arc((this.x * params.size) + (params.size / 2), (this.y * params.size) + (params.size / 2), (size / 2), 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
 };

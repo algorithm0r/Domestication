@@ -56,7 +56,7 @@ var params = {
     epoch: 20000,
 
     // database
-    db: "domestication",
+    db: "domesticationDB",
     collection: "runs"
 };
 

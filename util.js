@@ -57,7 +57,7 @@ var params = {
 
     // database
     db: "domesticationDB",
-    collection: "runs"
+    collection: "exp2023"
 };
 
 function loadParameters() {

@@ -24,6 +24,7 @@ var params = {
     dimension: 50,
     dry: -11,
     riverWidth: 4,
+    range: 16,
     floodRate: 0.0,
     droughtRate: 0.0,
     seasonLength: 500,
@@ -57,7 +58,7 @@ var params = {
 
     // database
     db: "domesticationDB",
-    collection: "exp2023"
+    collection: "exp2023v2"
 };
 
 function loadParameters() {

@@ -247,8 +247,8 @@ Automata.prototype.nextRun = function () {
     const harvest = document.getElementById("seed_selection");
     const plant = document.getElementById("plant_selection");
 
-    // const options = ["none", "random", "weight", "deepRoots", "fecundity", "fruitEnergy", "dispersal", "minweight", "mindeepRoots", "minfecundity", "minfruitEnergy", "mindispersal"];
-    const options = ["none", "random", "weight", "deepRoots", "fecundity", "minweight", "mindeepRoots", "minfecundity"];
+    const options = ["none", "random", "weight", "deepRoots", "fecundity", "fruitEnergy", "dispersal", "minweight", "mindeepRoots", "minfecundity", "minfruitEnergy", "mindispersal"];
+    // const options = ["none", "random", "weight", "deepRoots", "fecundity", "minweight", "mindeepRoots", "minfecundity"];
 
     if (harvest.value === "none" && plant.value === "none") {
         harvest.value = "random";

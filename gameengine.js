@@ -19,7 +19,7 @@ function Timer() {
 };
 
 Timer.prototype.tick = function () {
-    var wallCurrent = Date.now();
+    var wallCurrent = performance.now();
     var wallDelta = (wallCurrent - this.wallLastTimestamp) / 1000;
     this.wallLastTimestamp = wallCurrent;
 
@@ -127,7 +127,8 @@ GameEngine.prototype.update = function () {
 GameEngine.prototype.loop = function () {
     var speed = 10;
     this.clockTick = this.timer.tick();
-    this.update();
+    var loops = 5;
+    while(loops-- > 0) this.update();
     this.draw();
     this.click = null;
     this.rightclick = null;

@@ -16,6 +16,7 @@ function Timer() {
     this.gameTime = 0;
     this.maxStep = 0.05;
     this.wallLastTimestamp = 0;
+    this.ticks = [];
 };
 
 Timer.prototype.tick = function () {
@@ -25,6 +26,18 @@ Timer.prototype.tick = function () {
 
     var gameDelta = Math.min(wallDelta, this.maxStep);
     this.gameTime += gameDelta;
+
+    this.ticks.push(wallDelta);
+
+    let index = this.ticks.length - 1;
+    let sum = 0;
+    while(sum <= 1 && index >= 0) {
+        sum += this.ticks[index--];
+    }
+    index++;
+
+    this.ticks.splice(0,index);
+
     return gameDelta;
 };
 
@@ -127,7 +140,7 @@ GameEngine.prototype.update = function () {
 GameEngine.prototype.loop = function () {
     var speed = 10;
     this.clockTick = this.timer.tick();
-    var loops = 5;
+    var loops = params.updatesPerDraw;
     while(loops-- > 0) this.update();
     this.draw();
     this.click = null;

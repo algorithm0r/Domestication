@@ -341,10 +341,12 @@ Automata.prototype.draw = function (ctx) {
 
     ctx.font = "12px Arial";
     ctx.fillStyle = "#000000";
-    // ctx.textAlign = "center";
-    ctx.fillText(`Seeds in Shelter: ${this.shelter.seeds.length}`, 860, 710);
-    ctx.fillText(`Seeds to Plant: ${this.shelter.plantSeeds.length}`, 860, 724);
-    ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 860, 738);
+    ctx.textAlign = "left";
+    ctx.fillText(`Seeds in Shelter: ${this.shelter.seeds.length}`, 810, 710);
+    ctx.fillText(`Seeds to Plant: ${this.shelter.plantSeeds.length}`, 810, 724);
+    ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 810, 738);
+    ctx.fillText(`Tick ${this.game.clockTick}`, 810, 766);
+    ctx.fillText(`FPS ${this.game.timer.ticks.length}`, 810, 780);
     ctx.font = "10px Arial";
    
 };

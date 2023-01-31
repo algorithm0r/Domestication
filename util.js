@@ -19,6 +19,9 @@ function download(filename, text) {
 };
 
 var params = {
+    // sim
+    updatesPerDraw: 10,
+
     // environment
     size: 16,
     dimension: 50,
@@ -58,7 +61,7 @@ var params = {
 
     // database
     db: "domesticationDB",
-    collection: "exp2023v2"
+    collection: "exp2023v3"
 };
 
 function loadParameters() {

@@ -28,7 +28,7 @@ function Seed(seed) {
     this.energy = this.fruitEnergy.value;
 
     this.threshold = params.germThreshold + this.penalty * params.growthPenalty;
-    this.dropThreshold = this.threshold + (params.fullGrown * (1 - this.dispersal.value));
+    this.dropThreshold = this.threshold + (params.fullGrown * (1 - this.dispersal.value)) + 10;
 
     this.growthUnit = (1 - this.deepRoots.value) * (this.cell.water - params.dry) + this.deepRoots.value * params.range / 2;
     //this.energy = 1;

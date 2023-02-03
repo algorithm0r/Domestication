@@ -258,6 +258,11 @@ Automata.prototype.nextRun = function () {
             const harvestIndex = (options.indexOf(harvest.value) + 1) % options.length;
             harvest.value = options[harvestIndex];
         }
+        if(plant.value === "weight" && harvest.value !== "random") {
+            const harvestIndex = (options.indexOf(harvest.value) + 1) % options.length;
+            harvest.value = options[harvestIndex];
+            plant.value = "none";
+        }
     }
 };
 

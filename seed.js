@@ -40,11 +40,7 @@ Seed.prototype.update = function () {
     this.growth += this.growthUnit; // grow in range [0,...,range]
 
     if (this.growth > this.threshold && oldGrowth < this.threshold) { // germinate
-        var r = randomInt(params.range) + this.cell.water + this.fecundity.value * params.range - params.riverWidth;
-        // this.seeds = r < 0 ? 0 :
-            // r < 0.25 * range ? 1 :
-            // r < 0.5 * range ? 2 :
-            // r < 0.75 * range ? 3 : 4;
+        var r = randomInt(params.range) + (this.cell.water - params.riverWidth) + this.fecundity.value * params.range;
         this.seeds = Math.max(0,Math.ceil(r/params.range*4));
             if (this.seeds === 0) this.dead = true;
     }

@@ -101,7 +101,7 @@ GameEngine.prototype.startInput = function () {
     this.ctx.canvas.addEventListener("contextmenu", function (e) {
         //console.log(getXandY(e));
         that.rightclick = getXandY(e);
-        e.preventDefault();
+        // e.preventDefault();
     }, false);
 
     console.log('Input started');

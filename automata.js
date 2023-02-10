@@ -128,6 +128,17 @@ Automata.prototype.updateData = function () {
     var seedData = [];
     var energyData = [];
     var dispersalData = [];
+    var weightDataWild = [];
+    var rootsDataWild = [];
+    var seedDataWild = [];
+    var energyDataWild = [];
+    var dispersalDataWild = [];
+    var weightDataDomesticated = [];
+    var rootsDataDomesticated = [];
+    var seedDataDomesticated = [];
+    var energyDataDomesticated = [];
+    var dispersalDataDomesticated = [];
+
     var seedPop = 0;
     var humanPop = 0;
 
@@ -137,6 +148,16 @@ Automata.prototype.updateData = function () {
         seedData.push(0);
         energyData.push(0);
         dispersalData.push(0);
+        weightDataWild.push(0);
+        rootsDataWild.push(0);
+        seedDataWild.push(0);
+        energyDataWild.push(0);
+        dispersalDataWild.push(0);
+        weightDataDomesticated.push(0);
+        rootsDataDomesticated.push(0);
+        seedDataDomesticated.push(0);
+        energyDataDomesticated.push(0);
+        dispersalDataDomesticated.push(0);
     }
     for (var i = 0; i < params.dimension; i++) {
         for (var j = 0; j < params.dimension; j++) {
@@ -149,14 +170,24 @@ Automata.prototype.updateData = function () {
     for (var k = 0; k < this.seeds.length; k++) {
         var weightIndex = Math.floor(this.seeds[k].weight.value * 20) < 20 ? Math.floor(this.seeds[k].weight.value * 20) : 19;
         weightData[weightIndex]++;
+        if(this.seeds[k].dispersal.value < 0.6) weightDataDomesticated[weightIndex]++;
+        else weightDataWild[weightIndex]++;
         var rootsIndex = Math.floor(this.seeds[k].deepRoots.value * 20) < 20 ? Math.floor(this.seeds[k].deepRoots.value * 20) : 19;
         rootsData[rootsIndex]++;
+        if(this.seeds[k].dispersal.value < 0.6) rootsDataDomesticated[rootsIndex]++;
+        else rootsDataWild[rootsIndex]++;
         var seedIndex = Math.floor(this.seeds[k].fecundity.value * 20) < 20 ? Math.floor(this.seeds[k].fecundity.value * 20) : 19;
         seedData[seedIndex]++;
+        if(this.seeds[k].dispersal.value < 0.6) seedDataDomesticated[seedIndex]++;
+        else seedDataWild[seedIndex]++;
         var energyIndex = Math.floor(this.seeds[k].fruitEnergy.value * 20) < 20 ? Math.floor(this.seeds[k].fruitEnergy.value * 20) : 19;
         energyData[energyIndex]++;
+        if(this.seeds[k].dispersal.value < 0.6) energyDataDomesticated[energyIndex]++;
+        else energyDataWild[energyIndex]++;
         var dispersalIndex = Math.floor(this.seeds[k].dispersal.value * 20) < 20 ? Math.floor(this.seeds[k].dispersal.value * 20) : 19;
         dispersalData[dispersalIndex]++;
+        if(this.seeds[k].dispersal.value < 0.6) dispersalDataDomesticated[dispersalIndex]++;
+        else dispersalDataWild[dispersalIndex]++;
     }
 
     this.weightData.push(weightData);
@@ -169,6 +200,26 @@ Automata.prototype.updateData = function () {
     this.energyHist.data = this.energyData;
     this.dispersalData.push(dispersalData);
     this.dispersalHist.data = this.dispersalData;
+    this.weightDataWild.push(weightDataWild);
+    this.weightHistWild.data = this.weightDataWild;
+    this.rootDataWild.push(rootsDataWild);
+    this.rootHistWild.data = this.rootDataWild;
+    this.seedDataWild.push(seedDataWild);
+    this.seedHistWild.data = this.seedDataWild;
+    this.energyDataWild.push(energyDataWild);
+    this.energyHistWild.data = this.energyDataWild;
+    this.dispersalDataWild.push(dispersalDataWild);
+    this.dispersalHistWild.data = this.dispersalDataWild;
+    this.weightDataDomesticated.push(weightDataDomesticated);
+    this.weightHistDomesticated.data = this.weightDataDomesticated;
+    this.rootsDataDomesticated.push(rootsDataDomesticated);
+    this.rootHistDomesticated.data = this.rootsDataDomesticated;
+    this.seedDataDomesticated.push(seedDataDomesticated);
+    this.seedHistDomesticated.data = this.seedDataDomesticated;
+    this.energyDataDomesticated.push(energyDataDomesticated);
+    this.energyHistDomesticated.data = this.energyDataDomesticated;
+    this.dispersalDataDomesticated.push(dispersalDataDomesticated);
+    this.dispersalHistDomesticated.data = this.dispersalDataDomesticated;
 
     this.seedPop.push(seedPop);
     this.humanPop.push(humanPop);
@@ -200,6 +251,16 @@ Automata.prototype.buildAutomata = function () {
     this.seedData = [];
     this.energyData = [];
     this.dispersalData = [];
+    this.weightDataWild = [];
+    this.rootDataWild = [];
+    this.seedDataWild = [];
+    this.energyDataWild = [];
+    this.dispersalDataWild = [];
+    this.weightDataDomesticated = [];
+    this.rootsDataDomesticated = [];
+    this.seedDataDomesticated = [];
+    this.energyDataDomesticated = [];
+    this.dispersalDataDomesticated = [];
 
     this.seedPop = [];
     this.humanPop = [];
@@ -217,6 +278,26 @@ Automata.prototype.buildAutomata = function () {
     this.game.addEntity(this.energyHist);
     this.dispersalHist = new Histogram(this.game, 810, 600, "Dispersal");
     this.game.addEntity(this.dispersalHist);
+    this.weightHistWild = new Histogram(this.game, 1010, 200, "Seed Weight - Wild")
+    this.game.addEntity(this.weightHistWild);
+    this.rootHistWild = new Histogram(this.game, 1010, 300, "Root Depth - Wild");
+    this.game.addEntity(this.rootHistWild);
+    this.seedHistWild = new Histogram(this.game, 1010, 400, "Number of Seeds - Wild");
+    this.game.addEntity(this.seedHistWild);
+    this.energyHistWild = new Histogram(this.game, 1010, 500, "Nutritional Value - Wild");
+    this.game.addEntity(this.energyHistWild);
+    this.dispersalHistWild = new Histogram(this.game, 1010, 600, "Dispersal - Wild");
+    this.game.addEntity(this.dispersalHistWild);
+    this.weightHistDomesticated = new Histogram(this.game, 1210, 200, "Seed Weight - Domesticated")
+    this.game.addEntity(this.weightHistDomesticated);
+    this.rootHistDomesticated = new Histogram(this.game, 1210, 300, "Root Depth - Domesticated");
+    this.game.addEntity(this.rootHistDomesticated);
+    this.seedHistDomesticated = new Histogram(this.game, 1210, 400, "Number of Seeds - Domesticated");
+    this.game.addEntity(this.seedHistDomesticated);
+    this.energyHistDomesticated = new Histogram(this.game, 1210, 500, "Nutritional Value - Domesticated");
+    this.game.addEntity(this.energyHistDomesticated);
+    this.dispersalHistDomesticated = new Histogram(this.game, 1210, 600, "Dispersal - Domesticated");
+    this.game.addEntity(this.dispersalHistDomesticated);
 
     this.board = [];
 
@@ -236,7 +317,17 @@ Automata.prototype.logData = function () {
             rootData: this.rootData,
             seedData: this.seedData,
             energyData: this.energyData,
-            dispersalData: this.dispersalData
+            dispersalData: this.dispersalData,
+            weightDataWild: this.weightDataWild,
+            rootDataWild: this.rootDataWild,
+            seedDataWild: this.seedDataWild,
+            energyDataWild: this.energyDataWild,
+            dispersalDataWild: this.dispersalDataWild,
+            weightDataDomesticated: this.weightDataDomesticated,
+            rootData: this.rootsDataDomesticated,
+            seedData: this.seedDataDomesticated,
+            energyData: this.energyDataDomesticated,
+            dispersalData: this.dispersalDataDomesticated
         }
     };
 

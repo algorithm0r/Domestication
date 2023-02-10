@@ -61,7 +61,7 @@ var params = {
 
     // database
     db: "domesticationDB",
-    collection: "exp2023v3"
+    collection: "exp2023v4"
 };
 
 function loadParameters() {

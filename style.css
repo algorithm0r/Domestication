@@ -1,8 +1,8 @@
 #gameWorld {
     border: 1px solid white;
     background-color: white;
-    float: left;
     display:inline-block;
+    float: left;
 }
 
 .button {
@@ -14,13 +14,17 @@
     font-family:Arial;
     color: white;
     background-color: blue;
-    display:inline-block;
+    display:grid;
     text-align:center;
 }
 
 p {
     margin: 4px;
     font-size:20px;
+}
+
+div {
+    display:inline-block;
 }
 
 #environment {
@@ -52,15 +56,12 @@ p {
     font-family: Arial;
     color: purple;
     background-color: mediumpurple;
-    display:inline-block;
+    display:grid;
     text-align:left;
 }
 
 div input {
     width: 50px;
-}
-div div input {
-    width: 150px;
 }
 
 #agent {
@@ -70,6 +71,6 @@ div div input {
     font-family: Arial;
     color: green;
     background-color: lightgreen;
-    display:inline-block;
+    display:grid;
     text-align:left;
 }

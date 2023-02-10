@@ -1,5 +1,5 @@
 function Histogram(game, x, y, label) {
-    this.xSize = 360;
+    this.xSize = 200;
     this.ySize = 80;
     this.x = x;
     this.y = y;

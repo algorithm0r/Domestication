@@ -2,8 +2,8 @@ var socket = io.connect("http://73.225.31.4:8888");
 var context;
 var ticks = 199;
 var maxRuns = 100;
-var height = 200;
-var xDelta = 4;
+var height = 100;
+var xDelta = 2;
 var width = xDelta * ticks;
 var obj;
 
@@ -64,6 +64,28 @@ function serialize(hist) {
     return str;
 };
 
+function combineHistograms(data, totalSeeds, identifier) {
+    var histogram = [];
+
+    for (var i = 0; i < ticks; i++) {
+        histogram.push([]);
+        for (var j = 0; j < 20; j++) {
+            histogram[i].push(0);
+        }
+    }
+
+    for (var j = 0; j < ticks; j++) {
+        for (var k = 0; k < 20; k++) {
+            for (var i = 0; i < data.length; i++) {
+                histogram[j][k] += data[i][identifier][j][k] / totalSeeds[j];
+            }
+        }
+    }
+    return histogram;
+};
+
+
+
 function parseData(data) {
 
     var arrHumans = [];
@@ -96,38 +118,24 @@ function parseData(data) {
         }
     }
 
-    var histogramRoots = [];
-    var histogramWeight = [];
-    var histogramSeeds = [];
-    var histogramEnergy = [];
-    var histogramDisp = [];
+    var histogramRoots = combineHistograms(data,totalSeeds,"rootData");
+    var histogramWeight = combineHistograms(data,totalSeeds,"weightData");
+    var histogramSeeds = combineHistograms(data,totalSeeds,"seedData");
+    var histogramEnergy = combineHistograms(data,totalSeeds,"energyData");
+    var histogramDisp = combineHistograms(data,totalSeeds,"dispersalData");
 
-    for (var i = 0; i < ticks; i++) {
-        histogramRoots.push([]);
-        histogramWeight.push([]);
-        histogramSeeds.push([]);
-        histogramEnergy.push([]);
-        histogramDisp.push([]);
-        for (var j = 0; j < 20; j++) {
-            histogramRoots[i].push(0);
-            histogramWeight[i].push(0);
-            histogramSeeds[i].push(0);
-            histogramEnergy[i].push(0);
-            histogramDisp[i].push(0);
-        }
-    }
+    var histogramRootsWild = combineHistograms(data,totalSeeds,"rootDataWild");
+    var histogramWeightWild = combineHistograms(data,totalSeeds,"weightDataWild");
+    var histogramSeedsWild = combineHistograms(data,totalSeeds,"seedDataWild");
+    var histogramEnergyWild = combineHistograms(data,totalSeeds,"energyDataWild");
+    var histogramDispWild = combineHistograms(data,totalSeeds,"dispersalDataWild");
 
-    for (var j = 0; j < ticks; j++) {
-        for (var k = 0; k < 20; k++) {
-            for (var i = 0; i < runs; i++) {
-                histogramRoots[j][k] += data[i].rootData[j][k] / totalSeeds[j];
-                histogramWeight[j][k] += data[i].weightData[j][k] / totalSeeds[j];
-                histogramSeeds[j][k] += data[i].seedData[j][k] / totalSeeds[j];
-                histogramEnergy[j][k] += data[i].energyData[j][k] / totalSeeds[j];
-                histogramDisp[j][k] += data[i].dispersalData[j][k] / totalSeeds[j];
-            }
-        }
-    }
+    // var histogramRootsDomesticated = combineHistograms(data,totalSeeds,"rootsDataDomesticated");
+    // var histogramWeightDomesticated = combineHistograms(data,totalSeeds,"weightDataDomesticated");
+    // var histogramSeedsDomesticated = combineHistograms(data,totalSeeds,"seedDataDomesticated");
+    // var histogramEnergyDomesticated = combineHistograms(data,totalSeeds,"energyDataDomesticated");
+    // var histogramDispDomesticated = combineHistograms(data,totalSeeds,"dispersalDataDomesticated");
+
 
     //for (var j = 0; j < ticks; j++) {
     //    var testsum = 0;
@@ -149,6 +157,16 @@ function parseData(data) {
         histogramSeeds: histogramSeeds,
         histogramEnergy: histogramEnergy,
         histogramDisp: histogramDisp,
+        histogramRootsWild: histogramRootsWild,
+        histogramWeightWild: histogramWeightWild,
+        histogramSeedsWild: histogramSeedsWild,
+        histogramEnergyWild: histogramEnergyWild,
+        histogramDispWild: histogramDispWild,
+        // histogramRootsDomesticated: histogramRootsDomesticated,
+        // histogramWeightDomesticated: histogramWeightDomesticated,
+        // histogramSeedsDomesticated: histogramSeedsDomesticated,
+        // histogramEnergyDomesticated: histogramEnergyDomesticated,
+        // histogramDispDomesticated: histogramDispDomesticated,
     };
 
     //console.log(obj);
@@ -225,27 +243,30 @@ function drawData(runs, ctx) {
 
     ctx.fillStyle = "#eeeeee";
     ctx.fillRect(0, 0, width, height);
-    ctx.fillRect(0, 220, width, height);
-    ctx.fillRect(0, 440, width, height);
-    ctx.fillRect(0, 660, width, height);
-    ctx.fillRect(880, 220, width, height);
-    ctx.fillRect(880, 440, width, height);
 
     drawGraph(ctx, "Black", 0, obj.humans, maxHuman, false);
     drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
-    drawHistogram(ctx, 0, 220, obj.histogramRoots, "Deep Roots");
-    drawHistogram(ctx, 220, 220, obj.histogramWeight, "Seed Weight");
-    drawHistogram(ctx, 0, 440, obj.histogramSeeds, "Fecundity");
-    drawHistogram(ctx, 220, 440, obj.histogramEnergy, "Fruit Energy");
-    drawHistogram(ctx, 0, 660, obj.histogramDisp, "Dispersal");
-    
+    drawHistogram(ctx, 0, 115, obj.histogramRoots, "Deep Roots");
+    drawHistogram(ctx, 0, 230, obj.histogramWeight, "Seed Weight");
+    drawHistogram(ctx, 0, 345, obj.histogramSeeds, "Fecundity");
+    drawHistogram(ctx, 0, 460, obj.histogramEnergy, "Fruit Energy");
+    drawHistogram(ctx, 0, 575, obj.histogramDisp, "Dispersal");
+  
+    drawHistogram(ctx, 207, 115, obj.histogramRootsWild, "Deep Roots - Wild");
+    drawHistogram(ctx, 207, 230, obj.histogramWeightWild, "Seed Weight - Wild");
+    drawHistogram(ctx, 207, 345, obj.histogramSeedsWild, "Fecundity - Wild");
+    drawHistogram(ctx, 207, 460, obj.histogramEnergyWild, "Fruit Energy - Wild");
+    drawHistogram(ctx, 207, 575, obj.histogramDispWild, "Dispersal - Wild");
+
+    drawHistogram(ctx, 414, 115, obj.histogramRootsDomesticated, "Deep Roots - Domesticated");
+    drawHistogram(ctx, 414, 230, obj.histogramWeightDomesticated, "Seed Weight - Domesticated");
+    drawHistogram(ctx, 414, 345, obj.histogramSeedsDomesticated, "Fecundity - Domesticated");
+    drawHistogram(ctx, 414, 460, obj.histogramEnergyDomesticated, "Fruit Energy - Domesticated");
+    drawHistogram(ctx, 414, 575, obj.histogramDispDomesticated, "Dispersal - Domesticated");
+
+
     ctx.strokeStyle = "black";
     ctx.strokeRect(0, 0, width, height);
-    ctx.strokeRect(0, 220, width, height);
-    ctx.strokeRect(0, 440, width, height);
-    ctx.strokeRect(0, 660, width, height);
-    ctx.strokeRect(880, 220, width, height);
-    ctx.strokeRect(880, 440, width, height);
 
     ctx.font = "20px Arial";
     ctx.fillText("Runs: " + runs, 30, 950);
@@ -272,11 +293,17 @@ function drawGraph(ctx, color, start, obj, maxVal, labeling) {
 }
 
 function drawHistogram(ctx, xStart, yStart, obj, label) {
+    ctx.fillRect(xStart*xDelta, yStart, width, height);
+    ctx.fillStyle = "#eeeeee";
     for (var i = 0; i < ticks; i++) {
         for (var j = 0; j < 20; j++) {
             fill(ctx, obj[i][j], yStart, xStart + i, 19 - j);
         }
     }
+
+    ctx.strokeStyle = "black";
+    ctx.strokeRect(xStart*xDelta, yStart, width, height);
+
     ctx.fillStyle = "Black";
     ctx.fillText(label, xStart*xDelta + width / 2 - 30, yStart + height + 10);
 }

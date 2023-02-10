@@ -324,10 +324,10 @@ Automata.prototype.logData = function () {
             energyDataWild: this.energyDataWild,
             dispersalDataWild: this.dispersalDataWild,
             weightDataDomesticated: this.weightDataDomesticated,
-            rootData: this.rootsDataDomesticated,
-            seedData: this.seedDataDomesticated,
-            energyData: this.energyDataDomesticated,
-            dispersalData: this.dispersalDataDomesticated
+            rootDataDomesticated: this.rootsDataDomesticated,
+            seedDataDomesticated: this.seedDataDomesticated,
+            energyDataDomesticated: this.energyDataDomesticated,
+            dispersalDataDomesticated: this.dispersalDataDomesticated
         }
     };
 

@@ -130,11 +130,11 @@ function parseData(data) {
     var histogramEnergyWild = combineHistograms(data,totalSeeds,"energyDataWild");
     var histogramDispWild = combineHistograms(data,totalSeeds,"dispersalDataWild");
 
-    // var histogramRootsDomesticated = combineHistograms(data,totalSeeds,"rootsDataDomesticated");
-    // var histogramWeightDomesticated = combineHistograms(data,totalSeeds,"weightDataDomesticated");
-    // var histogramSeedsDomesticated = combineHistograms(data,totalSeeds,"seedDataDomesticated");
-    // var histogramEnergyDomesticated = combineHistograms(data,totalSeeds,"energyDataDomesticated");
-    // var histogramDispDomesticated = combineHistograms(data,totalSeeds,"dispersalDataDomesticated");
+    var histogramRootsDomesticated = combineHistograms(data,totalSeeds,"rootDataDomesticated");
+    var histogramWeightDomesticated = combineHistograms(data,totalSeeds,"weightDataDomesticated");
+    var histogramSeedsDomesticated = combineHistograms(data,totalSeeds,"seedDataDomesticated");
+    var histogramEnergyDomesticated = combineHistograms(data,totalSeeds,"energyDataDomesticated");
+    var histogramDispDomesticated = combineHistograms(data,totalSeeds,"dispersalDataDomesticated");
 
 
     //for (var j = 0; j < ticks; j++) {
@@ -162,11 +162,11 @@ function parseData(data) {
         histogramSeedsWild: histogramSeedsWild,
         histogramEnergyWild: histogramEnergyWild,
         histogramDispWild: histogramDispWild,
-        // histogramRootsDomesticated: histogramRootsDomesticated,
-        // histogramWeightDomesticated: histogramWeightDomesticated,
-        // histogramSeedsDomesticated: histogramSeedsDomesticated,
-        // histogramEnergyDomesticated: histogramEnergyDomesticated,
-        // histogramDispDomesticated: histogramDispDomesticated,
+        histogramRootsDomesticated: histogramRootsDomesticated,
+        histogramWeightDomesticated: histogramWeightDomesticated,
+        histogramSeedsDomesticated: histogramSeedsDomesticated,
+        histogramEnergyDomesticated: histogramEnergyDomesticated,
+        histogramDispDomesticated: histogramDispDomesticated,
     };
 
     //console.log(obj);

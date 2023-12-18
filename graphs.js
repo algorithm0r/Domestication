@@ -71,9 +71,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }, false);
 });
 
-socket.on("find", function (e) {
-//    var array = e.slice(0, 200);
-    var array = e;
+socket.on("find", function (array) {
     if (array.length > 0) parseData(array);
     else console.log("Empty data.");
 });

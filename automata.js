@@ -4,6 +4,8 @@ function Automata(game) {
     this.x = 0;
     this.y = 0;
 
+    this.run = 0;
+
     loadParameters();
     this.buildAutomata();
 };
@@ -34,7 +36,7 @@ Automata.prototype.partitionSeeds = function () {
     // var selectionProperty = selections[randomInt(selections.length)];
     var selectionProperty = params.plantStrategy;
 
-    if (seeds.length > 0 && this.shelter.plantSeeds.length < seeds.length / 4) {
+    if (seeds.length > 0 && this.shelter.plantSeeds.length < seeds.length / 4 && this.day > params.plantingTime) {
         if (selectionProperty == "none") {
             // do nothing
         } else if (selectionProperty == "random") {
@@ -60,9 +62,6 @@ Automata.prototype.partitionSeeds = function () {
             this.shelter.plantSeeds.push(...plant);
         }
     }
-    if (this.shelter.seeds.length > 2000) {
-        this.shelter.seeds.splice(0, this.shelter.seeds.length - 2000);
-    }
 };
 
 Automata.prototype.generateRiver = function () {
@@ -87,7 +86,7 @@ Automata.prototype.plantSeeds = function () {
         for (var j = 0; j < params.dimension; j++) {
             if (Math.random() < 0.1) {
                 var seed = new Seed({ cell: this.board[i][j] })
-                this.board[i][j].addSeed(seed);
+                this.board[i][j].addSeed(seed, 0);
                 this.seeds.push(seed);
             }
         }
@@ -95,16 +94,12 @@ Automata.prototype.plantSeeds = function () {
 };
 
 Automata.prototype.addHumans = function (numOfHumans) {
-    for (var i = 0; i < params.dimension; i++) {
-        for (var j = 0; j < params.dimension; j++) {
-            for (var k = 0; k < numOfHumans; k++) {
-                if (Math.random() < params.humanAddRate && this.board[i][j].shelter) {
-                    var human = new Human({ game: this.game, x: i, y: j, cell: this.board[i][j] });
-                    this.board[i][j].addHuman(human);
-                    this.humans.push(human);
-                }
-            }
-        }
+    for (var i = 0; i < numOfHumans; i++) {
+        var shelterRow = randomInt(params.dimension);
+        var shelterCol = Math.random() > 0.5 ? 0 : params.dimension - 1;
+        var human = new Human({ game: this.game, x: shelterRow, y: shelterCol, cell: this.board[shelterRow][shelterCol] });
+        this.board[shelterRow][shelterCol].addHuman(human);
+        this.humans.push(human);
     }
 };
 
@@ -141,6 +136,8 @@ Automata.prototype.updateData = function () {
 
     var seedPop = 0;
     var humanPop = 0;
+    var wildPop = 0;
+    var domePop = 0;
 
     for (var i = 0; i < 20; i++) {
         weightData.push(0);
@@ -170,24 +167,32 @@ Automata.prototype.updateData = function () {
     for (var k = 0; k < this.seeds.length; k++) {
         var weightIndex = Math.floor(this.seeds[k].weight.value * 20) < 20 ? Math.floor(this.seeds[k].weight.value * 20) : 19;
         weightData[weightIndex]++;
-        if(this.seeds[k].dispersal.value < 0.6) weightDataDomesticated[weightIndex]++;
-        else weightDataWild[weightIndex]++;
         var rootsIndex = Math.floor(this.seeds[k].deepRoots.value * 20) < 20 ? Math.floor(this.seeds[k].deepRoots.value * 20) : 19;
         rootsData[rootsIndex]++;
-        if(this.seeds[k].dispersal.value < 0.6) rootsDataDomesticated[rootsIndex]++;
-        else rootsDataWild[rootsIndex]++;
         var seedIndex = Math.floor(this.seeds[k].fecundity.value * 20) < 20 ? Math.floor(this.seeds[k].fecundity.value * 20) : 19;
         seedData[seedIndex]++;
-        if(this.seeds[k].dispersal.value < 0.6) seedDataDomesticated[seedIndex]++;
-        else seedDataWild[seedIndex]++;
         var energyIndex = Math.floor(this.seeds[k].fruitEnergy.value * 20) < 20 ? Math.floor(this.seeds[k].fruitEnergy.value * 20) : 19;
         energyData[energyIndex]++;
-        if(this.seeds[k].dispersal.value < 0.6) energyDataDomesticated[energyIndex]++;
-        else energyDataWild[energyIndex]++;
         var dispersalIndex = Math.floor(this.seeds[k].dispersal.value * 20) < 20 ? Math.floor(this.seeds[k].dispersal.value * 20) : 19;
         dispersalData[dispersalIndex]++;
-        if(this.seeds[k].dispersal.value < 0.6) dispersalDataDomesticated[dispersalIndex]++;
-        else dispersalDataWild[dispersalIndex]++;
+
+        if (this.seeds[k].dispersal.value < params.wildDomesticThreshold) {
+            domePop++;
+            weightDataDomesticated[weightIndex]++;
+            rootsDataDomesticated[rootsIndex]++;
+            seedDataDomesticated[seedIndex]++;
+            energyDataDomesticated[energyIndex]++;
+            dispersalDataDomesticated[dispersalIndex]++;
+        }
+        else {
+            wildPop++;
+            weightDataWild[weightIndex]++;
+            rootsDataWild[rootsIndex]++;
+            seedDataWild[seedIndex]++;
+            energyDataWild[energyIndex]++;
+            dispersalDataWild[dispersalIndex]++;
+        }
+
     }
 
     this.weightData.push(weightData);
@@ -223,13 +228,9 @@ Automata.prototype.updateData = function () {
 
     this.seedPop.push(seedPop);
     this.humanPop.push(humanPop);
+    this.wildPop.push(wildPop);
+    this.domePop.push(domePop);
 }
-
-Automata.prototype.reset = function () {
-    this.nextRun();
-    this.updateParams();
-    this.buildAutomata();
-};
 
 Automata.prototype.buildAutomata = function () {
     
@@ -264,6 +265,8 @@ Automata.prototype.buildAutomata = function () {
 
     this.seedPop = [];
     this.humanPop = [];
+    this.wildPop = [];
+    this.domePop = [];
 
     // graphs
     this.popGraph = new Graph(this.game, 810, 0, this, "Population");
@@ -334,37 +337,27 @@ Automata.prototype.logData = function () {
     if (socket) socket.emit("insert", data);
 };
 
+Automata.prototype.reset = function () {
+    this.nextRun();
+    loadParameters();
+    this.buildAutomata();
+};
+
 Automata.prototype.nextRun = function () {
     const harvest = document.getElementById("seed_selection");
     const plant = document.getElementById("plant_selection");
+    const human = document.getElementById("human_add_rate");
+    const run = document.getElementById("run");
 
-    const options = ["none", "random", "weight", "deepRoots", "fecundity", "fruitEnergy", "dispersal", "minweight", "mindeepRoots", "minfecundity", "minfruitEnergy", "mindispersal"];
-    // const options = ["none", "random", "weight", "deepRoots", "fecundity", "minweight", "mindeepRoots", "minfecundity"];
-
-    if (harvest.value === "none" && plant.value === "none") {
-        harvest.value = "random";
-    } else {
-        plant.value = options[(options.indexOf(plant.value) + 1) % options.length];
-        if (plant.value === "none") {
-            const harvestIndex = (options.indexOf(harvest.value) + 1) % options.length;
-            harvest.value = options[harvestIndex];
-        }
-        if(plant.value === "weight" && harvest.value !== "random") {
-            const harvestIndex = (options.indexOf(harvest.value) + 1) % options.length;
-            harvest.value = options[harvestIndex];
-            plant.value = "none";
-        }
-    }
-};
-
-Automata.prototype.updateParams = function () {
-    // var val = parseInt(document.getElementById("seed_selection").value) % 16;
-
-    // document.getElementById("seed_selection").value = val; // change seed selection strategy
-    // if (val === 15) document.getElementById("human_add_rate").value = "0"; // last run has no humans
-    // if (val === 0) document.getElementById("human_add_rate").value = "0.05"; // reset to add humans in next iteration
-
-    loadParameters();
+    // update params
+    this.run = (this.run + 1) % runs.length;
+    Object.assign(params,runs[this.run]);
+ 
+    // update HTML
+    run.innerHTML = params.runName;
+    harvest.value = params.harvestStrategy;
+    plant.value = params.plantStrategy;
+    human.value = params.humanAddRate;
 };
 
 Automata.prototype.update = function () {
@@ -372,12 +365,19 @@ Automata.prototype.update = function () {
     var drought = Math.random() < params.droughtRate;
 
     this.day++;
-    if (this.day === params.humansAdded) this.addHumans(2);
+    if (this.day === params.humansAdded) this.addHumans(params.humanAddRate);
 
-    if (this.day === params.epoch) {
+    if (this.day > params.epoch) {
         this.logData();
         this.reset();
     }
+
+    for (var i = 0; i < params.dimension; i++) {
+        for (var j = 0; j < params.dimension; j++) {
+            this.board[i][j].update();
+        }
+    }
+
     //reenable below for floods/droughts
 
     //if (this.day % params.seasonLength === 0) this.season = (this.season + 1) % 4;
@@ -418,7 +418,14 @@ Automata.prototype.update = function () {
         }
     }
 
-    this.partitionSeeds();
+    if(!params.individualSeedSeparation) this.partitionSeeds();
+    if (this.shelter.seeds.length > 2000) {
+        this.shelter.seeds.splice(0, this.shelter.seeds.length - 2000);
+    }
+    if (this.shelter.plantSeeds.length > 2000) {
+        this.shelter.plantSeeds.splice(0, this.shelter.plantSeeds.length - 2000);
+    }
+
 
     // data gathering
     if (this.day % params.reportingPeriod === 0) {
@@ -440,7 +447,7 @@ Automata.prototype.draw = function (ctx) {
     ctx.textAlign = "left";
     ctx.fillText(`Seeds in Shelter: ${this.shelter.seeds.length}`, 810, 710);
     ctx.fillText(`Seeds to Plant: ${this.shelter.plantSeeds.length}`, 810, 724);
-    ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 810, 738);
+    // ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 810, 738);
     ctx.fillText(`Tick ${this.game.clockTick}`, 810, 766);
     ctx.fillText(`FPS ${this.game.timer.ticks.length}`, 810, 780);
     ctx.font = "10px Arial";

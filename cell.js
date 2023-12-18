@@ -6,6 +6,7 @@ function Cell(game,x,y) {
 
     this.water = params.dry;
     this.seeds = [];
+    this.dormantSeeds = [];
     this.humans = [];
 
     this.color = "brown";
@@ -35,14 +36,34 @@ Cell.prototype.drought = function () {
     if (this.water < params.dry) this.water = params.dry;
 };
 
-Cell.prototype.addSeed = function (seed) {
-    if (!this.shelter && this.seeds.length < 4) {
+Cell.prototype.decayDormantSeeds = function() {
+    let chance = 0.5;
+    this.dormantSeeds = this.dormantSeeds.filter(seed => Math.random() > Math.pow(chance, seed.level + 1));
+};
+
+Cell.prototype.germinate = function() {
+    // add new seeds by priority    
+    while(this.seeds.length < 4 && this.dormantSeeds.length > 0) {
+        const minPriority = Math.min(...this.dormantSeeds.map(item => item.priority));
+        const minSeeds = this.dormantSeeds.filter(item => item.priority === minPriority);
+        const randomSeed = minSeeds[Math.floor(randomInt(minSeeds.length))];
+        this.seeds.push(randomSeed.seed);
+        this.game.board.seeds.push(randomSeed.seed);
+        this.dormantSeeds.splice(this.dormantSeeds.indexOf(randomSeed), 1);
+    }
+};
+
+Cell.prototype.addSeed = function (seed, offset) {
+    if (!this.shelter) {
         var s = new Seed(seed);
         s.cell = this;
         s.x = this.x;
         s.y = this.y;
-        this.seeds.push(s);
-        this.game.board.seeds.push(s);
+
+        let l = randomInt(4) + offset;
+        let p = Math.max(l - s.fruitEnergy.value * 5, 0);
+
+        this.dormantSeeds.push({ seed: s, level: l, priority: p });
     }
 };
 
@@ -72,7 +93,9 @@ Cell.prototype.removeHuman = function (human) {
 };
 
 Cell.prototype.update = function () {
-    if (this.water > params.riverWidth) this.seeds = []; // drown seeds in flood time
+    // if (this.water > params.riverWidth) this.seeds = []; // drown seeds in flood time
+   this.germinate();
+   this.decayDormantSeeds();
 };
 
 Cell.prototype.draw = function (ctx) {

@@ -17,6 +17,7 @@ function Human(human) {
     // behavioral properties
     this.dropRate = 0.1;
     this.maxDrop = 3;
+    this.seedSelectionProperty = params.plantStrategy; // uses the current setting 
 
     // display properties
     this.color = "red";
@@ -35,11 +36,49 @@ Human.prototype.spendEnergy = function () {
     return false;
 };
 
+
+//     } else if (selectionProperty.substring(0, 3) == "min") {
+//         selectionProperty = selectionProperty.slice(3);
+//         var avg = seeds.reduce((p, c) => p + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), 0) / seeds.length;     
+//     } else {
+//         var avg = seeds.reduce((p, c) => p + (c[selectionProperty].value ?? c[selectionProperty].length ?? c[selectionProperty]), 0) / seeds.length;
+
+
 Human.prototype.move = function (cell) {
     this.cell.removeHuman(this);
     cell.addHuman(this);
     if (cell.shelter) {
         cell.shelter.water += this.water;
+        // console.log("Dropping off " + this.seeds.length + " seeds to the shelter.");
+        
+        let selectionProperty = this.seedSelectionProperty;
+        if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
+            let diff = Math.floor(this.seeds.length*params.plantSelectionStrength);
+            if (diff > 0) {
+                if(selectionProperty != "random" && selectionProperty != "bottom" && selectionProperty != "top" && Math.random() < params.plantSelectionChance) {
+                    if (selectionProperty.substring(0, 3) == "min") {
+                        selectionProperty = selectionProperty.slice(3);
+                        this.seeds.sort((a, b) => {
+                            return (a[selectionProperty]?.value ?? a[selectionProperty]?.length ?? a[selectionProperty])
+                            - (b[selectionProperty]?.value ?? b[selectionProperty]?.length ?? b[selectionProperty]); 
+                        });
+                    } else {
+                        this.seeds.sort((a, b) => {
+                            return (b[selectionProperty]?.value ?? b[selectionProperty]?.length ?? b[selectionProperty])
+                            - (a[selectionProperty]?.value ?? a[selectionProperty]?.length ?? a[selectionProperty]);
+                        });
+                    }
+                } else if (selectionProperty == "random") {
+                    shuffleArray(this.seeds);
+                }
+
+                if(params.sharedPlantingSeeds) { // add planting seeds to collective store
+                    if(selectionProperty == "top") cell.shelter.plantSeeds.push(...this.seeds.splice(this.seeds.length - diff));
+                    else cell.shelter.plantSeeds.push(...this.seeds.splice(0, diff)); 
+                } else this.toPlant.push(...this.seeds.splice(0, diff)); // move planting seeds to personal planting basket
+            }
+        }
+
         cell.shelter.seeds.push(...this.seeds);
         this.seeds = [];
         this.water = 0;
@@ -49,14 +88,14 @@ Human.prototype.move = function (cell) {
         this.dropSeeds();
     }
 
-    if (this.toPlant.length > 0 && cell.seeds.length < 4) {
+    if (this.toPlant.length > 0 && this.game.board.day > params.plantingTime) {
         this.cultivate();
     }
 };
 
 Human.prototype.cultivate = function () {
     var [seed] = this.toPlant.splice(0, 1);
-    this.cell.addSeed(seed);
+    this.cell.addSeed(seed, 2);
 };
 
 Human.prototype.dropSeeds = function () {
@@ -80,8 +119,9 @@ Human.prototype.rest = function () {
     this.tired = Math.max(this.tired - params.metabolicUnit, 0);
 
     //drink
-    if (shelter.water > 0 && this.thirst > 0) {
-        var val = Math.min(shelter.water, params.metabolicUnit);
+    if (/*shelter.water > 0 &&*/ this.thirst > 0) {
+        // var val = Math.min(shelter.water, params.metabolicUnit);
+        var val = params.metabolicUnit;
         shelter.water -= val;
         this.thirst -= val;
     }

@@ -1,6 +1,6 @@
 function Seed(seed) {
     this.cell = seed.cell;
-    this.game = seed.cell.game;
+    this.game = gameEngine;
     this.x = seed.cell.x;
     this.y = seed.cell.y;
 
@@ -85,7 +85,7 @@ Seed.prototype.pluckSeeds = function () {
 Seed.prototype.spreadSeeds = function () {
     for (var i = 0; i < this.seeds; i++) {
         if (Math.random() >= this.weight.value) {
-            this.cell.addSeed(this);
+            this.cell.addSeed(this, 0);
         } else {
             var randomCell = (5 + randomInt(8)) % 9;
             var dX = (randomCell % 3) - 1;
@@ -94,7 +94,7 @@ Seed.prototype.spreadSeeds = function () {
             var y = this.y + dY < 0 || this.y + dY > params.dimension - 1 ? this.y : this.y + dY;
             var cell = this.game.board.board[x][y];
 
-            cell.addSeed(this);
+            cell.addSeed(this, 0);
         }
     }
 };

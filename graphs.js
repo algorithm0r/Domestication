@@ -17,22 +17,32 @@ socket.on("disconnect", function () {
 
 document.addEventListener("DOMContentLoaded", function (event) {
     context = document.getElementById("chart").getContext("2d");
-    socket.emit("find", 
-        { 
-            db: params.db, 
-            collection: params.collection, 
-            query: {"params.seedStrategy": "none", "params.plantStrategy": "none" },
-            limit: 10
+    // socket.emit("find", 
+    //     { 
+    //         db: params.db, 
+    //         collection: params.collection, 
+    //         query: {"params.seedStrategy": "none", "params.plantStrategy": "none" },
+    //         limit: 10
+    //     });
+
+    console.log("DOM loaded.");
+
+    socket.emit("distinct",
+        {
+            db: params.db,
+            collection: params.collection,
+            key: "params.runName"
         });
 
     document.getElementById("query").addEventListener("click", function (e) {
-        var query = document.getElementById("seed_selection").value;
-        var drop = document.getElementById("plant_selection").value;
+        var query = document.getElementById("run_selection").value;
+        console.log(query);
+
         socket.emit("find", 
             { 
                 db: params.db, 
                 collection: params.collection, 
-                query: {"params.seedStrategy": query, "params.plantStrategy": drop },
+                query: {"params.runName": query },
                 limit: 10
             });
     }, false);
@@ -86,6 +96,25 @@ socket.on("find", function (array) {
     else console.log("Empty data.");
 });
 
+socket.on("distinct", function (array) {
+    console.log(array);
+    console.log("\n");
+    if (array.length > 0) populateDropDown(array);
+    else console.log("Empty data.");
+});
+
+function populateDropDown(labels) {
+    const runSelect = document.getElementById("run_selection");
+
+    // Populate the dropdown with names
+    labels.forEach((label) => {
+        const option = document.createElement("option");
+        option.value = label;
+        option.textContent = label;
+        runSelect.appendChild(option);
+    });
+}
+
 function serialize(hist) {
     var str = "";
     for (var i = 0; i < ticks; i++) {
@@ -118,13 +147,17 @@ function combineHistograms(data, totalSeeds, identifier) {
 
 function parseData(data) {
 
-    var arrHumans = [];
-    var arrSeed = [];
+    var avgHumanPop = [];
+    var avgSeedPop = [];
+    var avgDomePop = [];
+    var avgWildPop = [];
     var totalSeeds = [];
 
     for (var i = 0; i < ticks; i++) {
-        arrHumans.push(0);
-        arrSeed.push(0);
+        avgHumanPop.push(0);
+        avgSeedPop.push(0);
+        avgDomePop.push(0);
+        avgWildPop.push(0);
         totalSeeds.push(0);
     }
 
@@ -133,18 +166,20 @@ function parseData(data) {
     var runs = Math.min(maxRuns, data.length);
     for (var i = 0; i < runs; i++) {
         for (var j = 0; j < data[i].humanPop.length; j++) {
-            arrHumans[j] += data[i].humanPop[j] / data.length;
+            avgHumanPop[j] += data[i].humanPop[j] / data.length;
             totalSeeds[j] += data[i].seedPop[j];
-            arrSeed[j] += data[i].seedPop[j] / data.length;
+            avgSeedPop[j] += data[i].seedPop[j] / data.length;
+            avgDomePop[j] += data[i].domePop[j] / data.length;
+            avgWildPop[j] += data[i].wildPop[j] / data.length;
         }
     }
 
-    for (var i = 0; i < arrHumans.length; i++) {
-        if (arrHumans[i] > maxHuman) {
-            maxHuman = arrHumans[i];
+    for (var i = 0; i < avgHumanPop.length; i++) {
+        if (avgHumanPop[i] > maxHuman) {
+            maxHuman = avgHumanPop[i];
         }
-        if (arrSeed[i] > maxSeed) {
-            maxSeed = arrSeed[i];
+        if (avgSeedPop[i] > maxSeed) {
+            maxSeed = avgSeedPop[i];
         }
     }
 
@@ -175,11 +210,14 @@ function parseData(data) {
     //    console.log(testsum);
     //}
     obj = {
+        runName: data[0].params.runName ?? "wild type 1 - no humans",
         params: data[0].params,
         runs: data.length,
         query: data[0].params.seedStrategy,
-        humans: arrHumans,
-        seeds: arrSeed,
+        humans: avgHumanPop,
+        seeds: avgSeedPop,
+        wild: avgWildPop,
+        dome: avgDomePop,
         maxHuman: maxHuman,
         maxSeed: maxSeed,
         histogramRoots: histogramRoots,
@@ -276,32 +314,55 @@ function drawData(runs, ctx) {
 
     drawGraph(ctx, "Black", 0, obj.humans, maxHuman, false);
     drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
-    // drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
-    // drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
-    drawHistogram(ctx, 0, 115, obj.histogramRoots, "Deep Roots");
-    drawHistogram(ctx, 0, 280, obj.histogramWeight, "Seed Weight");
-    drawHistogram(ctx, 0, 445, obj.histogramSeeds, "Fecundity");
-    drawHistogram(ctx, 0, 610, obj.histogramEnergy, "Fruit Energy");
-    drawHistogram(ctx, 0, 775, obj.histogramDisp, "Dispersal");
-  
-    drawHistogram(ctx, 0, 170, obj.histogramRootsWild, "Deep Roots - Wild");
-    drawHistogram(ctx, 0, 335, obj.histogramWeightWild, "Seed Weight - Wild");
-    drawHistogram(ctx, 0, 500, obj.histogramSeedsWild, "Fecundity - Wild");
-    drawHistogram(ctx, 0, 665, obj.histogramEnergyWild, "Fruit Energy - Wild");
-    drawHistogram(ctx, 0, 830, obj.histogramDispWild, "Dispersal - Wild");
+    drawGraph(ctx, "Blue", 0, obj.dome, maxSeed, true);
+    drawGraph(ctx, "Red", 0, obj.wild, maxSeed, true);
 
-    drawHistogram(ctx, 0, 225, obj.histogramRootsDomesticated, "Deep Roots - Domesticated");
-    drawHistogram(ctx, 0, 390, obj.histogramWeightDomesticated, "Seed Weight - Domesticated");
-    drawHistogram(ctx, 0, 555, obj.histogramSeedsDomesticated, "Fecundity - Domesticated");
-    drawHistogram(ctx, 0, 720, obj.histogramEnergyDomesticated, "Fruit Energy - Domesticated");
-    drawHistogram(ctx, 0, 885, obj.histogramDispDomesticated, "Dispersal - Domesticated");
+    histograms = [];
+    labels = [];
 
+    histograms.push(obj.histogramRoots);
+    labels.push("Deep Roots");
+    histograms.push(obj.histogramWeight);
+    labels.push("Seed Weight");
+    histograms.push(obj.histogramSeeds);
+    labels.push("Fecundity");
+    histograms.push(obj.histogramEnergy);
+    labels.push("Fruit Energy");
+    histograms.push(obj.histogramDisp);
+    labels.push("Dispersal");
+
+    histograms.push(obj.histogramRootsWild);
+    labels.push("Deep Roots - Wild");
+    histograms.push(obj.histogramWeightWild);
+    labels.push("Seed Weight - Wild");
+    histograms.push(obj.histogramSeedsWild);
+    labels.push("Fecundity - Wild");
+    histograms.push(obj.histogramEnergyWild);
+    labels.push("Fruit Energy - Wild");
+    histograms.push(obj.histogramDispWild);
+    labels.push("Dispersal - Wild");
+
+    histograms.push(obj.histogramRootsDomesticated);
+    labels.push("Deep Roots - Domesticated");
+    histograms.push(obj.histogramWeightDomesticated);
+    labels.push("Seed Weight - Domesticated");
+    histograms.push(obj.histogramSeedsDomesticated);
+    labels.push("Fecundity - Domesticated");
+    histograms.push(obj.histogramEnergyDomesticated);
+    labels.push("Fruit Energy - Domesticated");
+    histograms.push(obj.histogramDispDomesticated);
+    labels.push("Dispersal - Domesticated");
+
+    for(var i = 0; i < histograms.length; i++){
+        drawHistogram(ctx, 0, 55 + 55*i, histograms[i], labels[i]);
+    }   
 
     ctx.strokeStyle = "black";
     ctx.strokeRect(0, 0, width, height);
 
     ctx.font = "20px Arial";
-    ctx.fillText("Runs: " + runs, 30, 950);
+    ctx.fillText(obj.runName, 10, 900);
+    ctx.fillText("Runs: " + runs, 10, 950);
 }
 
 function drawGraph(ctx, color, start, obj, maxVal, labeling) {

@@ -72,6 +72,7 @@ var params = {
     basketSize: 400,
     plantBasketSize: 50,
     seedStrategy: 0,
+    runName: "wild type 1 - no humans",
     plantStrategy: "none",
     harvestStrategy: "none",
     plantSelectionChance: 1.0,
@@ -122,7 +123,7 @@ function loadParameters() {
 
 const runs = [
     {   
-        runName: "wild type 1 - no humans",
+        runName: "01. wild type 1 - no humans",
         harvestStrategy: "none",
         plantStrategy: "none",
         humanAddRate: 0,
@@ -132,7 +133,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "wild type 2 - humans harvest randomly",
+        runName: "02. wild type 2 - humans harvest randomly",
         harvestStrategy: "random",
         plantStrategy: "none",
         humanAddRate: 100,
@@ -142,7 +143,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },  
     {   
-        runName: "wild type 3 - humans harvest and plant randomly",
+        runName: "03. wild type 3 - humans harvest and plant randomly",
         harvestStrategy: "random",
         plantStrategy: "random",
         humanAddRate: 100,
@@ -152,7 +153,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 1 - harvesting shattering",
+        runName: "04. exp 1 - harvesting shattering",
         harvestStrategy: "dispersal",
         plantStrategy: "none",
         humanAddRate: 100,
@@ -162,7 +163,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 1 - harvesting non-shattering (sickle hypothesis)",
+        runName: "05. exp 1 - harvesting non-shattering (sickle hypothesis)",
         harvestStrategy: "mindispersal",
         plantStrategy: "none",
         humanAddRate: 100,
@@ -172,7 +173,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },        
     {   
-        runName: "exp 1 - harvesting shattering with random planting",
+        runName: "06. exp 1 - harvesting shattering with random planting",
         harvestStrategy: "dispersal",
         plantStrategy: "random",
         humanAddRate: 100,
@@ -182,7 +183,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 1 - harvesting non-shattering with random planting",
+        runName: "07. exp 1 - harvesting non-shattering with random planting",
         harvestStrategy: "mindispersal",
         plantStrategy: "random",
         humanAddRate: 100,
@@ -192,7 +193,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - planting the first harvested seeds",
+        runName: "08. exp 2 - planting the first harvested seeds",
         harvestStrategy: "random",
         plantStrategy: "bottom",
         humanAddRate: 100,
@@ -202,7 +203,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - planting the last harvested seeds",
+        runName: "09. exp 2 - planting the last harvested seeds",
         harvestStrategy: "random",
         plantStrategy: "top",
         humanAddRate: 100,
@@ -212,7 +213,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - harvesting shattering planting first harvested seeds",
+        runName: "10. exp 2 - harvesting shattering planting first harvested seeds",
         harvestStrategy: "dispersal",
         plantStrategy: "bottom",
         humanAddRate: 100,
@@ -222,7 +223,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - harvesting shattering planting harvested seeds",
+        runName: "11. exp 2 - harvesting shattering planting harvested seeds",
         harvestStrategy: "dispersal",
         plantStrategy: "top",
         humanAddRate: 100,
@@ -232,7 +233,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - harvesting shattering planting first harvested seeds",
+        runName: "12. exp 2 - harvesting non-shattering planting first harvested seeds",
         harvestStrategy: "mindispersal",
         plantStrategy: "bottom",
         humanAddRate: 100,
@@ -242,7 +243,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 2 - harvesting shattering planting harvested seeds",
+        runName: "13. exp 2 - harvesting non-shattering planting harvested seeds",
         harvestStrategy: "mindispersal",
         plantStrategy: "top",
         humanAddRate: 100,
@@ -252,7 +253,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting light seeds",
+        runName: "14. exp 3 - planting light seeds",
         harvestStrategy: "random",
         plantStrategy: "weight",
         humanAddRate: 100,
@@ -262,7 +263,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting heavy seeds",
+        runName: "15. exp 3 - planting heavy seeds",
         harvestStrategy: "random",
         plantStrategy: "minweight",
         humanAddRate: 100,
@@ -272,7 +273,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting deep rooted seeds",
+        runName: "16. exp 3 - planting deep rooted seeds",
         harvestStrategy: "random",
         plantStrategy: "deepRoots",
         humanAddRate: 100,
@@ -282,7 +283,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting shallow rooted seeds",
+        runName: "17. exp 3 - planting shallow rooted seeds",
         harvestStrategy: "random",
         plantStrategy: "mindeepRoots",
         humanAddRate: 100,
@@ -292,7 +293,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting shattering seeds",
+        runName: "18. exp 3 - planting shattering seeds",
         harvestStrategy: "random",
         plantStrategy: "dispersal",
         humanAddRate: 100,
@@ -302,7 +303,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting non-shattering seeds",
+        runName: "19. exp 3 - planting non-shattering seeds",
         harvestStrategy: "random",
         plantStrategy: "mindispersal",
         humanAddRate: 100,
@@ -312,7 +313,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 3 - planting light seeds",
+        runName: "20. exp 3 - planting light seeds",
         harvestStrategy: "random",
         plantStrategy: "weight",
         humanAddRate: 100,
@@ -322,7 +323,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - double humans first harvested",
+        runName: "21. exp 4 - double humans first harvested",
         harvestStrategy: "random",
         plantStrategy: "bottom",
         humanAddRate: 200,
@@ -332,7 +333,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - less selective first harvested",
+        runName: "22. exp 4 - less selective first harvested",
         harvestStrategy: "random",
         plantStrategy: "bottom",
         humanAddRate: 100,
@@ -342,7 +343,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - fewer selective humans first harvested",
+        runName: "23. exp 4 - fewer selective humans first harvested",
         harvestStrategy: "random",
         plantStrategy: "bottom",
         humanAddRate: 100,
@@ -352,7 +353,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - double humans non-shattering",
+        runName: "24. exp 4 - double humans non-shattering",
         harvestStrategy: "random",
         plantStrategy: "mindispersal",
         humanAddRate: 200,
@@ -362,7 +363,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - less selective non-shattering",
+        runName: "25. exp 4 - less selective non-shattering",
         harvestStrategy: "random",
         plantStrategy: "mindispersal",
         humanAddRate: 100,
@@ -372,7 +373,7 @@ const runs = [
         sharedPlantingSeeds: true,
     },
     {   
-        runName: "exp 4 - fewer selective humans non-shattering",
+        runName: "26. exp 4 - fewer selective humans non-shattering",
         harvestStrategy: "random",
         plantStrategy: "mindispersal",
         humanAddRate: 100,

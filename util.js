@@ -25,6 +25,20 @@ function download(filename, text) {
     pom.click();
 };
 
+
+function databaseConnected() {
+    const dbDiv = document.getElementById("db");
+    dbDiv.classList.remove("db-disconnected");
+    dbDiv.classList.add("db-connected");
+};
+
+function databaseDisconnected() {
+    const dbDiv = document.getElementById("db");
+    dbDiv.classList.remove("db-connected");
+    dbDiv.classList.add("db-disconnected");
+};
+
+
 var params = {
     // sim
     updatesPerDraw: 25,
@@ -69,7 +83,7 @@ var params = {
 
     // data gathering
     wildDomesticThreshold: 0.6,
-    reportingPeriod: 100,
+    reportingPeriod: 250,
     epoch: 150000,
 
     // database
@@ -197,4 +211,175 @@ const runs = [
         individualSeedSeparation: true,
         sharedPlantingSeeds: true,
     },
+    {   
+        runName: "exp 2 - harvesting shattering planting first harvested seeds",
+        harvestStrategy: "dispersal",
+        plantStrategy: "bottom",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 2 - harvesting shattering planting harvested seeds",
+        harvestStrategy: "dispersal",
+        plantStrategy: "top",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 2 - harvesting shattering planting first harvested seeds",
+        harvestStrategy: "mindispersal",
+        plantStrategy: "bottom",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 2 - harvesting shattering planting harvested seeds",
+        harvestStrategy: "mindispersal",
+        plantStrategy: "top",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting light seeds",
+        harvestStrategy: "random",
+        plantStrategy: "weight",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting heavy seeds",
+        harvestStrategy: "random",
+        plantStrategy: "minweight",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting deep rooted seeds",
+        harvestStrategy: "random",
+        plantStrategy: "deepRoots",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting shallow rooted seeds",
+        harvestStrategy: "random",
+        plantStrategy: "mindeepRoots",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting shattering seeds",
+        harvestStrategy: "random",
+        plantStrategy: "dispersal",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting non-shattering seeds",
+        harvestStrategy: "random",
+        plantStrategy: "mindispersal",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 3 - planting light seeds",
+        harvestStrategy: "random",
+        plantStrategy: "weight",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - double humans first harvested",
+        harvestStrategy: "random",
+        plantStrategy: "bottom",
+        humanAddRate: 200,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - less selective first harvested",
+        harvestStrategy: "random",
+        plantStrategy: "bottom",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.5,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - fewer selective humans first harvested",
+        harvestStrategy: "random",
+        plantStrategy: "bottom",
+        humanAddRate: 100,
+        plantSelectionChance: 0.5,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - double humans non-shattering",
+        harvestStrategy: "random",
+        plantStrategy: "mindispersal",
+        humanAddRate: 200,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - less selective non-shattering",
+        harvestStrategy: "random",
+        plantStrategy: "mindispersal",
+        humanAddRate: 100,
+        plantSelectionChance: 1.0,
+        plantSelectionStrength: 0.5,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+    {   
+        runName: "exp 4 - fewer selective humans non-shattering",
+        harvestStrategy: "random",
+        plantStrategy: "mindispersal",
+        humanAddRate: 100,
+        plantSelectionChance: 0.5,
+        plantSelectionStrength: 0.2,
+        individualSeedSeparation: true,
+        sharedPlantingSeeds: true,
+    },
+
 ];

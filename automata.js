@@ -316,6 +316,8 @@ Automata.prototype.logData = function () {
             params: params,
             seedPop: this.seedPop,
             humanPop: this.humanPop,
+            wildPop: this.wildPop,
+            domePop: this.domePop,
             weightData: this.weightData,
             rootData: this.rootData,
             seedData: this.seedData,

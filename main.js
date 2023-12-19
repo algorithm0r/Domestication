@@ -8,6 +8,14 @@ if (window.io !== undefined) {
 
 	socket = io.connect('http://73.225.31.4:8888');
 
+	socket.on("connect", function () {
+		databaseConnected();
+	});
+	
+	socket.on("disconnect", function () {
+		databaseDisconnected();
+	});
+
 	socket.addEventListener("log", console.log);
 }
 

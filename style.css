@@ -80,3 +80,21 @@ div input {
     background-color: darkgrey;
     text-align:center;
 }
+
+/* Default style */
+.db-status {
+    width: 100px;
+    border: 1px solid #000;
+    background-color: darkgrey;
+    text-align:center;
+}
+
+/* Connected state (green background) */
+.db-connected {
+    background-color: lightgreen;
+}
+
+/* Disconnected state (red background) */
+.db-disconnected {
+    background-color: lightcoral;
+}

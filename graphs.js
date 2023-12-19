@@ -1,30 +1,40 @@
 var socket = io.connect("http://73.225.31.4:8888");
 var context;
-var ticks = 199;
+var ticks = 600;
 var maxRuns = 100;
-var height = 100;
-var xDelta = 2;
+var height = 40;
+var xDelta = 1;
 var width = xDelta * ticks;
 var obj;
 
 socket.on("connect", function () {
-    console.log("connected on output");
+    databaseConnected();
+});
+
+socket.on("disconnect", function () {
+    databaseDisconnected();
 });
 
 document.addEventListener("DOMContentLoaded", function (event) {
     context = document.getElementById("chart").getContext("2d");
     socket.emit("find", 
-        { db: params.db, 
+        { 
+            db: params.db, 
             collection: params.collection, 
-            query: {"params.seedStrategy": "none", "params.plantStrategy": "none" }});
+            query: {"params.seedStrategy": "none", "params.plantStrategy": "none" },
+            limit: 10
+        });
 
     document.getElementById("query").addEventListener("click", function (e) {
         var query = document.getElementById("seed_selection").value;
         var drop = document.getElementById("plant_selection").value;
         socket.emit("find", 
-            { db: params.db, 
+            { 
+                db: params.db, 
                 collection: params.collection, 
-                query: {"params.seedStrategy": query, "params.plantStrategy": drop }});
+                query: {"params.seedStrategy": query, "params.plantStrategy": drop },
+                limit: 10
+            });
     }, false);
 
     // document.getElementById("next").addEventListener("click", function (e) {
@@ -266,23 +276,25 @@ function drawData(runs, ctx) {
 
     drawGraph(ctx, "Black", 0, obj.humans, maxHuman, false);
     drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
+    // drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
+    // drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
     drawHistogram(ctx, 0, 115, obj.histogramRoots, "Deep Roots");
-    drawHistogram(ctx, 0, 230, obj.histogramWeight, "Seed Weight");
-    drawHistogram(ctx, 0, 345, obj.histogramSeeds, "Fecundity");
-    drawHistogram(ctx, 0, 460, obj.histogramEnergy, "Fruit Energy");
-    drawHistogram(ctx, 0, 575, obj.histogramDisp, "Dispersal");
+    drawHistogram(ctx, 0, 280, obj.histogramWeight, "Seed Weight");
+    drawHistogram(ctx, 0, 445, obj.histogramSeeds, "Fecundity");
+    drawHistogram(ctx, 0, 610, obj.histogramEnergy, "Fruit Energy");
+    drawHistogram(ctx, 0, 775, obj.histogramDisp, "Dispersal");
   
-    drawHistogram(ctx, 207, 115, obj.histogramRootsWild, "Deep Roots - Wild");
-    drawHistogram(ctx, 207, 230, obj.histogramWeightWild, "Seed Weight - Wild");
-    drawHistogram(ctx, 207, 345, obj.histogramSeedsWild, "Fecundity - Wild");
-    drawHistogram(ctx, 207, 460, obj.histogramEnergyWild, "Fruit Energy - Wild");
-    drawHistogram(ctx, 207, 575, obj.histogramDispWild, "Dispersal - Wild");
+    drawHistogram(ctx, 0, 170, obj.histogramRootsWild, "Deep Roots - Wild");
+    drawHistogram(ctx, 0, 335, obj.histogramWeightWild, "Seed Weight - Wild");
+    drawHistogram(ctx, 0, 500, obj.histogramSeedsWild, "Fecundity - Wild");
+    drawHistogram(ctx, 0, 665, obj.histogramEnergyWild, "Fruit Energy - Wild");
+    drawHistogram(ctx, 0, 830, obj.histogramDispWild, "Dispersal - Wild");
 
-    drawHistogram(ctx, 414, 115, obj.histogramRootsDomesticated, "Deep Roots - Domesticated");
-    drawHistogram(ctx, 414, 230, obj.histogramWeightDomesticated, "Seed Weight - Domesticated");
-    drawHistogram(ctx, 414, 345, obj.histogramSeedsDomesticated, "Fecundity - Domesticated");
-    drawHistogram(ctx, 414, 460, obj.histogramEnergyDomesticated, "Fruit Energy - Domesticated");
-    drawHistogram(ctx, 414, 575, obj.histogramDispDomesticated, "Dispersal - Domesticated");
+    drawHistogram(ctx, 0, 225, obj.histogramRootsDomesticated, "Deep Roots - Domesticated");
+    drawHistogram(ctx, 0, 390, obj.histogramWeightDomesticated, "Seed Weight - Domesticated");
+    drawHistogram(ctx, 0, 555, obj.histogramSeedsDomesticated, "Fecundity - Domesticated");
+    drawHistogram(ctx, 0, 720, obj.histogramEnergyDomesticated, "Fruit Energy - Domesticated");
+    drawHistogram(ctx, 0, 885, obj.histogramDispDomesticated, "Dispersal - Domesticated");
 
 
     ctx.strokeStyle = "black";

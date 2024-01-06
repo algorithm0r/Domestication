@@ -89,7 +89,7 @@ var params = {
 
     // database
     db: "domesticationDB",
-    collection: "exp2024v4.1"
+    collection: "exp2024v4x1"
 };
 
 function loadParameters() {

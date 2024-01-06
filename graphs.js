@@ -78,33 +78,33 @@ document.addEventListener("DOMContentLoaded", function (event) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.seedStrategy + obj.params.plantStrategy + ".txt", serialize(obj.histogramSeeds));
-            download("roots" + obj.params.seedStrategy + obj.params.plantStrategy + ".txt", serialize(obj.histogramRoots));
-            download("weight" + obj.params.seedStrategy + obj.params.plantStrategy + ".txt", serialize(obj.histogramWeight));
-            download("disp" + obj.params.seedStrategy + obj.params.plantStrategy + ".txt", serialize(obj.histogramDisp));
-            download("energy" + obj.params.seedStrategy + obj.params.plantStrategy + ".txt", serialize(obj.histogramEnergy));
+            download("seeds" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramSeeds));
+            download("roots" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramRoots));
+            download("weight" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramWeight));
+            download("disp" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramDisp));
+            download("energy" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramEnergy));
         }
     }, false);
     document.getElementById("downloadwild").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.seedStrategy + obj.params.plantStrategy + "wild.txt", serialize(obj.histogramSeedsWild));
-            download("roots" + obj.params.seedStrategy + obj.params.plantStrategy + "wild.txt", serialize(obj.histogramRootsWild));
-            download("weight" + obj.params.seedStrategy + obj.params.plantStrategy + "wild.txt", serialize(obj.histogramWeightWild));
-            download("disp" + obj.params.seedStrategy + obj.params.plantStrategy + "wild.txt", serialize(obj.histogramDispWild));
-            download("energy" + obj.params.seedStrategy + obj.params.plantStrategy + "wild.txt", serialize(obj.histogramEnergyWild));
+            download("seeds" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramSeedsWild));
+            download("roots" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramRootsWild));
+            download("weight" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramWeightWild));
+            download("disp" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramDispWild));
+            download("energy" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramEnergyWild));
         }
     }, false);
     document.getElementById("downloaddome").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.seedStrategy + obj.params.plantStrategy + "dome.txt", serialize(obj.histogramSeedsDomesticated));
-            download("roots" + obj.params.seedStrategy + obj.params.plantStrategy + "dome.txt", serialize(obj.histogramRootsDomesticated));
-            download("weight" + obj.params.seedStrategy + obj.params.plantStrategy + "dome.txt", serialize(obj.histogramWeightDomesticated));
-            download("disp" + obj.params.seedStrategy + obj.params.plantStrategy + "dome.txt", serialize(obj.histogramDispDomesticated));
-            download("energy" + obj.params.seedStrategy + obj.params.plantStrategy + "dome.txt", serialize(obj.histogramEnergyDomesticated));
+            download("seeds" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramSeedsDomesticated));
+            download("roots" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramRootsDomesticated));
+            download("weight" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramWeightDomesticated));
+            download("disp" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramDispDomesticated));
+            download("energy" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramEnergyDomesticated));
         }
     }, false);
 });

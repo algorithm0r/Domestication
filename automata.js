@@ -350,6 +350,9 @@ Automata.prototype.nextRun = function () {
     const plant = document.getElementById("plant_selection");
     const human = document.getElementById("human_add_rate");
     const run = document.getElementById("run");
+    const chance = document.getElementById("plantSelectionChance");
+    const strength = document.getElementById("plantSelectionStrength");
+   
 
     // update params
     this.run = (this.run + 1) % runs.length;
@@ -360,6 +363,8 @@ Automata.prototype.nextRun = function () {
     harvest.value = params.harvestStrategy;
     plant.value = params.plantStrategy;
     human.value = params.humanAddRate;
+    chance.value = params.plantSelectionChance;
+    strength.value = params.plantSelectionStrength;
 };
 
 Automata.prototype.update = function () {

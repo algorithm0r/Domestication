@@ -5,6 +5,12 @@ var maxRuns = 100;
 var height = 40;
 var xDelta = 1;
 var width = xDelta * ticks;
+var numRecords = 0;
+var page = 0;
+var data = [];
+var limit = 20;
+
+var query;
 var obj;
 
 socket.on("connect", function () {
@@ -35,16 +41,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
         });
 
     document.getElementById("query").addEventListener("click", function (e) {
-        var query = document.getElementById("run_selection").value;
+        query = document.getElementById("run_selection").value;
+        document.getElementById("query_info").innerHTML = "Query Sent. Awaiting Reply.";
         console.log(query);
 
-        socket.emit("find", 
-            { 
-                db: params.db, 
-                collection: params.collection, 
-                query: {"params.runName": query },
-                limit: 10
-            });
+   
+        socket.emit("count",
+        {
+            db: params.db,
+            collection: params.collection,
+            query: { "params.runName": query },
+        });
+
+        
+        
+        // socket.emit("find",
+        //     {
+        //         db: params.db,
+        //         collection: params.collection,
+        //         query: { "params.runName": query },
+        //         limit: 20,
+        //         page: 1
+        //     });
     }, false);
 
     // document.getElementById("next").addEventListener("click", function (e) {
@@ -91,14 +109,52 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }, false);
 });
 
+socket.on("count", function (length) {
+    numRecords = length;
+    document.getElementById("query_info").innerHTML = `Received 0 of ${numRecords} records.`;
+    page = 0;
+    data = [];
+    // for (var i = 0; i < length/limit; i++) {
+        socket.emit("find",
+            {
+                db: params.db,
+                collection: params.collection,
+                query: { "params.runName": query },
+                limit: limit,
+                page: page
+            });
+        console.log(`Requesting page ${page} of size ${limit}.`);
+    // }
+});
+
 socket.on("find", function (array) {
-    if (array.length > 0) parseData(array);
+    if (array.length > 0) {
+        console.log("Find: data received.")
+
+        data.push(...array);
+        document.getElementById("query_info").innerHTML = `Received ${data.length} of ${numRecords} records.`;
+
+        if(data.length === numRecords) parseData(data);
+        else {
+            socket.emit("find",
+            {
+                db: params.db,
+                collection: params.collection,
+                query: { "params.runName": query },
+                limit: limit,
+                page: ++page
+            });
+            console.log(`Requesting page ${page} of size ${limit}.`);
+        }
+    }
     else console.log("Empty data.");
 });
 
 socket.on("distinct", function (array) {
+    document.getElementById("query_info").innerHTML = "Ready to Query";
     console.log(array);
     console.log("\n");
+    
     if (array.length > 0) populateDropDown(array);
     else console.log("Empty data.");
 });
@@ -210,7 +266,7 @@ function parseData(data) {
     //    console.log(testsum);
     //}
     obj = {
-        runName: data[0].params.runName ?? "wild type 1 - no humans",
+        runName: data[0].params.runName ?? "no runName",
         params: data[0].params,
         runs: data.length,
         query: data[0].params.seedStrategy,

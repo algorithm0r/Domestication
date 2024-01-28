@@ -55,7 +55,7 @@ Human.prototype.move = function (cell) {
         if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
             let diff = Math.floor(this.seeds.length*params.plantSelectionStrength);
             if (diff > 0) {
-                if(selectionProperty != "random" && selectionProperty != "bottom" && selectionProperty != "top" && Math.random() < params.plantSelectionChance) {
+                if(selectionProperty != "random" && selectionProperty != "bottom" && selectionProperty != "top") {
                     if (selectionProperty.substring(0, 3) == "min") {
                         selectionProperty = selectionProperty.slice(3);
                         this.seeds.sort((a, b) => {
@@ -68,7 +68,7 @@ Human.prototype.move = function (cell) {
                             - (a[selectionProperty]?.value ?? a[selectionProperty]?.length ?? a[selectionProperty]);
                         });
                     }
-                } else if (selectionProperty == "random") {
+                } else if (selectionProperty == "random" || Math.random() > params.plantSelectionChance) {
                     shuffleArray(this.seeds);
                 }
 

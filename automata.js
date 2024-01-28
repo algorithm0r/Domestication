@@ -352,6 +352,8 @@ Automata.prototype.nextRun = function () {
     const run = document.getElementById("run");
     const chance = document.getElementById("plantSelectionChance");
     const strength = document.getElementById("plantSelectionStrength");
+    const indiv = document.getElementById("individualSeedSeparation");
+    const share = document.getElementById("sharedPlantingSeeds");
    
 
     // update params
@@ -365,6 +367,8 @@ Automata.prototype.nextRun = function () {
     human.value = params.humanAddRate;
     chance.value = params.plantSelectionChance;
     strength.value = params.plantSelectionStrength;
+    indiv.checked = params.individualSeedSeparation;
+    share.checked = params.sharedPlantingSeeds;
 };
 
 Automata.prototype.update = function () {

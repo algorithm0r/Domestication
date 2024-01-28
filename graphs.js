@@ -11,6 +11,7 @@ var data = [];
 var limit = 20;
 
 var query;
+var filter;
 var obj;
 
 socket.on("connect", function () {
@@ -43,27 +44,38 @@ document.addEventListener("DOMContentLoaded", function (event) {
     document.getElementById("query").addEventListener("click", function (e) {
         query = document.getElementById("run_selection").value;
         document.getElementById("query_info").innerHTML = "Query Sent. Awaiting Reply.";
+
+        filter = null;
+
         console.log(query);
+        console.log(filter);
 
-   
         socket.emit("count",
-        {
-            db: params.db,
-            collection: params.collection,
-            query: { "params.runName": query },
-        });
+            {
+                db: params.db,
+                collection: params.collection,
+                query: { "params.runName": query },
+            });
 
-        
-        
-        // socket.emit("find",
-        //     {
-        //         db: params.db,
-        //         collection: params.collection,
-        //         query: { "params.runName": query },
-        //         limit: 20,
-        //         page: 1
-        //     });
     }, false);
+
+    // document.getElementById("query_pop").addEventListener("click", function (e) {
+    //     query = document.getElementById("run_selection").value;
+    //     document.getElementById("query_info").innerHTML = "Query Sent. Awaiting Reply.";
+
+    //     filter = { params: 1, humanPop: 1, seedPop: 1, wildPop: 1, domePop: 1 };
+
+    //     console.log(query);
+    //     console.log(filter);
+
+    //     socket.emit("count",
+    //         {
+    //             db: params.db,
+    //             collection: params.collection,
+    //             query: { "params.runName": query },
+    //         });
+
+    // }, false);
 
     // document.getElementById("next").addEventListener("click", function (e) {
     //     var q = document.getElementById("runToQuery");
@@ -78,52 +90,60 @@ document.addEventListener("DOMContentLoaded", function (event) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramSeeds));
-            download("roots" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramRoots));
-            download("weight" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramWeight));
-            download("disp" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramDisp));
-            download("energy" + obj.params.runName.substring(0,2) + ".txt", serialize(obj.histogramEnergy));
+            download("seeds" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramSeeds));
+            download("roots" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramRoots));
+            download("weight" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramWeight));
+            download("disp" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramDisp));
+            download("energy" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramEnergy));
         }
     }, false);
     document.getElementById("downloadwild").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramSeedsWild));
-            download("roots" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramRootsWild));
-            download("weight" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramWeightWild));
-            download("disp" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramDispWild));
-            download("energy" + obj.params.runName.substring(0,2) + "wild.txt", serialize(obj.histogramEnergyWild));
+            download("seeds" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramSeedsWild));
+            download("roots" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramRootsWild));
+            download("weight" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramWeightWild));
+            download("disp" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramDispWild));
+            download("energy" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramEnergyWild));
         }
     }, false);
     document.getElementById("downloaddome").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramSeedsDomesticated));
-            download("roots" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramRootsDomesticated));
-            download("weight" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramWeightDomesticated));
-            download("disp" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramDispDomesticated));
-            download("energy" + obj.params.runName.substring(0,2) + "dome.txt", serialize(obj.histogramEnergyDomesticated));
+            download("seeds" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramSeedsDomesticated));
+            download("roots" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramRootsDomesticated));
+            download("weight" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramWeightDomesticated));
+            download("disp" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramDispDomesticated));
+            download("energy" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramEnergyDomesticated));
+        }
+    }, false);
+    document.getElementById("downloadpop").addEventListener("click", function (e) {
+        console.log("Download clicked.");
+        console.log(obj);
+        if (obj.params) {
+            download("population" + obj.params.runName.substring(0, 2) + ".txt", serializeGraph([obj.seeds, obj.wild, obj.dome]));
         }
     }, false);
 });
 
 socket.on("count", function (length) {
-    numRecords = length;
+    numRecords = Math.max(length, maxRuns);
     document.getElementById("query_info").innerHTML = `Received 0 of ${numRecords} records.`;
-    page = 0;
+    page = 1;
     data = [];
     // for (var i = 0; i < length/limit; i++) {
-        socket.emit("find",
-            {
-                db: params.db,
-                collection: params.collection,
-                query: { "params.runName": query },
-                limit: limit,
-                page: page
-            });
-        console.log(`Requesting page ${page} of size ${limit}.`);
+    socket.emit("find",
+        {
+            db: params.db,
+            collection: params.collection,
+            query: { "params.runName": query },
+            filter: filter,
+            limit: limit,
+            page: page
+        });
+    console.log(`Requesting page ${page} of size ${limit}.`);
     // }
 });
 
@@ -134,18 +154,19 @@ socket.on("find", function (array) {
         data.push(...array);
         document.getElementById("query_info").innerHTML = `Received ${data.length} of ${numRecords} records.`;
 
-        if(data.length === numRecords) parseData(data);
-        else {
-            socket.emit("find",
+        parseData(data);
+
+        if(data.length < maxRuns) socket.emit("find",
             {
                 db: params.db,
                 collection: params.collection,
                 query: { "params.runName": query },
+                filter: filter,
                 limit: limit,
                 page: ++page
             });
-            console.log(`Requesting page ${page} of size ${limit}.`);
-        }
+        console.log(`Requesting page ${page} of size ${limit}.`);
+
     }
     else console.log("Empty data.");
 });
@@ -154,7 +175,7 @@ socket.on("distinct", function (array) {
     document.getElementById("query_info").innerHTML = "Ready to Query";
     console.log(array);
     console.log("\n");
-    
+
     if (array.length > 0) populateDropDown(array);
     else console.log("Empty data.");
 });
@@ -171,7 +192,29 @@ function populateDropDown(labels) {
     });
 }
 
-function serialize(hist) {
+function serializeGraph(timeSeriesList) {
+        if (timeSeriesList.length === 0) {
+          return "";
+        }
+      
+        const numSeries = timeSeriesList.length;
+        const numDataPoints = timeSeriesList[0].length;
+        let csvString = "";
+      
+        for (let dataIndex = 0; dataIndex < numDataPoints; dataIndex++) {
+          for (let seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
+            csvString += timeSeriesList[seriesIndex][dataIndex];
+            if (seriesIndex < numSeries - 1) {
+              csvString += ",";
+            }
+          }
+          csvString += "\n";
+        }
+      
+        return csvString;  
+}
+
+function serializeHist(hist) {
     var str = "";
     for (var i = 0; i < ticks; i++) {
         str += hist[i] + "\n";
@@ -198,8 +241,6 @@ function combineHistograms(data, totalSeeds, identifier) {
     }
     return histogram;
 };
-
-
 
 function parseData(data) {
 
@@ -239,23 +280,23 @@ function parseData(data) {
         }
     }
 
-    var histogramRoots = combineHistograms(data,totalSeeds,"rootData");
-    var histogramWeight = combineHistograms(data,totalSeeds,"weightData");
-    var histogramSeeds = combineHistograms(data,totalSeeds,"seedData");
-    var histogramEnergy = combineHistograms(data,totalSeeds,"energyData");
-    var histogramDisp = combineHistograms(data,totalSeeds,"dispersalData");
+    var histogramRoots = combineHistograms(data, totalSeeds, "rootData");
+    var histogramWeight = combineHistograms(data, totalSeeds, "weightData");
+    var histogramSeeds = combineHistograms(data, totalSeeds, "seedData");
+    var histogramEnergy = combineHistograms(data, totalSeeds, "energyData");
+    var histogramDisp = combineHistograms(data, totalSeeds, "dispersalData");
 
-    var histogramRootsWild = combineHistograms(data,totalSeeds,"rootDataWild");
-    var histogramWeightWild = combineHistograms(data,totalSeeds,"weightDataWild");
-    var histogramSeedsWild = combineHistograms(data,totalSeeds,"seedDataWild");
-    var histogramEnergyWild = combineHistograms(data,totalSeeds,"energyDataWild");
-    var histogramDispWild = combineHistograms(data,totalSeeds,"dispersalDataWild");
+    var histogramRootsWild = combineHistograms(data, totalSeeds, "rootDataWild");
+    var histogramWeightWild = combineHistograms(data, totalSeeds, "weightDataWild");
+    var histogramSeedsWild = combineHistograms(data, totalSeeds, "seedDataWild");
+    var histogramEnergyWild = combineHistograms(data, totalSeeds, "energyDataWild");
+    var histogramDispWild = combineHistograms(data, totalSeeds, "dispersalDataWild");
 
-    var histogramRootsDomesticated = combineHistograms(data,totalSeeds,"rootDataDomesticated");
-    var histogramWeightDomesticated = combineHistograms(data,totalSeeds,"weightDataDomesticated");
-    var histogramSeedsDomesticated = combineHistograms(data,totalSeeds,"seedDataDomesticated");
-    var histogramEnergyDomesticated = combineHistograms(data,totalSeeds,"energyDataDomesticated");
-    var histogramDispDomesticated = combineHistograms(data,totalSeeds,"dispersalDataDomesticated");
+    var histogramRootsDomesticated = combineHistograms(data, totalSeeds, "rootDataDomesticated");
+    var histogramWeightDomesticated = combineHistograms(data, totalSeeds, "weightDataDomesticated");
+    var histogramSeedsDomesticated = combineHistograms(data, totalSeeds, "seedDataDomesticated");
+    var histogramEnergyDomesticated = combineHistograms(data, totalSeeds, "energyDataDomesticated");
+    var histogramDispDomesticated = combineHistograms(data, totalSeeds, "dispersalDataDomesticated");
 
 
     //for (var j = 0; j < ticks; j++) {
@@ -409,9 +450,9 @@ function drawData(runs, ctx) {
     histograms.push(obj.histogramDispDomesticated);
     labels.push("Dispersal - Domesticated");
 
-    for(var i = 0; i < histograms.length; i++){
-        drawHistogram(ctx, 0, 55 + 55*i, histograms[i], labels[i]);
-    }   
+    for (var i = 0; i < histograms.length; i++) {
+        drawHistogram(ctx, 0, 55 + 55 * i, histograms[i], labels[i]);
+    }
 
     ctx.strokeStyle = "black";
     ctx.strokeRect(0, 0, width, height);
@@ -426,9 +467,9 @@ function drawGraph(ctx, color, start, obj, maxVal, labeling) {
     ctx.beginPath();
     var initAnt = height + start - Math.floor(obj[0] / maxVal * height);
     ctx.moveTo(0, initAnt);
-    for (var i = 0; i < ticks; i ++) {
+    for (var i = 0; i < ticks; i++) {
         var yPos = height + start - Math.floor(obj[i] / maxVal * height);
-        ctx.lineTo(i*xDelta, yPos);
+        ctx.lineTo(i * xDelta, yPos);
     }
     ctx.stroke();
     ctx.closePath();
@@ -442,7 +483,7 @@ function drawGraph(ctx, color, start, obj, maxVal, labeling) {
 }
 
 function drawHistogram(ctx, xStart, yStart, obj, label) {
-    ctx.fillRect(xStart*xDelta, yStart, width, height);
+    ctx.fillRect(xStart * xDelta, yStart, width, height);
     ctx.fillStyle = "#eeeeee";
     for (var i = 0; i < ticks; i++) {
         for (var j = 0; j < 20; j++) {
@@ -451,10 +492,10 @@ function drawHistogram(ctx, xStart, yStart, obj, label) {
     }
 
     ctx.strokeStyle = "black";
-    ctx.strokeRect(xStart*xDelta, yStart, width, height);
+    ctx.strokeRect(xStart * xDelta, yStart, width, height);
 
     ctx.fillStyle = "Black";
-    ctx.fillText(label, xStart*xDelta + width / 2 - 30, yStart + height + 10);
+    ctx.fillText(label, xStart * xDelta + width / 2 - 30, yStart + height + 10);
 }
 
 function fill(ctx, color, start, x, y) {
@@ -471,8 +512,8 @@ function fill(ctx, color, start, x, y) {
     }
 
     ctx.fillRect(x * xDelta,
-		            start + (y * height / 20),
-				    xDelta,
-					height / 20);
+        start + (y * height / 20),
+        xDelta,
+        height / 20);
 
 }

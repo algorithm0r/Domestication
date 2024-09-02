@@ -1,10 +1,10 @@
-function Histogram(game, x, y, label) {
+function Histogram(game, x, y, data, label) {
     this.xSize = 200;
     this.ySize = 80;
     this.x = x;
     this.y = y;
     this.label = label;
-    this.data = [];
+    this.data = data;
     this.ctx = game.ctx;
     this.maxVal = 0;
 };

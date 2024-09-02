@@ -1,4 +1,4 @@
-var socket = io.connect("http://73.225.31.4:8888");
+var socket = io.connect(params.ip);
 var context;
 var ticks = 600;
 var maxRuns = 100;
@@ -90,48 +90,48 @@ document.addEventListener("DOMContentLoaded", function (event) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramSeeds));
-            download("roots" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramRoots));
-            download("weight" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramWeight));
-            download("disp" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramDisp));
-            download("energy" + obj.params.runName.substring(0, 2) + ".txt", serializeHist(obj.histogramEnergy));
+            download("seeds" + obj.params.runName.substring(0, 2) + ".csv", serializeHist(obj.histogramSeeds));
+            download("roots" + obj.params.runName.substring(0, 2) + ".csv", serializeHist(obj.histogramRoots));
+            download("weight" + obj.params.runName.substring(0, 2) + ".csv", serializeHist(obj.histogramWeight));
+            download("disp" + obj.params.runName.substring(0, 2) + ".csv", serializeHist(obj.histogramDisp));
+            // download("energy" + obj.params.runName.substring(0, 2) + ".csv", serializeHist(obj.histogramEnergy));
         }
     }, false);
     document.getElementById("downloadwild").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramSeedsWild));
-            download("roots" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramRootsWild));
-            download("weight" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramWeightWild));
-            download("disp" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramDispWild));
-            download("energy" + obj.params.runName.substring(0, 2) + "wild.txt", serializeHist(obj.histogramEnergyWild));
+            download("seeds" + obj.params.runName.substring(0, 2) + "wild.csv", serializeHist(obj.histogramSeedsWild));
+            download("roots" + obj.params.runName.substring(0, 2) + "wild.csv", serializeHist(obj.histogramRootsWild));
+            download("weight" + obj.params.runName.substring(0, 2) + "wild.csv", serializeHist(obj.histogramWeightWild));
+            download("disp" + obj.params.runName.substring(0, 2) + "wild.csv", serializeHist(obj.histogramDispWild));
+            // download("energy" + obj.params.runName.substring(0, 2) + "wild.csv", serializeHist(obj.histogramEnergyWild));
         }
     }, false);
     document.getElementById("downloaddome").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("seeds" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramSeedsDomesticated));
-            download("roots" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramRootsDomesticated));
-            download("weight" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramWeightDomesticated));
-            download("disp" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramDispDomesticated));
-            download("energy" + obj.params.runName.substring(0, 2) + "dome.txt", serializeHist(obj.histogramEnergyDomesticated));
+            download("seeds" + obj.params.runName.substring(0, 2) + "dome.csv", serializeHist(obj.histogramSeedsDomesticated));
+            download("roots" + obj.params.runName.substring(0, 2) + "dome.csv", serializeHist(obj.histogramRootsDomesticated));
+            download("weight" + obj.params.runName.substring(0, 2) + "dome.csv", serializeHist(obj.histogramWeightDomesticated));
+            download("disp" + obj.params.runName.substring(0, 2) + "dome.csv", serializeHist(obj.histogramDispDomesticated));
+            // download("energy" + obj.params.runName.substring(0, 2) + "dome.csv", serializeHist(obj.histogramEnergyDomesticated));
         }
     }, false);
     document.getElementById("downloadpop").addEventListener("click", function (e) {
         console.log("Download clicked.");
         console.log(obj);
         if (obj.params) {
-            download("population" + obj.params.runName.substring(0, 2) + ".txt", serializeGraph([obj.seeds, obj.wild, obj.dome]));
+            download("population" + obj.params.runName.substring(0, 2) + ".csv", serializeGraph([obj.seeds, obj.wild, obj.dome]));
         }
     }, false);
 });
 
 socket.on("count", function (length) {
-    numRecords = Math.max(length, maxRuns);
+    numRecords = Math.min(length, maxRuns);
     document.getElementById("query_info").innerHTML = `Received 0 of ${numRecords} records.`;
-    page = 1;
+    page = length > maxRuns + limit ? 1 : 0;
     data = [];
     // for (var i = 0; i < length/limit; i++) {
     socket.emit("find",
@@ -193,25 +193,27 @@ function populateDropDown(labels) {
 }
 
 function serializeGraph(timeSeriesList) {
-        if (timeSeriesList.length === 0) {
-          return "";
-        }
-      
-        const numSeries = timeSeriesList.length;
-        const numDataPoints = timeSeriesList[0].length;
-        let csvString = "";
-      
+    if (timeSeriesList.length === 0) {
+        return "";
+    }
+
+    const numSeries = timeSeriesList.length;
+    const numDataPoints = timeSeriesList[0].length;
+    let csvString = "";
+    // for (let dataIndex = 0; dataIndex < numDataPoints; dataIndex++) {
+    //     for (let seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
+    for (let seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
         for (let dataIndex = 0; dataIndex < numDataPoints; dataIndex++) {
-          for (let seriesIndex = 0; seriesIndex < numSeries; seriesIndex++) {
+
             csvString += timeSeriesList[seriesIndex][dataIndex];
-            if (seriesIndex < numSeries - 1) {
-              csvString += ",";
+            if (seriesIndex < numDataPoints - 1) {
+                csvString += ",";
             }
-          }
-          csvString += "\n";
         }
-      
-        return csvString;  
+        csvString += "\n";
+    }
+
+    return csvString;
 }
 
 function serializeHist(hist) {
@@ -222,7 +224,7 @@ function serializeHist(hist) {
     return str;
 };
 
-function combineHistograms(data, totalSeeds, identifier) {
+function combineHistograms(data, identifier) {
     var histogram = [];
 
     for (var i = 0; i < ticks; i++) {
@@ -235,7 +237,7 @@ function combineHistograms(data, totalSeeds, identifier) {
     for (var j = 0; j < ticks; j++) {
         for (var k = 0; k < 20; k++) {
             for (var i = 0; i < data.length; i++) {
-                histogram[j][k] += data[i][identifier][j][k] / totalSeeds[j];
+                histogram[j][k] += data[i][identifier][j][k];
             }
         }
     }
@@ -261,14 +263,18 @@ function parseData(data) {
     var maxHuman = 0;
     var maxSeed = 0;
     var runs = Math.min(maxRuns, data.length);
-    for (var i = 0; i < runs; i++) {
-        for (var j = 0; j < data[i].humanPop.length; j++) {
-            avgHumanPop[j] += data[i].humanPop[j] / data.length;
+    var timeSteps = data[0].humanPop.length;
+    for (var j = 0; j < timeSteps; j++) {
+        for (var i = 0; i < runs; i++) {
+            avgHumanPop[j] += data[i].humanPop[j];
             totalSeeds[j] += data[i].seedPop[j];
-            avgSeedPop[j] += data[i].seedPop[j] / data.length;
-            avgDomePop[j] += data[i].domePop[j] / data.length;
-            avgWildPop[j] += data[i].wildPop[j] / data.length;
+            avgDomePop[j] += data[i].domeSeedPop[j];
+            avgWildPop[j] += data[i].wildSeedPop[j];
         }
+        avgHumanPop[j] /= runs;
+        avgSeedPop[j] = totalSeeds[j] / runs;
+        avgDomePop[j] /= runs;
+        avgWildPop[j] /= runs;
     }
 
     for (var i = 0; i < avgHumanPop.length; i++) {
@@ -280,23 +286,23 @@ function parseData(data) {
         }
     }
 
-    var histogramRoots = combineHistograms(data, totalSeeds, "rootData");
-    var histogramWeight = combineHistograms(data, totalSeeds, "weightData");
-    var histogramSeeds = combineHistograms(data, totalSeeds, "seedData");
-    var histogramEnergy = combineHistograms(data, totalSeeds, "energyData");
-    var histogramDisp = combineHistograms(data, totalSeeds, "dispersalData");
+    var histogramRoots = combineHistograms(data, "rootData");
+    var histogramWeight = combineHistograms(data, "weightData");
+    var histogramSeeds = combineHistograms(data, "seedData");
+    // var histogramEnergy = combineHistograms(data, "energyData");
+    var histogramDisp = combineHistograms(data, "dispersalData");
 
-    var histogramRootsWild = combineHistograms(data, totalSeeds, "rootDataWild");
-    var histogramWeightWild = combineHistograms(data, totalSeeds, "weightDataWild");
-    var histogramSeedsWild = combineHistograms(data, totalSeeds, "seedDataWild");
-    var histogramEnergyWild = combineHistograms(data, totalSeeds, "energyDataWild");
-    var histogramDispWild = combineHistograms(data, totalSeeds, "dispersalDataWild");
+    var histogramRootsWild = combineHistograms(data, "rootDataWild");
+    var histogramWeightWild = combineHistograms(data, "weightDataWild");
+    var histogramSeedsWild = combineHistograms(data, "seedDataWild");
+    // var histogramEnergyWild = combineHistograms(data, "energyDataWild");
+    var histogramDispWild = combineHistograms(data, "dispersalDataWild");
 
-    var histogramRootsDomesticated = combineHistograms(data, totalSeeds, "rootDataDomesticated");
-    var histogramWeightDomesticated = combineHistograms(data, totalSeeds, "weightDataDomesticated");
-    var histogramSeedsDomesticated = combineHistograms(data, totalSeeds, "seedDataDomesticated");
-    var histogramEnergyDomesticated = combineHistograms(data, totalSeeds, "energyDataDomesticated");
-    var histogramDispDomesticated = combineHistograms(data, totalSeeds, "dispersalDataDomesticated");
+    var histogramRootsDomesticated = combineHistograms(data, "rootDataDomesticated");
+    var histogramWeightDomesticated = combineHistograms(data, "weightDataDomesticated");
+    var histogramSeedsDomesticated = combineHistograms(data, "seedDataDomesticated");
+    // var histogramEnergyDomesticated = combineHistograms(data, "energyDataDomesticated");
+    var histogramDispDomesticated = combineHistograms(data, "dispersalDataDomesticated");
 
 
     //for (var j = 0; j < ticks; j++) {
@@ -312,31 +318,31 @@ function parseData(data) {
         runs: data.length,
         query: data[0].params.seedStrategy,
         humans: avgHumanPop,
-        seeds: avgSeedPop,
-        wild: avgWildPop,
-        dome: avgDomePop,
+        seeds: avgSeedPop.slice(0, avgSeedPop.length - 1),
+        wild: avgWildPop.slice(0, avgWildPop.length - 1),
+        dome: avgDomePop.slice(0, avgDomePop.length - 1),
         maxHuman: maxHuman,
         maxSeed: maxSeed,
         histogramRoots: histogramRoots,
         histogramWeight: histogramWeight,
         histogramSeeds: histogramSeeds,
-        histogramEnergy: histogramEnergy,
+        // histogramEnergy: histogramEnergy,
         histogramDisp: histogramDisp,
         histogramRootsWild: histogramRootsWild,
         histogramWeightWild: histogramWeightWild,
         histogramSeedsWild: histogramSeedsWild,
-        histogramEnergyWild: histogramEnergyWild,
+        // histogramEnergyWild: histogramEnergyWild,
         histogramDispWild: histogramDispWild,
         histogramRootsDomesticated: histogramRootsDomesticated,
         histogramWeightDomesticated: histogramWeightDomesticated,
         histogramSeedsDomesticated: histogramSeedsDomesticated,
-        histogramEnergyDomesticated: histogramEnergyDomesticated,
+        // histogramEnergyDomesticated: histogramEnergyDomesticated,
         histogramDispDomesticated: histogramDispDomesticated,
     };
 
     //console.log(obj);
     //console.log(data);
-    drawData(runs, context);
+    drawData(runs, context, totalSeeds);
     labelRun(data[0].params.seedStrategy);
     //var str = formatRole(obj);
     //download(document.getElementById("runToQuery").value, str);
@@ -399,7 +405,7 @@ function labelRun(run) {
     context.fillText(str, 15, 755);
 }
 
-function drawData(runs, ctx) {
+function drawData(runs, ctx, totalSeeds) {
     ctx.font = "10px Arial";
     ctx.clearRect(0, 0, 2400, 1000);
     ctx.textAlign = "start";
@@ -410,8 +416,8 @@ function drawData(runs, ctx) {
     ctx.fillRect(0, 0, width, height);
 
     drawGraph(ctx, "Black", 0, obj.humans, maxHuman, false);
-    drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, true);
-    drawGraph(ctx, "Blue", 0, obj.dome, maxSeed, true);
+    drawGraph(ctx, "Green", 0, obj.seeds, maxSeed, false);
+    drawGraph(ctx, "Blue", 0, obj.dome, maxSeed, false);
     drawGraph(ctx, "Red", 0, obj.wild, maxSeed, true);
 
     histograms = [];
@@ -423,8 +429,8 @@ function drawData(runs, ctx) {
     labels.push("Seed Weight");
     histograms.push(obj.histogramSeeds);
     labels.push("Fecundity");
-    histograms.push(obj.histogramEnergy);
-    labels.push("Fruit Energy");
+    // histograms.push(obj.histogramEnergy);
+    // labels.push("Fruit Energy");
     histograms.push(obj.histogramDisp);
     labels.push("Dispersal");
 
@@ -434,8 +440,8 @@ function drawData(runs, ctx) {
     labels.push("Seed Weight - Wild");
     histograms.push(obj.histogramSeedsWild);
     labels.push("Fecundity - Wild");
-    histograms.push(obj.histogramEnergyWild);
-    labels.push("Fruit Energy - Wild");
+    // histograms.push(obj.histogramEnergyWild);
+    // labels.push("Fruit Energy - Wild");
     histograms.push(obj.histogramDispWild);
     labels.push("Dispersal - Wild");
 
@@ -445,13 +451,13 @@ function drawData(runs, ctx) {
     labels.push("Seed Weight - Domesticated");
     histograms.push(obj.histogramSeedsDomesticated);
     labels.push("Fecundity - Domesticated");
-    histograms.push(obj.histogramEnergyDomesticated);
-    labels.push("Fruit Energy - Domesticated");
+    // histograms.push(obj.histogramEnergyDomesticated);
+    // labels.push("Fruit Energy - Domesticated");
     histograms.push(obj.histogramDispDomesticated);
     labels.push("Dispersal - Domesticated");
 
     for (var i = 0; i < histograms.length; i++) {
-        drawHistogram(ctx, 0, 55 + 55 * i, histograms[i], labels[i]);
+        drawHistogram(ctx, 0, 55 + 55 * i, histograms[i], totalSeeds, labels[i]);
     }
 
     ctx.strokeStyle = "black";
@@ -482,13 +488,19 @@ function drawGraph(ctx, color, start, obj, maxVal, labeling) {
     }
 }
 
-function drawHistogram(ctx, xStart, yStart, obj, label) {
+function drawHistogram(ctx, xStart, yStart, obj, totalSeeds, label) {
     ctx.fillRect(xStart * xDelta, yStart, width, height);
     ctx.fillStyle = "#eeeeee";
+    // console.log(`drawing histogram ${label}`);
     for (var i = 0; i < ticks; i++) {
+        var sum = 0;
         for (var j = 0; j < 20; j++) {
-            fill(ctx, obj[i][j], yStart, xStart + i, 19 - j);
+            sum += obj[i][j];
+            fill(ctx, obj[i][j] / totalSeeds[i], yStart, xStart + i, 19 - j);
         }
+        // if(sum != totalSeeds[i]) {
+        //     console.log(`i: ${i} sum: ${sum} totalSeeds[i]: ${totalSeeds[i]}`);
+        // }
     }
 
     ctx.strokeStyle = "black";

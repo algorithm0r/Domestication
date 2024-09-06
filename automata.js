@@ -4,10 +4,9 @@ class Automata {
         this.x = 0;
         this.y = 0;
 
-        this.run = 0;
+        this.run = -1;
 
-        loadParameters();
-        this.buildAutomata();
+        this.reset();
     }
     buildAutomata() {
 

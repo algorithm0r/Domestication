@@ -108,10 +108,11 @@ class Automata {
         }
     }
     addHumans(numOfHumans) {
+        var planters = Math.round(numOfHumans * params.plantingFraction); // deterministic split (humans are immortal)
         for (var i = 0; i < numOfHumans; i++) {
             var shelterRow = randomInt(params.dimension);
             var shelterCol = Math.random() > 0.5 ? 0 : params.dimension - 1;
-            var human = new Human({ game: gameEngine, x: shelterRow, y: shelterCol, cell: this.board[shelterRow][shelterCol] });
+            var human = new Human({ game: gameEngine, x: shelterRow, y: shelterCol, cell: this.board[shelterRow][shelterCol], plants: i < planters });
             this.board[shelterRow][shelterCol].addHuman(human);
             this.humans.push(human);
         }

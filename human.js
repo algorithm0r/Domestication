@@ -17,6 +17,8 @@ function Human(human) {
     // behavioral properties
     this.plantSelectionProperty = params.plantStrategy; // uses the current setting 
 
+    this.plants = human.plants ?? true; // does this human plant? (false = harvest only)
+
     // display properties
     this.color = "red";
 
@@ -49,7 +51,7 @@ Human.prototype.move = function (cell) {
         cell.shelter.water += this.water;
         
         let selectionProperty = this.plantSelectionProperty;
-        if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
+        if (this.plants && params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
             let diff = Math.floor(this.seeds.length*params.plantSelectionStrength);
             if (diff > 0) {
                 if(selectionProperty != "random" && selectionProperty != "bottom" && selectionProperty != "top") {
@@ -85,7 +87,7 @@ Human.prototype.move = function (cell) {
         this.dropSeeds();
     }
 
-    if (this.toPlant.length > 0 && this.game.board.day > params.plantingTime) {
+    if (this.plants && this.toPlant.length > 0 && this.game.board.day > params.plantingTime) {
         this.cultivate();
     }
 };
@@ -133,7 +135,7 @@ Human.prototype.rest = function () {
     }
 
     // fill planting seeds
-    if (this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
+    if (this.plants && this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
         var diff = Math.min(params.scoopSize, params.plantBasketSize - this.toPlant.length);
         this.toPlant.push(...shelter.plantSeeds.splice(0, diff));
     }

@@ -40,10 +40,11 @@ class Cell {
     germinate() {
         // add new seeds by priority    
         while (this.seeds.length < 4 && this.dormantSeeds.length > 0) {
-            const randomSeed = this.dormantSeeds[Math.floor(randomInt(this.dormantSeeds.length))];
+            const idx = randomInt(this.dormantSeeds.length);
+            const randomSeed = this.dormantSeeds[idx];
             this.seeds.push(randomSeed.seed);
             this.game.board.seeds.push(randomSeed.seed);
-            // this.dormantSeeds.splice(this.dormantSeeds.indexOf(randomSeed), 1);
+            this.dormantSeeds.splice(idx, 1); // consume germinated entry — fixes duplication (R1.BUG1)
         }
     }
     addSeed(seed, offset) {

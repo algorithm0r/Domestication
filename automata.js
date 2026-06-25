@@ -108,7 +108,7 @@ class Automata {
         }
     }
     addHumans(numOfHumans) {
-        var planters = Math.round(numOfHumans * params.plantingFraction); // deterministic split (humans are immortal)
+        var planters = Math.min(numOfHumans, params.numPlanters); // first numPlanters humans plant, rest harvest only
         for (var i = 0; i < numOfHumans; i++) {
             var shelterRow = randomInt(params.dimension);
             var shelterCol = Math.random() > 0.5 ? 0 : params.dimension - 1;

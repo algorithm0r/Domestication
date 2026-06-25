@@ -24,7 +24,8 @@ class Timer {
         var wallDelta = (wallCurrent - this.wallLastTimestamp) / 1000;
         this.wallLastTimestamp = wallCurrent;
 
-        var gameDelta = Math.min(wallDelta, this.maxStep);
+        // var gameDelta = Math.min(wallDelta, this.maxStep);
+        var gameDelta = wallDelta;
         this.gameTime += gameDelta;
 
         this.ticks.push(wallDelta);

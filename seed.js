@@ -49,6 +49,10 @@ class Seed {
         if (this.growth > this.dropThreshold || Math.random() < params.seedDeathChance) { // die
             this.dead = true;
         }
+
+        if (this.isMature() && Math.random() < params.predationChance) {
+            this.pluckSeeds();
+        }
     }
     draw(ctx, i) {
         var penalty = Math.floor(this.deepRoots.value * 255);

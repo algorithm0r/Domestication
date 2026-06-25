@@ -117,7 +117,7 @@ class Automata {
         }
     }
     addShelters() {
-        var prob = 1;
+        var prob = params.shelterDensity;
         for (var i = 0; i < params.dimension; i++) {
             if (Math.random() < prob) {
                 var j = randomInt(1);

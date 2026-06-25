@@ -49,6 +49,7 @@ var params = {
     dry: -11,
     riverWidth: 4,
     range: 16,
+    shelterDensity: 1, // probability each edge cell is a shelter (1 = continuous edges; < 1 limits the number of shelters)
     floodRate: 0.0,
     droughtRate: 0.0,
     seasonLength: 500,

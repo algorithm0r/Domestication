@@ -316,7 +316,7 @@ function parseData(data) {
         runName: data[0].params.runName ?? "no runName",
         params: data[0].params,
         runs: data.length,
-        query: data[0].params.seedStrategy,
+        query: data[0].params.harvestStrategy,
         humans: avgHumanPop,
         seeds: avgSeedPop.slice(0, avgSeedPop.length - 1),
         wild: avgWildPop.slice(0, avgWildPop.length - 1),
@@ -343,7 +343,7 @@ function parseData(data) {
     //console.log(obj);
     //console.log(data);
     drawData(runs, context, totalSeeds);
-    labelRun(data[0].params.seedStrategy);
+    labelRun(data[0].params.harvestStrategy);
     //var str = formatRole(obj);
     //download(document.getElementById("runToQuery").value, str);
     //str = formatForage(obj);

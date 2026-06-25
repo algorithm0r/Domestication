@@ -15,9 +15,7 @@ function Human(human) {
     this.toPlant = [];
 
     // behavioral properties
-    this.dropRate = 0.1;
-    this.maxDrop = 3;
-    this.seedSelectionProperty = params.plantStrategy; // uses the current setting 
+    this.plantSelectionProperty = params.plantStrategy; // uses the current setting 
 
     // display properties
     this.color = "red";
@@ -49,9 +47,8 @@ Human.prototype.move = function (cell) {
     cell.addHuman(this);
     if (cell.shelter) {
         cell.shelter.water += this.water;
-        // console.log("Dropping off " + this.seeds.length + " seeds to the shelter.");
         
-        let selectionProperty = this.seedSelectionProperty;
+        let selectionProperty = this.plantSelectionProperty;
         if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
             let diff = Math.floor(this.seeds.length*params.plantSelectionStrength);
             if (diff > 0) {
@@ -101,7 +98,6 @@ Human.prototype.cultivate = function () {
 Human.prototype.dropSeeds = function () {
     var dropSize = Math.min(this.seeds.length, randomInt(params.maxSeedDrop) + 1);
 
-    // this.seeds.sort((s1,s2)=>(s1.energy>s2.energy) ? 1 : (s2.energy < s1.energy) ? -1 : 0);
     var seeds = this.seeds.splice(0, dropSize);
     for (var i = 0; i < seeds.length; i++) {
         seeds[i].cell = this.cell;
@@ -132,7 +128,6 @@ Human.prototype.rest = function () {
         var val = Math.min(seeds.length, params.metabolicUnit);
         for (var i = 0; i < val; i++) {
             var seed = seeds.splice(0, 1)[0];
-            //console.log(seed[0].penalty);
             this.hunger -= params.seedsDiffMetabolism ? seed.energy : 1;
         }
     }
@@ -181,300 +176,46 @@ Human.prototype.moveToShelter = function () {
     this.move(cell);
 };
 
+// Harvest-preference table: gene key + direction (+1 = max, -1 = min).
+const HARVEST = {
+    weight:      { key: 'weight',      dir:  1 }, minweight:      { key: 'weight',      dir: -1 },
+    deepRoots:   { key: 'deepRoots',   dir:  1 }, mindeepRoots:   { key: 'deepRoots',   dir: -1 },
+    fecundity:   { key: 'fecundity',   dir:  1 }, minfecundity:   { key: 'fecundity',   dir: -1 },
+    dispersal:   { key: 'dispersal',   dir:  1 }, mindispersal:   { key: 'dispersal',   dir: -1 },
+    fruitEnergy: { key: 'fruitEnergy', dir:  1 }, minfruitEnergy: { key: 'fruitEnergy', dir: -1 },
+};
+
+// Pick which in-range seeds a human prefers, per params.harvestStrategy:
+//   "random"             -> every viable seed (caller picks one at random)
+//   "<gene>"/"min<gene>" -> the seed(s) with the max/min of that gene (ties kept)
+//   "none"/unknown       -> nothing
+// Replaces a ~290-line switch of near-identical cases. The original's
+// unreachable numeric cases (penalty 3/4, seed-energy 13/14) are dropped.
 Human.prototype.selectSeed = function (cells) {
-    var cell = [];
-    var seed = [];
-
-    switch (params.seedStrategy) {
-        case "random": // random seed
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "fecundity": // most seeds
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value > cell[0].seeds[seed[0]].fecundity.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value === cell[0].seeds[seed[0]].fecundity.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "minfecundity": // fewest seeds
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value < cell[0].seeds[seed[0]].fecundity.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fecundity.value === cell[0].seeds[seed[0]].fecundity.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        // case "fecundity": // most seeds
-        //     cell = [];
-        //     seed = [];
-
-        //     for (var i = 0; i < cells.length; i++) {
-        //         var c = cells[i];
-        //         for (var j = 0; j < c.seeds.length; j++) {
-        //             if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || (cell.length > 0 && c.seeds[j].seeds > cell[0].seeds[seed[0]].seeds))) {
-        //                 cell = [c];
-        //                 seed = [j];
-        //             } else if (!c.seeds[j].dead && (cell.length > 0 && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds)) {
-        //                 cell.push(c);
-        //                 seed.push(j);
-        //             }
-        //         }
-        //     }
-        //     break;
-        // case "minfecundity": // fewest seeds
-        //     cell = [];
-        //     seed = [];
-
-        //     for (var i = 0; i < cells.length; i++) {
-        //         var c = cells[i];
-        //         for (var j = 0; j < c.seeds.length; j++) {
-        //             if (cell.length === 0) {
-        //                 if (!c.seeds[j].dead && c.seeds[j].seeds > 0) {
-        //                     cell = [c];
-        //                     seed = [j];
-        //                 }
-        //             } else if (!c.seeds[j].dead && c.seeds[j].seeds > 0 && c.seeds[j].seeds < cell[0].seeds[seed[0]].seeds) {
-        //                 cell = [c];
-        //                 seed = [j];
-        //             } else if (!c.seeds[j].dead && c.seeds[j].seeds === cell[0].seeds[seed[0]].seeds) {
-        //                 cell.push(c);
-        //                 seed.push(j);
-        //             }
-        //         }
-        //     }
-        //     break;
-        case 3: // min penalty
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty < cell[0].seeds[seed[0]].penalty)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case 4: // max penalty
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].penalty > cell[0].seeds[seed[0]].penalty)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].penalty === cell[0].seeds[seed[0]].penalty) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "mindeepRoots": // min roots
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value < cell[0].seeds[seed[0]].deepRoots.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "deepRoots": // max roots
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value > cell[0].seeds[seed[0]].deepRoots.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].deepRoots.value === cell[0].seeds[seed[0]].deepRoots.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "minweight": // min weight
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value < cell[0].seeds[seed[0]].weight.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "weight": // max weight
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].weight.value > cell[0].seeds[seed[0]].weight.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].weight.value === cell[0].seeds[seed[0]].weight.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "mindispersal": // min dispersal
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value < cell[0].seeds[seed[0]].dispersal.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value === cell[0].seeds[seed[0]].dispersal.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "dispersal": // max dispersal
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value > cell[0].seeds[seed[0]].dispersal.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].dispersal.value === cell[0].seeds[seed[0]].dispersal.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "minfruitEnergy": // min energy
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value < cell[0].seeds[seed[0]].fruitEnergy.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value === cell[0].seeds[seed[0]].fruitEnergy.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case "fruitEnergy": // max energy
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value > cell[0].seeds[seed[0]].fruitEnergy.value)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].fruitEnergy.value === cell[0].seeds[seed[0]].fruitEnergy.value) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case 13: // min seed energy
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].energy < cell[0].seeds[seed[0]].energy)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].energy === cell[0].seeds[seed[0]].energy) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
-        case 14: // max seed energy
-            cell = [];
-            seed = [];
-
-            for (var i = 0; i < cells.length; i++) {
-                var c = cells[i];
-                for (var j = 0; j < c.seeds.length; j++) {
-                    if (!c.seeds[j].dead && ((cell.length === 0 && c.seeds[j].seeds > 0) || c.seeds[j].seeds > 0 && c.seeds[j].energy > cell[0].seeds[seed[0]].energy)) {
-                        cell = [c];
-                        seed = [j];
-                    } else if (!c.seeds[j].dead && cell.length > 0 && c.seeds[j].seeds > 0 && c.seeds[j].energy === cell[0].seeds[seed[0]].energy) {
-                        cell.push(c);
-                        seed.push(j);
-                    }
-                }
-            }
-            break;
+    var cand = [];
+    for (var i = 0; i < cells.length; i++) {
+        var c = cells[i];
+        for (var j = 0; j < c.seeds.length; j++) {
+            var s = c.seeds[j];
+            if (!s.dead && s.seeds > 0) cand.push({ c: c, j: j, s: s });
+        }
     }
+    if (cand.length === 0) return { cell: [], seed: [] };
+
+    if (params.harvestStrategy === "random") {
+        return { cell: cand.map(function (x) { return x.c; }),
+                 seed: cand.map(function (x) { return x.j; }) };
+    }
+
+    var rule = HARVEST[params.harvestStrategy];
+    if (!rule) return { cell: [], seed: [] };   // "none" or unrecognized
+
+    var val = function (x) { var p = x.s[rule.key]; return (p && typeof p === "object") ? p.value : p; };
+    var best = val(cand[0]);
+    for (var k = 1; k < cand.length; k++) { var v = val(cand[k]); if (rule.dir * v > rule.dir * best) best = v; }
+
+    var cell = [], seed = [];
+    for (var k = 0; k < cand.length; k++) if (val(cand[k]) === best) { cell.push(cand[k].c); seed.push(cand[k].j); }
     return { cell: cell, seed: seed };
 };
 

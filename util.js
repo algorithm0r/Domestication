@@ -63,6 +63,10 @@ var params = {
     seedDeathChance: 0.01,
     growthPenalty: 100,
     predationChance: 0,
+    pluckRate: 0.75,         // fraction of a plant's seeds recovered when plucked/harvested
+    dormantDecayChance: 0.5, // probability a dormant soil-bank seed decays each tick
+    cellCapacity: 4,         // max simultaneously-growing seeds per cell
+    initialSeedDensity: 0.1, // probability each cell is seeded at world initialization
 
     // humans
     humanAddRate: 200,
@@ -73,7 +77,7 @@ var params = {
     scoopSize: 5,
     basketSize: 400,
     plantBasketSize: 50,
-    seedStrategy: 0,
+    granaryCap: 2000,        // max seeds stored in the shared shelter (food / planting stores)
     runName: "01. no humans",
     plantStrategy: "none",
     harvestStrategy: "none",
@@ -118,7 +122,7 @@ function loadParameters() {
     // params.skinSize = parseInt(document.getElementById("skin_size").value);
     // params.scoopSize = parseInt(document.getElementById("scoop_size").value);
     // params.basketSize = parseInt(document.getElementById("basket_size").value);
-    params.seedStrategy = document.getElementById("seed_selection").value;
+    params.harvestStrategy = document.getElementById("seed_selection").value;
     params.plantStrategy = document.getElementById("plant_selection").value;
 
     console.log(params);

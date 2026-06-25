@@ -192,11 +192,16 @@ class Automata {
         for (var i = this.seeds.length - 1; i >= 0; i--) {
             var seed = this.seeds[i];
             if (seed.dead) {
-                this.seeds.splice(i, 1);
                 seed.cell.removeSeed(seed);
                 seed.spreadSeeds();
             }
         }
+        // compact out dead seeds in one O(N) pass (replaces the per-element splice above)
+        var w = 0;
+        for (var i = 0; i < this.seeds.length; i++) {
+            if (!this.seeds[i].dead) this.seeds[w++] = this.seeds[i];
+        }
+        this.seeds.length = w;
 
         if (!params.individualSeedSeparation) this.partitionSeeds();
         if (this.shelter.seeds.length > params.granaryCap) {

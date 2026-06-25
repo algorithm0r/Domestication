@@ -15,7 +15,7 @@ function Human(human) {
     this.toPlant = [];
 
     // behavioral properties
-    this.seedSelectionProperty = params.plantStrategy; // uses the current setting 
+    this.plantSelectionProperty = params.plantStrategy; // uses the current setting 
 
     // display properties
     this.color = "red";
@@ -48,7 +48,7 @@ Human.prototype.move = function (cell) {
     if (cell.shelter) {
         cell.shelter.water += this.water;
         
-        let selectionProperty = this.seedSelectionProperty;
+        let selectionProperty = this.plantSelectionProperty;
         if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
             let diff = Math.floor(this.seeds.length*params.plantSelectionStrength);
             if (diff > 0) {
@@ -180,7 +180,7 @@ Human.prototype.selectSeed = function (cells) {
     var cell = [];
     var seed = [];
 
-    switch (params.seedStrategy) {
+    switch (params.harvestStrategy) {
         case "random": // random seed
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i];

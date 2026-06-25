@@ -78,7 +78,6 @@ var params = {
     basketSize: 400,
     plantBasketSize: 50,
     granaryCap: 2000,        // max seeds stored in the shared shelter (food / planting stores)
-    seedStrategy: 0,
     runName: "01. no humans",
     plantStrategy: "none",
     harvestStrategy: "none",
@@ -123,7 +122,7 @@ function loadParameters() {
     // params.skinSize = parseInt(document.getElementById("skin_size").value);
     // params.scoopSize = parseInt(document.getElementById("scoop_size").value);
     // params.basketSize = parseInt(document.getElementById("basket_size").value);
-    params.seedStrategy = document.getElementById("seed_selection").value;
+    params.harvestStrategy = document.getElementById("seed_selection").value;
     params.plantStrategy = document.getElementById("plant_selection").value;
 
     console.log(params);

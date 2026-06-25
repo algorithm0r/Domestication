@@ -15,8 +15,6 @@ function Human(human) {
     this.toPlant = [];
 
     // behavioral properties
-    this.dropRate = 0.1;
-    this.maxDrop = 3;
     this.seedSelectionProperty = params.plantStrategy; // uses the current setting 
 
     // display properties

@@ -1,0 +1,7 @@
+# runtime/output artifacts (not source)
+results/
+queue-state.json
+results.jsonl
+runlist.json
+*.log
+test_out.json

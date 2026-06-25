@@ -83,7 +83,7 @@ var params = {
     harvestStrategy: "none",
     plantSelectionChance: 1.0,
     plantSelectionStrength: 0.2,
-    plantingFraction: 1.0,   // deterministic fraction of humans that plant; the rest harvest only (predation)
+    numPlanters: 1e9,        // number of humans that plant (capped at population); the rest harvest only (predation)
     seedDropRate: 0.02,
     maxSeedDrop: 3,
     individualSeedSeparation: true,

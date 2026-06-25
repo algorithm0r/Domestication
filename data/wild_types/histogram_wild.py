@@ -38,8 +38,8 @@ plt.rcParams["font.family"] = "Times New Roman"
 c = 1
 fig, axn = plt.subplots(5, 3, sharey=True)
 ##plt.figure(num = 1, figsize = (10,16), dpi = 80)
-cbar_ax = fig.add_axes([.91, .08, .01, .82])
-fig.subplots_adjust(wspace=0.05, hspace=0.25, right=0.90, bottom = 0.08, left=0.06, top=0.90)
+cbar_ax = fig.add_axes([.86, .08, .01, .82])
+fig.subplots_adjust(wspace=0.05, hspace=0.25, right=0.85, bottom = 0.08, left=0.10, top=0.90)
 
 for x in range(len(inFiles)):
     inFile = open(inFiles[x] + '.txt', 'r')
@@ -77,10 +77,10 @@ for x in range(len(inFiles)):
     df = pd.DataFrame(histogram, index=row)
     plt.subplot(4, 3, c)
     axes = plt.gca()
-    bottom = plt.get_cmap("gist_rainbow_r")
-    top = plt.get_cmap("bwr_r")
-    newcolors = np.vstack((top(np.linspace(0.5, 1, 24)), (bottom(np.linspace(0.24, 1, 232)))))
-    c_map = colors.ListedColormap(newcolors, "newMap")
+    bottom = plt.get_cmap("gist_rainbow_r") # get rainbow color map
+    top = plt.get_cmap("bwr_r") # get blue white red color map (only use blue white portion)
+    newcolors = np.vstack((top(np.linspace(0.5, 1, 24)), (bottom(np.linspace(0.24, 1, 232))))) # stack the two together to put white on the end of the rainbow
+    c_map = colors.ListedColormap(newcolors, "newMap") # make the new color map
     ax = sns.heatmap(df,
                      vmin=0,
                      vmax=1,
@@ -92,19 +92,19 @@ for x in range(len(inFiles)):
     ax.margins(0.01)
     if c == 4:
         cbar = ax.collections[0].colorbar
-        cbar.set_ticks([0, 0.2, 0.4, 0.6, 0.8, 1])
-        cbar.set_ticklabels(["0%", "20%", "40%", "60%", "80%", "100%"], rotation=90, va='center')
+        cbar.set_ticks([0,0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9, 1])
+        cbar.set_ticklabels(["0%","10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"], rotation=90, va='center')
     for _, spine in ax.spines.items():
         spine.set_visible(True)
     title = ["Wild Type I","Wild Type II", "Wild Type III"]
-    title_pos = [25,25,25]
+    title_pos = [10,5,2]
     axes.set_yticks([3,17],["Max","Min"])
     axes.set_xticks([10,88])
-    axes.set_xticklabels(["10000","20000"],rotation=0)
+    axes.set_xticklabels(["10k","20k"],rotation=0)
     axes.tick_params(left=False,bottom=False,pad = -2.5)
     axes.tick_params(axis='x',pad = -1.5)
     if x//3 == 0: # first row titles
-        axes.text(title_pos[x],-6,title[x], size="12")
+        axes.text(title_pos[x],-6,title[x], size="10")
     if x//3 != 3: # last row ticks
         axes.get_xaxis().set_visible(False)
     if x%3 != 0: # first column axes
@@ -112,15 +112,15 @@ for x in range(len(inFiles)):
     if x%3 == 1: # middle column titles
         plt.title(inTitle[x//3],y=1.0,pad=4)
     if x == 6:
-        axes.text(-18, 6, "Gene Value", fontsize=12, rotation=90)
+        axes.text(-38, 5, "Gene Value", fontsize=10, rotation=90)
     if x == 10:
-        axes.set_xlabel("Time Step", labelpad=0, fontsize=12)
+        axes.set_xlabel("Time Step", labelpad=0, fontsize=10)
     axes.title.set_size(10)
     c += 1
 
 f = plt.figure(num=1)
-#f.set_figwidth(3)
-#f.set_figheight(8)
-plt.savefig("control.pdf")
+f.set_figwidth(3.33)
+#f.set_figheight(4)
+plt.savefig("control.png", dpi=300)
 
 plt.show()

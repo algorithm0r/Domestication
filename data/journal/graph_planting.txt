@@ -1,0 +1,11 @@
+Selectively Planting, Time, Domesticated Seed Population
+./csvs/population12.csv, Max Roots
+./csvs/population13.csv, Max Fecundity
+./csvs/population14.csv, Max Weight
+./csvs/population15.csv, Max Abscission
+./csvs/population16.csv, Min Roots
+./csvs/population17.csv, Min Fecundity
+./csvs/population18.csv, Min Weight
+./csvs/population19.csv, Min Abscission
+./csvs/population20.csv, First
+./csvs/population21.csv, Last

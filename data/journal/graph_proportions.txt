@@ -1,0 +1,6 @@
+Selectively Planting, Time, % of Domesticated Seed Population
+./csvs/population31.csv, 10% of seeds saved
+./csvs/population20.csv, 20% of seeds saved
+./csvs/population32.csv, 30% of seeds saved
+./csvs/population33.csv, 40% of seeds saved
+./csvs/population34.csv, 50% of seeds saved

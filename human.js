@@ -47,7 +47,6 @@ Human.prototype.move = function (cell) {
     cell.addHuman(this);
     if (cell.shelter) {
         cell.shelter.water += this.water;
-        // console.log("Dropping off " + this.seeds.length + " seeds to the shelter.");
         
         let selectionProperty = this.seedSelectionProperty;
         if (params.individualSeedSeparation && selectionProperty != "none" && this.game.board.day > params.plantingTime) {
@@ -99,7 +98,6 @@ Human.prototype.cultivate = function () {
 Human.prototype.dropSeeds = function () {
     var dropSize = Math.min(this.seeds.length, randomInt(params.maxSeedDrop) + 1);
 
-    // this.seeds.sort((s1,s2)=>(s1.energy>s2.energy) ? 1 : (s2.energy < s1.energy) ? -1 : 0);
     var seeds = this.seeds.splice(0, dropSize);
     for (var i = 0; i < seeds.length; i++) {
         seeds[i].cell = this.cell;
@@ -130,7 +128,6 @@ Human.prototype.rest = function () {
         var val = Math.min(seeds.length, params.metabolicUnit);
         for (var i = 0; i < val; i++) {
             var seed = seeds.splice(0, 1)[0];
-            //console.log(seed[0].penalty);
             this.hunger -= params.seedsDiffMetabolism ? seed.energy : 1;
         }
     }

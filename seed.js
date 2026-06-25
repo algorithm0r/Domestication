@@ -35,7 +35,6 @@ class Seed {
         this.dropThreshold = this.threshold + ((params.fullGrown * (1 - this.dispersal.value))/this.growthUnit) + 1;
 
         //this.energy = 1;
-        //console.log(this.penalty);
     }
     update() {
         this.growth++;

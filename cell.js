@@ -34,12 +34,12 @@ class Cell {
         if (this.water < params.dry) this.water = params.dry;
     }
     decayDormantSeeds() {
-        let chance = 0.5;
+        let chance = params.dormantDecayChance;
         this.dormantSeeds = this.dormantSeeds.filter(seed => Math.random() > chance);
     }
     germinate() {
         // add new seeds by priority    
-        while (this.seeds.length < 4 && this.dormantSeeds.length > 0) {
+        while (this.seeds.length < params.cellCapacity && this.dormantSeeds.length > 0) {
             const idx = randomInt(this.dormantSeeds.length);
             const randomSeed = this.dormantSeeds[idx];
             this.seeds.push(randomSeed.seed);

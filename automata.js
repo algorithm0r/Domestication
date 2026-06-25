@@ -99,7 +99,7 @@ class Automata {
     plantSeeds() {
         for (var i = 0; i < params.dimension; i++) {
             for (var j = 0; j < params.dimension; j++) {
-                if (Math.random() < 0.1) {
+                if (Math.random() < params.initialSeedDensity) {
                     var seed = new Seed({ cell: this.board[i][j] });
                     this.board[i][j].addSeed(seed, 0);
                     this.seeds.push(seed);
@@ -199,11 +199,11 @@ class Automata {
         }
 
         if (!params.individualSeedSeparation) this.partitionSeeds();
-        if (this.shelter.seeds.length > 2000) {
-            this.shelter.seeds.splice(0, this.shelter.seeds.length - 2000);
+        if (this.shelter.seeds.length > params.granaryCap) {
+            this.shelter.seeds.splice(0, this.shelter.seeds.length - params.granaryCap);
         }
-        if (this.shelter.plantSeeds.length > 2000) {
-            this.shelter.plantSeeds.splice(0, this.shelter.plantSeeds.length - 2000);
+        if (this.shelter.plantSeeds.length > params.granaryCap) {
+            this.shelter.plantSeeds.splice(0, this.shelter.plantSeeds.length - params.granaryCap);
         }
 
 

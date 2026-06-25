@@ -67,7 +67,7 @@ class Seed {
         this.dispersal.mutate();
     }
     pluckSeeds() {
-        var pluckRate = 0.75;
+        var pluckRate = params.pluckRate;
         var list = [];
 
         for (var i = 0; i < this.seeds;) {

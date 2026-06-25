@@ -84,6 +84,7 @@ class Cell {
     }
     update() {
         // if (this.water > params.riverWidth) this.seeds = []; // drown seeds in flood time
+        if (this.dormantSeeds.length === 0) return; // no dormant seeds: germinate/decay are no-ops
         this.germinate();
         this.decayDormantSeeds();
     }

@@ -134,7 +134,7 @@ Human.prototype.rest = function () {
         // var val = Math.min(shelter.water, params.metabolicUnit);
         var val = params.metabolicUnit;
         shelter.water -= val;
-        this.thirst -= val;
+        this.thirst = Math.max(this.thirst - val, 0);   // clamp at 0 (symmetric with tired), so thirst resets to the same baseline as the other drives
     }
 
     // eat
@@ -143,7 +143,7 @@ Human.prototype.rest = function () {
         var val = Math.min(seeds.length, params.metabolicUnit);
         for (var i = 0; i < val; i++) {
             var seed = seeds.splice(0, 1)[0];
-            this.hunger -= params.seedsDiffMetabolism ? seed.energy : 1;
+            this.hunger = Math.max(this.hunger - (params.seedsDiffMetabolism ? seed.energy : 1), 0);   // clamp at 0 (symmetric with tired)
         }
     }
 
@@ -335,7 +335,7 @@ Human.prototype.update = function () {
     //if (Math.random() < 0.001) this.dead = true;
 
     if (cell.shelter) {
-        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > -params.metabolicThreshold && cell.shelter.seeds.length > 0 && !this.parent)) {
+        if (this.tired > 0 || (this.thirst > 0 && this.cell.shelter.water > 0) || (this.hunger > 0 && cell.shelter.seeds.length > 0 && !this.parent)) {
             this.rest();
             return;
         }

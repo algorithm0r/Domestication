@@ -70,7 +70,7 @@ var params = {
 
     // humans
     humanAddRate: 200,
-    seedsDiffMetabolism: true,
+    seedsDiffMetabolism: false,   // FIX: seed.energy was never assigned (commented out in seed.js), so the true-branch of the eat loop did `hunger -= undefined` = NaN, silently disabling hunger as a metabolic drive. false -> `hunger -= 1`.
     metabolicThreshold: 30,
     metabolicUnit: 5,
     skinSize: 30,
@@ -80,6 +80,7 @@ var params = {
     granaryCap: 2000,        // max seeds stored in the shared shelter (food / planting stores)
     runName: "01. no humans",
     plantStrategy: "none",
+    plantLineage: "off",     // lineage experiment: "planted"/"natural" restricts replanting to grain whose parent plant was / was not human-sown; "off" = no restriction (default; behaviorally inert)
     harvestStrategy: "none",
     plantSelectionChance: 1.0,
     plantSelectionStrength: 0.2,

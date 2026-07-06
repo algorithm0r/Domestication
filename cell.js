@@ -47,12 +47,14 @@ class Cell {
             this.dormantSeeds.splice(idx, 1); // consume germinated entry — fixes duplication (R1.BUG1)
         }
     }
-    addSeed(seed, offset) {
+    addSeed(seed, offset, planted) {
         if (!this.shelter) {
             var s = new Seed(seed);
             s.cell = this;
             s.x = this.x;
             s.y = this.y;
+            s.planted = !!planted;   // true only when a human sows it (cultivate); natural fall / world-init -> false
+            if (planted) s.gsp = 0;  // sowing resets the generations-since-planted counter
 
             let l = randomInt(4) + offset;
             let p = 0;

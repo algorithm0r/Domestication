@@ -9,6 +9,16 @@ class Seed {
         this.seeds = 0;
         this.growth = 0;
 
+        // lineage tags (lineage experiment): how this seed came to be. Minted fresh on every
+        // seed and NOT inherited — set only when a human sows it / plucks it. Read solely by the
+        // gated plant-lineage branch in human.move(); inert when params.plantLineage === "off".
+        this.planted = false;       // true iff a human sowed THIS seed (set in cultivate -> addSeed)
+        this.fromPlanted = false;   // true iff this grain was plucked from a sown plant (set in pluckSeeds)
+        // gens-since-planted: INHERITED through every reproduction (+1/gen via this constructor) and
+        // RESET to 0 only when a human sows the seed (cell.addSeed, planted=true). 9999 = never-planted
+        // (wild). Selection mode "mingsp" plants the lowest-counter seeds (closest to the planted line).
+        this.gsp = (typeof seed.gsp === 'number') ? seed.gsp + 1 : 9999;
+
         // genes
         if (params.randomSeeds) {
             this.weight = seed.weight ? new RealGene(seed.weight) : new RealGene();
@@ -72,6 +82,7 @@ class Seed {
         for (var i = 0; i < this.seeds;) {
             if (Math.random() < pluckRate) {
                 var seed = new Seed(this);
+                seed.fromPlanted = this.planted;   // grain records whether its parent plant was sown (one step; not propagated further)
                 list.push(seed);
                 this.seeds--;
             } else {

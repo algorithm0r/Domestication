@@ -71,6 +71,19 @@ Human.prototype.move = function (cell) {
                     shuffleArray(this.seeds);
                 }
 
+                // lineage experiment: restrict replanting to grain off a sown ("planted") or a
+                // natural ("natural") parent plant. Matching grain is moved to the front (stable,
+                // preserving the strategy order above) so the bottom-splice below takes it first,
+                // padding with the rest only when matching grain is short (bootstrap). Inert when "off".
+                if (params.plantLineage === "planted" || params.plantLineage === "natural") {
+                    let wantPlanted = params.plantLineage === "planted";
+                    let match = [], rest = [];
+                    for (let k = 0; k < this.seeds.length; k++) {
+                        (!!this.seeds[k].fromPlanted === wantPlanted ? match : rest).push(this.seeds[k]);
+                    }
+                    this.seeds = match.concat(rest);
+                }
+
                 if(params.sharedPlantingSeeds) { // add planting seeds to collective store
                     if(selectionProperty == "top") cell.shelter.plantSeeds.push(...this.seeds.splice(this.seeds.length - diff));
                     else cell.shelter.plantSeeds.push(...this.seeds.splice(0, diff)); 
@@ -94,7 +107,7 @@ Human.prototype.move = function (cell) {
 
 Human.prototype.cultivate = function () {
     var [seed] = this.toPlant.splice(0, 1);
-    this.cell.addSeed(seed, 2);
+    this.cell.addSeed(seed, 2, true);   // human-sown -> tag the resulting seed planted=true
 };
 
 Human.prototype.dropSeeds = function () {

@@ -59,8 +59,8 @@ class Seed {
             this.dead = true;
         }
 
-        if (this.isMature() && Math.random() < params.predationChance) {
-            this.pluckSeeds();
+        if (params.predationChance > 0 && this.isMature() && Math.random() < params.predationChance) {
+            this.pluckSeeds();   // guard: skip the per-seed RNG draw entirely when predation is off (every Domestication run) — saves ~1 Math.random()/seed/tick
         }
     }
     draw(ctx, i) {

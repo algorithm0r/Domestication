@@ -7,7 +7,6 @@ class Cell {
 
         this.water = params.dry;
         this.seeds = [];
-        this.dormantSeeds = [];
         this.humans = [];
 
         this.color = "brown";
@@ -33,34 +32,22 @@ class Cell {
         this.water--;
         if (this.water < params.dry) this.water = params.dry;
     }
-    decayDormantSeeds() {
-        let chance = params.dormantDecayChance;
-        this.dormantSeeds = this.dormantSeeds.filter(seed => Math.random() > chance);
-    }
-    germinate() {
-        // add new seeds by priority    
-        while (this.seeds.length < params.cellCapacity && this.dormantSeeds.length > 0) {
-            const idx = randomInt(this.dormantSeeds.length);
-            const randomSeed = this.dormantSeeds[idx];
-            this.seeds.push(randomSeed.seed);
-            this.game.board.seeds.push(randomSeed.seed);
-            this.dormantSeeds.splice(idx, 1); // consume germinated entry — fixes duplication (R1.BUG1)
-        }
-    }
     addSeed(seed, offset, planted) {
-        if (!this.shelter) {
-            var s = new Seed(seed);
-            s.cell = this;
-            s.x = this.x;
-            s.y = this.y;
-            s.planted = !!planted;   // true only when a human sows it (cultivate); natural fall / world-init -> false
-            if (planted) s.gsp = 0;  // sowing resets the generations-since-planted counter
-
-            let l = randomInt(4) + offset;
-            let p = 0;
-
-            this.dormantSeeds.push({ seed: s, level: l, priority: p });
-        }
+        // Reverted the dormant seed-bank: a fallen/sown seed takes root immediately if the cell has
+        // room, otherwise it dies on the spot. The old dormancy (a queue drained by germinate() with
+        // a per-tick 50% decay) was behaviorally this same "root-if-space-else-die" with many extra
+        // steps and a whole per-cell update pass, for negligible effect. `offset` is now unused (it
+        // only ever fed the dead `level` field); kept in the signature so callers need not change.
+        if (this.shelter) return;                               // shelters don't grow seeds
+        if (this.seeds.length >= params.cellCapacity) return;   // no room -> seed dies immediately
+        var s = new Seed(seed);
+        s.cell = this;
+        s.x = this.x;
+        s.y = this.y;
+        s.planted = !!planted;   // true only when a human sows it (cultivate); natural fall / world-init -> false
+        if (planted) s.gsp = 0;  // sowing resets the generations-since-planted counter
+        this.seeds.push(s);
+        this.game.board.seeds.push(s);
     }
     removeSeed(seed) {
         for (var i = 0; i < this.seeds.length; i++) {
@@ -83,12 +70,6 @@ class Cell {
                 return;
             }
         }
-    }
-    update() {
-        // if (this.water > params.riverWidth) this.seeds = []; // drown seeds in flood time
-        if (this.dormantSeeds.length === 0) return; // no dormant seeds: germinate/decay are no-ops
-        this.germinate();
-        this.decayDormantSeeds();
     }
     draw(ctx) {
         if (this.water <= 0) {

@@ -100,9 +100,9 @@ class Automata {
         for (var i = 0; i < params.dimension; i++) {
             for (var j = 0; j < params.dimension; j++) {
                 if (Math.random() < params.initialSeedDensity) {
-                    var seed = new Seed({ cell: this.board[i][j] });
-                    this.board[i][j].addSeed(seed, 0);
-                    this.seeds.push(seed);
+                    // addSeed now establishes the seed directly (into the cell + board.seeds); it used
+                    // to only queue a dormant copy, so this no longer needs a separate board push.
+                    this.board[i][j].addSeed(new Seed({ cell: this.board[i][j] }), 0);
                 }
             }
         }
@@ -170,11 +170,8 @@ class Automata {
             this.reset();
         }
 
-        for (var i = 0; i < params.dimension; i++) {
-            for (var j = 0; j < params.dimension; j++) {
-                this.board[i][j].update();
-            }
-        }
+        // (cells no longer have per-tick work: seeds establish immediately in addSeed, so the old
+        // per-cell germinate/decay pass over all dimension^2 cells is gone.)
 
         for (var i = this.seeds.length - 1; i >= 0; i--) {
             var seed = this.seeds[i];

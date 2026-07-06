@@ -13,6 +13,8 @@ const COORD = process.argv[2] ?? 'http://localhost:8088';
 const HOST = os.hostname();
 const WID = process.argv[3] ?? `${HOST}-${process.pid}`;
 const OUTDIR = process.argv[4] ?? path.join(HERE, 'results');
+const PERSIST = process.env.PERSIST === '1' || process.env.PERSIST === 'true';   // idle on empty queue instead of exiting
+const IDLE_POLL = 7000;
 fs.mkdirSync(OUTDIR, { recursive: true });
 
 let current = null, tick = 0, total = 0, pop = 0;
@@ -41,11 +43,21 @@ async function loop() {
     let claim;
     try { claim = await getJSON(`/claim?worker=${encodeURIComponent(WID)}&host=${encodeURIComponent(HOST)}`); }
     catch { await new Promise(r => setTimeout(r, 5000)); continue; }   // coordinator down: wait & retry
-    if (claim.done) { console.log(`[${WID}] queue empty, done`); break; }
+    if (claim.done) {
+      if (PERSIST) { await new Promise(r => setTimeout(r, IDLE_POLL)); continue; }   // wait for the next wave
+      console.log(`[${WID}] queue empty, done`); break;
+    }
     current = claim.id; tick = 0; total = 0; pop = 0;
     const t0 = Date.now();
-    const stats = await runHeadless(claim.config, path.join(OUTDIR, claim.id + '.json'));
-    if (stats) { await post('/complete', { id: claim.id, worker: WID, host: HOST, stats }); console.log(`[${WID}] done ${claim.id} (${Math.round((Date.now()-t0)/1000)}s)`); }
+    const outfile = path.join(OUTDIR, claim.id + '.json');
+    const stats = await runHeadless(claim.config, outfile);
+    if (stats) {
+      let result = null;                                  // ship the data payload so it lands on the coordinator
+      try { result = JSON.parse(fs.readFileSync(outfile, 'utf8')); } catch {}
+      const resp = await post('/complete', { id: claim.id, worker: WID, host: HOST, stats, result });
+      if (resp && resp.cleanup) { try { fs.unlinkSync(outfile); } catch {} }   // Mongo mode: coordinator stored it, drop local copy
+      console.log(`[${WID}] done ${claim.id} (${Math.round((Date.now()-t0)/1000)}s)`);
+    }
     else { await post('/error', { id: claim.id, worker: WID, error: 'headless failed' }); console.log(`[${WID}] ERROR ${claim.id}`); }
     current = null;
   }

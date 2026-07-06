@@ -1,7 +1,18 @@
 # runtime/output artifacts (not source)
 results/
+node_modules/
+data/
 queue-state.json
 results.jsonl
 runlist.json
 *.log
+*.png
+*.svg
+*.html
+*.bak-*
 test_out.json
+# experiment / queue / recalibration data (generated) — keep only the setting matrix + npm manifests
+*.json
+!settings.json
+!package.json
+!package-lock.json

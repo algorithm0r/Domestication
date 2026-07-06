@@ -18,7 +18,7 @@ const agg = JSON.parse(fs.readFileSync(aggPath, 'utf8'));
 const dome = {};               // key -> conflatedMean
 const key = p => `${p.humanAddRate}|${p.numPlanters}|${p.metabolicThreshold}|${p.plantSelectionStrength}|${p.plantSelectionChance}|${p.harvestStrategy}|${p.plantStrategy}`;
 for (const s of agg) dome[key(s.params)] = { v: s.conflatedMean, n: s.n };
-const POPS = []; for (let p = 10; p <= 100; p += 10) POPS.push(p);
+const POPS = []; for (let p = 10; p <= 120; p += 10) POPS.push(p);
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const hex = (r, g, b) => '#' + [r, g, b].map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
@@ -100,7 +100,7 @@ const c3 = render('fig_selective.svg', 'selective% × population (corrected)', '
 // 10–140, each row per-cell baseline-corrected — the low-pop rows correct toward ~0, confirming
 // they're WT1 artifact rather than planting-induced (instead of dropping them). Cells without a
 // baseline yet render as pending (…) until the enbase_* runs land.
-const EN_POPS = []; for (let p = 10; p <= 100; p += 10) EN_POPS.push(p);
+const EN_POPS = []; for (let p = 10; p <= 120; p += 10) EN_POPS.push(p);
 const c4 = render('fig_energy.svg', 'energy × population (corrected)', 'all-planting, saved 0.20, selective 1.0; baseline = per-(pop,energy) no-planting',
   EN, 'metabolic energy', (pop, mt) => ({ ...A, humanAddRate: pop, numPlanters: pop, metabolicThreshold: mt }), true,
   { pops: EN_POPS, baseFn: (pop, mt) => baseEnergy(pop, mt), linearCols: true });

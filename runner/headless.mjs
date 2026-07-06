@@ -42,6 +42,11 @@ DataManager.prototype.logData = function () {
     weightDataWild: this.weightDataWild, rootDataWild: this.rootDataWild, seedDataWild: this.seedDataWild, dispersalDataWild: this.dispersalDataWild,
     weightDataDomesticated: this.weightDataDomesticated, rootDataDomesticated: this.rootsDataDomesticated,
     seedDataDomesticated: this.seedDataDomesticated, dispersalDataDomesticated: this.dispersalDataDomesticated,
+    gspData: this.gspData, gspDataWild: this.gspDataWild, gspDataDomesticated: this.gspDataDomesticated,
+    plantedWeightData: this.plantedWeightData, plantedRootData: this.plantedRootData, plantedSeedData: this.plantedSeedData,
+    plantedDispersalData: this.plantedDispersalData, plantedGspData: this.plantedGspData, plantCountData: this.plantCountData,
+    harvestedWeightData: this.harvestedWeightData, harvestedRootData: this.harvestedRootData, harvestedSeedData: this.harvestedSeedData,
+    harvestedDispersalData: this.harvestedDispersalData, harvestedGspData: this.harvestedGspData, harvestCountData: this.harvestCountData,
   };
 };
 

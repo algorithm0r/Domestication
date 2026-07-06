@@ -107,6 +107,7 @@ Human.prototype.move = function (cell) {
 
 Human.prototype.cultivate = function () {
     var [seed] = this.toPlant.splice(0, 1);
+    if (seed && this.game.board.dataMan) this.game.board.dataMan.recordPlant(seed);   // instrument: the seed being sown
     this.cell.addSeed(seed, 2, true);   // human-sown -> tag the resulting seed planted=true
 };
 
@@ -256,7 +257,9 @@ Human.prototype.moveToSeeds = function () {
         var sel = randomInt(cc.cell.length);
         var ce = cc.cell[sel];
         this.move(ce);
-        this.seeds.push(...ce.seeds[cc.seed[sel]].pluckSeeds());
+        var plucked = ce.seeds[cc.seed[sel]].pluckSeeds();
+        if (this.game.board.dataMan) for (var pi = 0; pi < plucked.length; pi++) this.game.board.dataMan.recordHarvest(plucked[pi]);   // instrument: seeds plucked (human predation)
+        this.seeds.push(...plucked);
     } else {
         this.moveRandom();
     }

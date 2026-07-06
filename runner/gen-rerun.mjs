@@ -17,7 +17,7 @@ const DRY = process.env.DRY === '1';
 const BASE = { epoch: 100000, humansAdded: 25000, plantingTime: 50000, predationChance: 0 };
 const A = { harvestStrategy: 'random', plantStrategy: 'bottom', metabolicThreshold: 20,
             plantSelectionStrength: 0.20, plantSelectionChance: 1.0 };   // NEW anchor energy = 20
-const POPS = []; for (let p = 10; p <= 100; p += 10) POPS.push(p);
+const POPS = []; for (let p = 10; p <= 120; p += 10) POPS.push(p);
 const SAVED = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30];
 const SELECTIVE = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
 const p3 = v => String(Math.round(v * 1000)).padStart(4, '0');

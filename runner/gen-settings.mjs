@@ -12,7 +12,7 @@ const BASE = { epoch: 100000, humansAdded: 25000, plantingTime: 50000, predation
 // sweep anchors (the values held fixed when sweeping another knob) — NEW anchor: pop80 / energy20
 const A = { harvestStrategy: 'random', plantStrategy: 'bottom', metabolicThreshold: 20,
             plantSelectionStrength: 0.20, plantSelectionChance: 1.0 };
-const POPS      = []; for (let p = 10; p <= 100; p += 10) POPS.push(p);   // 10
+const POPS      = []; for (let p = 10; p <= 120; p += 10) POPS.push(p);   // 12 (110/120 added; 130/140 pending)
 const SAVED     = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30];                              // 6
 const SELECTIVE = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];           // 11
 const ENERGY    = [10, 20, 30, 40, 50];                                             // 5

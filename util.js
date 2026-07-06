@@ -76,7 +76,7 @@ var params = {
     skinSize: 30,
     scoopSize: 5,
     basketSize: 400,
-    plantBasketSize: 50,
+    plantBasketSize: 400,    // raised well above the per-trip carry ceiling (~65 at mt50) so the basket cap never binds — removes it as a hidden driver of domestication (was 50)
     granaryCap: 2000,        // max seeds stored in the shared shelter (food / planting stores)
     runName: "01. no humans",
     plantStrategy: "none",

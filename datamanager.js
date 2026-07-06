@@ -1,3 +1,7 @@
+// histogram buckets: gene value in [0,1] -> 0..19; gsp (0..9999) -> 0..19 (top bin = deep-wild lineage)
+function gbucket(v) { var b = Math.floor(v * 20); return b < 0 ? 0 : (b > 19 ? 19 : b); }
+function gspBucket(g) { var b = Math.floor(g); return b < 0 ? 0 : (b > 19 ? 19 : b); }
+
 class DataManager {
     constructor(automata) {
         this.automata = automata;
@@ -27,6 +31,27 @@ class DataManager {
         this.seedDataDomesticated = [];
         this.dispersalDataDomesticated = [];
 
+        // gsp (generations-since-planted / lineage) for the standing population (all/wild/dome)
+        this.gspData = [];
+        this.gspDataWild = [];
+        this.gspDataDomesticated = [];
+
+        // planted-seed event distributions (what humans SOW, per reporting period): 4 genes + gsp + count
+        this.plantedWeightData = [];
+        this.plantedRootData = [];
+        this.plantedSeedData = [];
+        this.plantedDispersalData = [];
+        this.plantedGspData = [];
+        this.plantCountData = [];
+        // harvested-seed event distributions (what humans PLUCK — the human-predation side): 4 genes + gsp + count
+        this.harvestedWeightData = [];
+        this.harvestedRootData = [];
+        this.harvestedSeedData = [];
+        this.harvestedDispersalData = [];
+        this.harvestedGspData = [];
+        this.harvestCountData = [];
+        this._resetEventAcc();
+
         // graphs
         const seedData = [this.seedPop, this.wildSeedPop, this.domeSeedPop];
         this.popGraph = new Graph(gameEngine, 810, 0, seedData, "Seed Population");
@@ -46,6 +71,41 @@ class DataManager {
         this.rootHistDomesticated = new Histogram(gameEngine, 1210, 400, this.rootsDataDomesticated, "Root Depth - Domesticated");
         this.seedHistDomesticated = new Histogram(gameEngine, 1210, 500, this.seedDataDomesticated, "Fecundity - Domesticated");
         this.dispersalHistDomesticated = new Histogram(gameEngine, 1210, 600, this.dispersalDataDomesticated, "Abscision - Domesticated");
+
+        // gsp (generations-since-planted / lineage) — population all/wild/dome
+        this.gspHist = new Histogram(gameEngine, 810, 700, this.gspData, "gsp / lineage");
+        this.gspHistWild = new Histogram(gameEngine, 1010, 700, this.gspDataWild, "gsp - Wild");
+        this.gspHistDomesticated = new Histogram(gameEngine, 1210, 700, this.gspDataDomesticated, "gsp - Domesticated");
+        // PLANTED-seed event distributions (what humans sow), stacked: gsp + 4 genes
+        this.plantedGspHist = new Histogram(gameEngine, 1450, 300, this.plantedGspData, "PLANTED gsp");
+        this.plantedWeightHist = new Histogram(gameEngine, 1450, 400, this.plantedWeightData, "PLANTED weight");
+        this.plantedRootHist = new Histogram(gameEngine, 1450, 500, this.plantedRootData, "PLANTED root");
+        this.plantedSeedHist = new Histogram(gameEngine, 1450, 600, this.plantedSeedData, "PLANTED fecundity");
+        this.plantedDispersalHist = new Histogram(gameEngine, 1450, 700, this.plantedDispersalData, "PLANTED dispersal");
+        // HARVESTED-seed event distributions (what humans pluck / "predation")
+        this.harvestedGspHist = new Histogram(gameEngine, 1670, 300, this.harvestedGspData, "HARVESTED gsp");
+        this.harvestedWeightHist = new Histogram(gameEngine, 1670, 400, this.harvestedWeightData, "HARVESTED weight");
+        this.harvestedRootHist = new Histogram(gameEngine, 1670, 500, this.harvestedRootData, "HARVESTED root");
+        this.harvestedSeedHist = new Histogram(gameEngine, 1670, 600, this.harvestedSeedData, "HARVESTED fecundity");
+        this.harvestedDispersalHist = new Histogram(gameEngine, 1670, 700, this.harvestedDispersalData, "HARVESTED dispersal");
+    }
+
+    _zeros() { var a = []; for (var i = 0; i < 20; i++) a.push(0); return a; }
+    _resetEventAcc() {
+        this._pW = this._zeros(); this._pR = this._zeros(); this._pF = this._zeros(); this._pD = this._zeros(); this._pGsp = this._zeros(); this._pN = 0;
+        this._hW = this._zeros(); this._hR = this._zeros(); this._hF = this._zeros(); this._hD = this._zeros(); this._hGsp = this._zeros(); this._hN = 0;
+    }
+    // called from human.cultivate() for each sown seed
+    recordPlant(seed) {
+        this._pW[gbucket(seed.weight.value)]++; this._pR[gbucket(seed.deepRoots.value)]++;
+        this._pF[gbucket(seed.fecundity.value)]++; this._pD[gbucket(seed.dispersal.value)]++;
+        this._pGsp[gspBucket(seed.gsp)]++; this._pN++;
+    }
+    // called from human.moveToSeeds() for each plucked seed
+    recordHarvest(seed) {
+        this._hW[gbucket(seed.weight.value)]++; this._hR[gbucket(seed.deepRoots.value)]++;
+        this._hF[gbucket(seed.fecundity.value)]++; this._hD[gbucket(seed.dispersal.value)]++;
+        this._hGsp[gspBucket(seed.gsp)]++; this._hN++;
     }
 
     updateData() {
@@ -68,8 +128,9 @@ class DataManager {
         var rootsDataDomesticated = [];
         var seedDataDomesticated = [];
         var dispersalDataDomesticated = [];
+        var gspData = [], gspDataWild = [], gspDataDomesticated = [];
 
-    
+
         for (var i = 0; i < 20; i++) {
             weightData.push(0);
             rootsData.push(0);
@@ -83,6 +144,7 @@ class DataManager {
             rootsDataDomesticated.push(0);
             seedDataDomesticated.push(0);
             dispersalDataDomesticated.push(0);
+            gspData.push(0); gspDataWild.push(0); gspDataDomesticated.push(0);
         }
 
         function getHistogramBucket(value) {
@@ -98,6 +160,8 @@ class DataManager {
             seedData[seedIndex]++;
             var dispersalIndex = getHistogramBucket(seeds[k].dispersal.value);
             dispersalData[dispersalIndex]++;
+            var gspIndex = gspBucket(seeds[k].gsp);
+            gspData[gspIndex]++;
 
             if (seeds[k].dispersal.value < params.wildDomesticThreshold) {
                 domeSeedPop++;
@@ -105,6 +169,7 @@ class DataManager {
                 rootsDataDomesticated[rootsIndex]++;
                 seedDataDomesticated[seedIndex]++;
                 dispersalDataDomesticated[dispersalIndex]++;
+                gspDataDomesticated[gspIndex]++;
             }
             else {
                 wildSeedPop++;
@@ -112,6 +177,7 @@ class DataManager {
                 rootsDataWild[rootsIndex]++;
                 seedDataWild[seedIndex]++;
                 dispersalDataWild[dispersalIndex]++;
+                gspDataWild[gspIndex]++;
             }
         }
 
@@ -127,6 +193,14 @@ class DataManager {
         this.rootsDataDomesticated.push(rootsDataDomesticated);
         this.seedDataDomesticated.push(seedDataDomesticated);
         this.dispersalDataDomesticated.push(dispersalDataDomesticated);
+        this.gspData.push(gspData); this.gspDataWild.push(gspDataWild); this.gspDataDomesticated.push(gspDataDomesticated);
+
+        // planted / harvested event distributions for this period, then reset the live accumulators
+        this.plantedWeightData.push(this._pW); this.plantedRootData.push(this._pR); this.plantedSeedData.push(this._pF);
+        this.plantedDispersalData.push(this._pD); this.plantedGspData.push(this._pGsp); this.plantCountData.push(this._pN);
+        this.harvestedWeightData.push(this._hW); this.harvestedRootData.push(this._hR); this.harvestedSeedData.push(this._hF);
+        this.harvestedDispersalData.push(this._hD); this.harvestedGspData.push(this._hGsp); this.harvestCountData.push(this._hN);
+        this._resetEventAcc();
 
         this.seedPop.push(seedPop);
         this.humanPop.push(humanPop);
@@ -157,6 +231,11 @@ class DataManager {
                 rootDataDomesticated: this.rootsDataDomesticated,
                 seedDataDomesticated: this.seedDataDomesticated,
                 dispersalDataDomesticated: this.dispersalDataDomesticated,
+                gspData: this.gspData, gspDataWild: this.gspDataWild, gspDataDomesticated: this.gspDataDomesticated,
+                plantedWeightData: this.plantedWeightData, plantedRootData: this.plantedRootData, plantedSeedData: this.plantedSeedData,
+                plantedDispersalData: this.plantedDispersalData, plantedGspData: this.plantedGspData, plantCountData: this.plantCountData,
+                harvestedWeightData: this.harvestedWeightData, harvestedRootData: this.harvestedRootData, harvestedSeedData: this.harvestedSeedData,
+                harvestedDispersalData: this.harvestedDispersalData, harvestedGspData: this.harvestedGspData, harvestCountData: this.harvestCountData,
             }
         };
 
@@ -183,5 +262,19 @@ class DataManager {
         this.rootHistDomesticated.draw(ctx);
         this.seedHistDomesticated.draw(ctx);
         this.dispersalHistDomesticated.draw(ctx);
+
+        this.gspHist.draw(ctx);
+        this.gspHistWild.draw(ctx);
+        this.gspHistDomesticated.draw(ctx);
+        this.plantedGspHist.draw(ctx);
+        this.plantedWeightHist.draw(ctx);
+        this.plantedRootHist.draw(ctx);
+        this.plantedSeedHist.draw(ctx);
+        this.plantedDispersalHist.draw(ctx);
+        this.harvestedGspHist.draw(ctx);
+        this.harvestedWeightHist.draw(ctx);
+        this.harvestedRootHist.draw(ctx);
+        this.harvestedSeedHist.draw(ctx);
+        this.harvestedDispersalHist.draw(ctx);
     }
 }

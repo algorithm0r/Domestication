@@ -1360,6 +1360,406 @@
   }
  },
  {
+  "id": "pp_pop110_pl0",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 0,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl10",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 10,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl20",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 20,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl30",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 30,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl40",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 40,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl50",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 50,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl60",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 60,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl70",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 70,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl80",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 80,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl90",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 90,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 100,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop110_pl110",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl0",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 0,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl10",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 10,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl20",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 20,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl30",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 30,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl40",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 40,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl50",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 50,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl60",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 60,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl70",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 70,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl80",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 80,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl90",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 90,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 100,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl110",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "pp_pop120_pl120",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
   "id": "saved_pop10_s0050",
   "config": {
    "epoch": 100000,
@@ -2154,6 +2554,166 @@
    "plantStrategy": "bottom",
    "humanAddRate": 100,
    "numPlanters": 100,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.3,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop110_s0050",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.05,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop110_s0100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.1,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop110_s0150",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.15,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop110_s0250",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.25,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop110_s0300",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.3,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop120_s0050",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.05,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop120_s0100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.1,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop120_s0150",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.15,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop120_s0250",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.25,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "saved_pop120_s0300",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
    "metabolicThreshold": 20,
    "plantSelectionStrength": 0.3,
    "plantSelectionChance": 1
@@ -3760,6 +4320,326 @@
   }
  },
  {
+  "id": "sel_pop110_c0000",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0
+  }
+ },
+ {
+  "id": "sel_pop110_c0100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.1
+  }
+ },
+ {
+  "id": "sel_pop110_c0200",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.2
+  }
+ },
+ {
+  "id": "sel_pop110_c0300",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.3
+  }
+ },
+ {
+  "id": "sel_pop110_c0400",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.4
+  }
+ },
+ {
+  "id": "sel_pop110_c0500",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.5
+  }
+ },
+ {
+  "id": "sel_pop110_c0600",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.6
+  }
+ },
+ {
+  "id": "sel_pop110_c0700",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.7
+  }
+ },
+ {
+  "id": "sel_pop110_c0800",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.8
+  }
+ },
+ {
+  "id": "sel_pop110_c0900",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.9
+  }
+ },
+ {
+  "id": "sel_pop120_c0000",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0
+  }
+ },
+ {
+  "id": "sel_pop120_c0100",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.1
+  }
+ },
+ {
+  "id": "sel_pop120_c0200",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.2
+  }
+ },
+ {
+  "id": "sel_pop120_c0300",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.3
+  }
+ },
+ {
+  "id": "sel_pop120_c0400",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.4
+  }
+ },
+ {
+  "id": "sel_pop120_c0500",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.5
+  }
+ },
+ {
+  "id": "sel_pop120_c0600",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.6
+  }
+ },
+ {
+  "id": "sel_pop120_c0700",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.7
+  }
+ },
+ {
+  "id": "sel_pop120_c0800",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.8
+  }
+ },
+ {
+  "id": "sel_pop120_c0900",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 20,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 0.9
+  }
+ },
+ {
   "id": "en_pop10_mt10",
   "config": {
    "epoch": 100000,
@@ -4394,6 +5274,134 @@
    "plantStrategy": "bottom",
    "humanAddRate": 100,
    "numPlanters": 100,
+   "metabolicThreshold": 50,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop110_mt10",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 10,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop110_mt30",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 30,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop110_mt40",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 40,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop110_mt50",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 110,
+   "numPlanters": 110,
+   "metabolicThreshold": 50,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop120_mt10",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 10,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop120_mt30",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 30,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop120_mt40",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
+   "metabolicThreshold": 40,
+   "plantSelectionStrength": 0.2,
+   "plantSelectionChance": 1
+  }
+ },
+ {
+  "id": "en_pop120_mt50",
+  "config": {
+   "epoch": 100000,
+   "humansAdded": 25000,
+   "plantingTime": 50000,
+   "predationChance": 0,
+   "harvestStrategy": "random",
+   "plantStrategy": "bottom",
+   "humanAddRate": 120,
+   "numPlanters": 120,
    "metabolicThreshold": 50,
    "plantSelectionStrength": 0.2,
    "plantSelectionChance": 1

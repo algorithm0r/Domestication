@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 const ENERGY = [10, 20, 30, 40, 50];
-const POP = []; for (let p = 10; p <= 100; p += 10) POP.push(p);
+const POP = []; for (let p = 10; p <= 120; p += 10) POP.push(p);
 const REPS = parseInt(process.env.REPS || '3');
 const EPOCH = parseInt(process.env.EPOCH || '100000');
 const BASE = { epoch: EPOCH, humansAdded: 25000, plantingTime: 50000, predationChance: 0,

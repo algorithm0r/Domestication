@@ -26,6 +26,9 @@ const config = {
 if (process.env.EPOCH) config.epoch = parseInt(process.env.EPOCH);
 if (process.env.HUMANSADDED) config.humansAdded = parseInt(process.env.HUMANSADDED);
 if (process.env.PLANTINGTIME) config.plantingTime = parseInt(process.env.PLANTINGTIME);
+if (process.env.POP) { config.humanAddRate = parseInt(process.env.POP); config.numPlanters = parseInt(process.env.POP); }
+if (process.env.MT) config.metabolicThreshold = parseInt(process.env.MT);
+if (process.env.PLANTBASKET) config.plantBasketSize = parseInt(process.env.PLANTBASKET);
 
 const modelSrc = MODEL.map(f => `\n//==== ${f} ====\n` + fs.readFileSync(path.join(REPO, f), 'utf8')).join('\n');
 
@@ -59,6 +62,7 @@ Human.prototype.update = function () {
 };
 
 var board = new Automata();
+__CAP = params.plantBasketSize;   // re-read AFTER the config override applies (plantBasketSize may be overridden)
 var epoch = params.epoch;
 var t0 = __perf.now();
 for (var t = 1; t <= epoch; t++) {
@@ -77,8 +81,13 @@ for (var t = 1; t <= epoch; t++) {
 }
 board.dataMan.logData();
 var ms = __perf.now() - t0;
+// dome over the last third of the seedPop/domeSeedPop time series (same as mongo.mjs domeOf)
+var __sp = __PAYLOAD.seedPop, __dsp = __PAYLOAD.domeSeedPop, __n = __sp.length, __st = Math.floor(__n * 0.67), __dm = 0, __c = 0;
+for (var __i = __st; __i < __n; __i++) if (__sp[__i] > 0) { __dm += __dsp[__i] / __sp[__i]; __c++; }
+var __dome = __c ? __dm / __c : null;
 __BASKET = {
   config: __CONFIG, cap: __CAP, scoopSize: params.scoopSize, basketSize: params.basketSize,
+  dome: __dome != null ? +__dome.toFixed(4) : null,
   plantSelectionStrength: params.plantSelectionStrength,
   totals: { departures: __dep, plantingDepartures: __plantedDep,
     meanCarriedAll: __dep ? +(__sum/__dep).toFixed(3) : 0,

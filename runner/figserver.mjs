@@ -15,10 +15,10 @@ const ACTIVE_COLL = process.env.COLL || 'domestication-final-2026';   // the liv
 const MONGO_DB = process.env.MONGO_DB || 'domesticationDB';
 
 const FIGS = [
-  { svg: 'fig_pp.svg',        cap: 'Planting effort × population (corrected)' },
-  { svg: 'fig_saved.svg',     cap: 'saved% × population (corrected)' },
-  { svg: 'fig_selective.svg', cap: 'selective% × population (corrected)' },
-  { svg: 'fig_energy.svg',    cap: 'energy × population (corrected)' },
+  { svg: 'fig_pp.svg',        div: 'fig_pp_div.svg',        cap: 'Planting effort × population' },
+  { svg: 'fig_saved.svg',     div: 'fig_saved_div.svg',     cap: 'saved% × population' },
+  { svg: 'fig_selective.svg', div: 'fig_selective_div.svg', cap: 'selective% × population' },
+  { svg: 'fig_energy.svg',    div: 'fig_energy_div.svg',    cap: 'energy × population' },
 ];
 
 // ---- render a collection's figures (pull -> mongo-figs -> paper-figs), cached per collection ----
@@ -31,16 +31,21 @@ async function regen(coll) {
   const c = figCache[coll] || (figCache[coll] = { ts: 0, version: 0, regenerating: false });
   if (c.regenerating) return; c.regenerating = true;
   try { await run(['pull.mjs', coll]); await run(['mongo-figs.mjs', coll]); await run(['paper-figs.mjs', coll]);
+    if (Date.now() - (c.divTs || 0) > 180000) { await run(['div-figs.mjs', coll]); await run(['collapse-fig.mjs', coll]); c.divTs = Date.now(); }   // divergence + collapse figs are heavy (per-cell gsp) — throttle to 3 min
     c.ts = Date.now(); c.version = Math.round(c.ts / 1000); }
   finally { c.regenerating = false; }
 }
 function readFigs(coll) {
   const dir = path.join(HERE, 'data', coll);
-  const sweeps = FIGS.map(f => { const p = path.join(dir, f.svg); return { cap: f.cap, svg: fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '<div class=missing>pending…</div>' }; });
+  const sweeps = FIGS.map(f => { const p = path.join(dir, f.svg), dp = path.join(dir, f.div);
+    return { cap: f.cap, svg: fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '<div class=missing>pending…</div>',
+      div: fs.existsSync(dp) ? fs.readFileSync(dp, 'utf8') : '<div class=missing>divergence pending…</div>' }; });
   let paper = [];
   const mp = path.join(dir, 'paper-manifest.json');
   if (fs.existsSync(mp)) paper = JSON.parse(fs.readFileSync(mp, 'utf8')).map(e => { const p = path.join(dir, e.svg); return { id: e.id, svg: fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '' }; });
-  return { coll, version: (figCache[coll] && figCache[coll].version) || 0, sweeps, paper };
+  const cp = path.join(dir, 'fig_collapse.svg');
+  const collapse = fs.existsSync(cp) ? fs.readFileSync(cp, 'utf8') : '';
+  return { coll, version: (figCache[coll] && figCache[coll].version) || 0, sweeps, paper, collapse };
 }
 
 // ---- run/setting detail: list settings that have data, and render one setting's distributions ----
@@ -158,7 +163,10 @@ async function pollFigs(){
  try{var f=await (await fetch('/figs?coll='+encodeURIComponent(viewedColl))).json();
   document.getElementById('figago').textContent='figures '+(Math.round(Date.now()/1000)-f.version)+'s old';
   if(f.version===lastVer)return; lastVer=f.version;
-  var html=f.sweeps.map(function(x){return '<section><h2>'+x.cap+'</h2><div class=fig>'+x.svg+'</div></section>';}).join('');
+  var html=(f.collapse?'<section><h2>Collapse — domestication vs lineage divergence</h2><div class=fig style="margin:0 18px">'+f.collapse+'</div></section>':'')+f.sweeps.map(function(x){return '<section><h2>'+x.cap+'</h2><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin:0 18px">'+
+   '<div><div style="font-size:11px;color:#9fb3c8;margin:0 0 4px 2px">domestication (dome, corrected)</div><div class=fig style=margin:0>'+x.svg+'</div></div>'+
+   '<div><div style="font-size:11px;color:#9fb3c8;margin:0 0 4px 2px">lineage divergence (TV distance, planted vs harvested gsp)</div><div class=fig style=margin:0>'+x.div+'</div></div>'+
+   '</div></section>';}).join('');
   if(f.paper&&f.paper.length){html+='<h2 style="margin-top:28px">Experiments — distributions ('+f.paper.length+')</h2>'+f.paper.map(function(x){return '<div class=fig>'+x.svg+'</div>';}).join('');}
   document.getElementById('figs').innerHTML=html;
  }catch(e){}

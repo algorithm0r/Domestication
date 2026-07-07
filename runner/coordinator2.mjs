@@ -47,9 +47,26 @@ async function storeToMongo(runId, data) {
 
 const repId = (bin, n) => `${bin.id}_r${String(n).padStart(3, '0')}`;
 const repNum = id => { const m = id.match(/_r0*(\d+)$/); return m ? parseInt(m[1]) : 0; };
+// non-convergence detection: after a floor of STALL_FLOOR reps, a not-yet-converged bin is declared
+// non-converged (stalled) if its nNeeded is either RECEDING (rose over the last STALL_K reps) or
+// STUCK-HIGH (> NEED_BUDGET) — the two ways a boundary/bistable cell fails to settle.
+const STALL_FLOOR = parseInt(process.env.STALL_FLOOR || '10');
+const STALL_K = parseInt(process.env.STALL_K || '5');
+const NEED_BUDGET = parseInt(process.env.NEED_BUDGET || '25');
 function assess(bin) {
   bin.ev = evaluate(bin.domes);
-  bin.finished = (bin.domes.length >= MIN_N && bin.ev.enough) || bin.domes.length >= MAX_N;
+  const n = bin.domes.length;
+  (bin.needHist ||= []).push(bin.ev.nNeeded);
+  while (bin.needHist.length > STALL_K + 1) bin.needHist.shift();
+  const converged = n >= MIN_N && bin.ev.enough;
+  let stalled = false;
+  if (!converged && n >= STALL_FLOOR) {
+    const receding = bin.needHist.length >= STALL_K + 1 && bin.needHist[bin.needHist.length - 1] > bin.needHist[0];
+    const stuckHigh = bin.ev.nNeeded > NEED_BUDGET;
+    stalled = receding || stuckHigh;
+  }
+  bin.converged = converged; bin.stalled = stalled;
+  bin.finished = converged || stalled || n >= MAX_N;
 }
 
 // --- resumable: rebuild every bin from the runs already in Mongo ---
@@ -80,9 +97,10 @@ function nextBin() {
 
 const workers = new Map(); const recent = []; const startedAt = Date.now(); let completed = 0;
 const counts = () => {
-  const done = bins.filter(b => b.finished).length;
+  let done = 0, converged = 0, stalled = 0;
+  for (const b of bins) { if (b.finished) done++; if (b.converged) converged++; if (b.stalled) stalled++; }
   const running = [...workers.values()].filter(w => w.runId && Date.now() - w.lastBeat < 60000).length;
-  return { total: bins.length, done, pending: bins.length - done, running, error: 0, reps: bins.reduce((a, b) => a + b.domes.length, 0) };
+  return { total: bins.length, done, converged, stalled, pending: bins.length - done, running, error: 0, reps: bins.reduce((a, b) => a + b.domes.length, 0) };
 };
 function byType() {
   const t = {};
@@ -131,12 +149,20 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, {
       counts: c, byType: byType(), workers: ws, offlineWorkers: 0, etaSec: null,
       recent: recent.map(r => ({ id: r.id, host: r.host, dome: r.dome, finished: r.finished, n: r.n, durationMs: r.durationMs, tps: r.tps })),
-      bins: bins.map(b => ({ id: b.id, n: b.domes.length, finished: b.finished, nNeeded: b.ev ? b.ev.nNeeded : null, ciHalf: b.ev ? b.ev.levelCIhalf : null, dome: b.ev ? +b.ev.conflatedMean.toFixed(3) : null })),
+      bins: bins.map(b => ({ id: b.id, n: b.domes.length, finished: b.finished, status: b.stalled ? 'stalled' : (b.converged ? 'converged' : 'active'), nNeeded: b.ev ? b.ev.nNeeded : null, ciHalf: b.ev ? b.ev.levelCIhalf : null, dome: b.ev ? +b.ev.conflatedMean.toFixed(3) : null, p: b.ev ? +b.ev.p.toFixed(3) : null })),
       done: c.done === c.total, startedAt, completed, adaptive: true
     });
   }
   json(res, 200, { ok: true });
 });
 
-mongoSocket.on('connect', async () => { await rebuild(); server.listen(PORT, '0.0.0.0', () => console.log(`coordinator2 on 0.0.0.0:${PORT}  (adaptive; ${bins.length} settings; collection ${COLL})`)); });
+function writeConvergence() {   // per-settingKey status map the figure renderers overlay onto cells
+  try {
+    const dir = path.join(HERE, 'data', COLL); fs.mkdirSync(dir, { recursive: true });
+    const map = {};
+    for (const b of bins) map[b.key] = { status: b.stalled ? 'stalled' : (b.converged ? 'converged' : 'active'), n: b.domes.length };
+    fs.writeFileSync(path.join(dir, 'convergence.json'), JSON.stringify(map));
+  } catch {}
+}
+mongoSocket.on('connect', async () => { await rebuild(); writeConvergence(); setInterval(writeConvergence, 20000); server.listen(PORT, '0.0.0.0', () => console.log(`coordinator2 on 0.0.0.0:${PORT}  (adaptive; ${bins.length} settings; floor ${STALL_FLOOR}, stall K=${STALL_K} / budget ${NEED_BUDGET}; ${COLL})`)); });
 mongoSocket.on('connect_error', e => { console.error('mongo connect_error:', e.message); process.exit(1); });

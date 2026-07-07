@@ -157,5 +157,11 @@ function writeConvergence() {   // per-settingKey status map the figure renderer
     fs.writeFileSync(path.join(dir, 'convergence.json'), JSON.stringify(map));
   } catch {}
 }
-mongoSocket.on('connect', async () => { await rebuild(); writeConvergence(); setInterval(writeConvergence, 20000); server.listen(PORT, '0.0.0.0', () => console.log(`coordinator2 on 0.0.0.0:${PORT}  (adaptive; ${bins.length} settings; floor ${STALL_FLOOR}, converge-budget ${NEED_BUDGET}; ${COLL})`)); });
+let bootstrapped = false;   // socket.io re-fires 'connect' on every reconnect — rebuild + listen exactly ONCE
+mongoSocket.on('connect', async () => {
+  if (bootstrapped) { console.log('mongo socket reconnected'); return; }   // subsequent reconnects: nothing to do, insertRun just resumes
+  bootstrapped = true;
+  await rebuild(); writeConvergence(); setInterval(writeConvergence, 20000);
+  server.listen(PORT, '0.0.0.0', () => console.log(`coordinator2 on 0.0.0.0:${PORT}  (adaptive; ${bins.length} settings; floor ${STALL_FLOOR}, converge-budget ${NEED_BUDGET}; ${COLL})`));
+});
 mongoSocket.on('connect_error', e => { console.error('mongo connect_error:', e.message); process.exit(1); });

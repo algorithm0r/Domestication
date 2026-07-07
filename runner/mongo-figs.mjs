@@ -71,10 +71,10 @@ function render(file, title, sub, COLS, colLabel, cellParams, correct = true, op
   s += `<rect width="${W}" height="${H}" fill="#fff"/>`;
   s += `<text x="${padL}" y="26" font-size="15" font-weight="700" fill="#111">${title}</text>`;
   s += `<text x="${padL}" y="44" font-size="11" fill="#666">${sub2}</text>`;
-  { const lx = W - 248, ly = 22; s += `<g font-size="10" fill="#555">` +   // status legend (per-cell corner dot)
+  { const lx = W - 250, ly = 22; s += `<g font-size="10" fill="#555">` +   // status legend (corner dot on settled cells; working cells have no dot)
     `<circle cx="${lx}" cy="${ly - 3}" r="3" fill="#2e7d32"/><text x="${lx + 7}" y="${ly}">converged</text>` +
     `<circle cx="${lx + 76}" cy="${ly - 3}" r="3" fill="#e6820e"/><text x="${lx + 83}" y="${ly}">non-conv</text>` +
-    `<circle cx="${lx + 150}" cy="${ly - 3}" r="3" fill="#3a78c9"/><text x="${lx + 157}" y="${ly}">working</text></g>`; }
+    `<text x="${lx + 150}" y="${ly}" fill="#999">no dot = working</text></g>`; }
   for (let ri = 0; ri < pops.length; ri++) for (let ci = 0; ci < COLS.length; ci++) {
     const pop = pops[ri], v = COLS[ci], x = colX[ci], y = padT + ri * CH, cw = colW[ci];
     if (!cellParams(pop, v)) { s += `<rect x="${x}" y="${y}" width="${cw}" height="${CH}" fill="#f4f4f4" stroke="#fff" stroke-width="0.5"/>`; continue; }   // out of range
@@ -83,8 +83,8 @@ function render(file, title, sub, COLS, colLabel, cellParams, correct = true, op
     const [r, gn, b] = g ? viridis(Math.max(0, g.val) / max) : [221, 221, 221];
     s += `<rect x="${x}" y="${y}" width="${cw}" height="${CH}" fill="${hex(r,gn,b)}" stroke="#fff" stroke-width="0.5"/>`;
     if (g) { const lum = 0.299*r + 0.587*gn + 0.114*b; s += `<text x="${x+cw/2}" y="${y+CH/2+3}" font-size="9" text-anchor="middle" fill="${lum>140?'#111':'#fff'}">${g.val.toFixed(2)}</text>`; }
-    const st = CONV[settingKey({ ...BASE, ...cellParams(pop, v) })];   // convergence status dot, top-right corner
-    if (st) s += `<circle cx="${(x + cw - 4).toFixed(1)}" cy="${y + 4}" r="2.6" fill="${statusColor(st.status)}" stroke="#fff" stroke-width="0.7"/>`;
+    const st = CONV[settingKey({ ...BASE, ...cellParams(pop, v) })];   // corner dot only for SETTLED cells (green=converged, amber=non-converged); working cells get no dot
+    if (st && st.status !== 'active') s += `<circle cx="${(x + cw - 4).toFixed(1)}" cy="${y + 4}" r="2.6" fill="${statusColor(st.status)}" stroke="#fff" stroke-width="0.7"/>`;
   }
   COLS.forEach((v, ci) => s += `<text x="${colX[ci]+colW[ci]/2}" y="${padT-6}" font-size="10" fill="#555" text-anchor="middle">${typeof v === 'number' && v < 1 && v > 0 ? v.toFixed(2) : v}</text>`);
   pops.forEach((p, ri) => s += `<text x="${padL-8}" y="${padT+ri*CH+CH/2+3}" font-size="10" fill="#555" text-anchor="end">${p}</text>`);

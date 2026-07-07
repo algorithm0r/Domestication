@@ -18,7 +18,7 @@ const agg = JSON.parse(fs.readFileSync(aggPath, 'utf8'));
 // per-settingKey convergence status written by the coordinator (converged / stalled / active)
 let CONV = {}; const convPath = path.join(DIR, 'convergence.json');
 if (fs.existsSync(convPath)) { try { CONV = JSON.parse(fs.readFileSync(convPath, 'utf8')); } catch {} }
-const statusColor = s => s === 'converged' ? '#2e7d32' : s === 'stalled' ? '#e6820e' : '#3a78c9';
+const statusColor = s => s === 'converged' ? '#2e7d32' : s === 'stalled' ? '#ff0000' : '#3a78c9';
 
 // index settings by their defining params
 const dome = {};               // key -> conflatedMean
@@ -73,7 +73,7 @@ function render(file, title, sub, COLS, colLabel, cellParams, correct = true, op
   s += `<text x="${padL}" y="44" font-size="11" fill="#666">${sub2}</text>`;
   { const lx = W - 250, ly = 22; s += `<g font-size="10" fill="#555">` +   // status legend (corner dot on settled cells; working cells have no dot)
     `<circle cx="${lx}" cy="${ly - 3}" r="3" fill="#2e7d32"/><text x="${lx + 7}" y="${ly}">converged</text>` +
-    `<circle cx="${lx + 76}" cy="${ly - 3}" r="3" fill="#e6820e"/><text x="${lx + 83}" y="${ly}">non-conv</text>` +
+    `<circle cx="${lx + 76}" cy="${ly - 3}" r="3" fill="#ff0000"/><text x="${lx + 83}" y="${ly}">non-conv</text>` +
     `<text x="${lx + 150}" y="${ly}" fill="#999">no dot = working</text></g>`; }
   for (let ri = 0; ri < pops.length; ri++) for (let ci = 0; ci < COLS.length; ci++) {
     const pop = pops[ri], v = COLS[ci], x = colX[ci], y = padT + ri * CH, cw = colW[ci];

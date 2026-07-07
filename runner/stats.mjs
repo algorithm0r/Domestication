@@ -25,15 +25,17 @@ export function evaluate(vals, { thr = 0.1, eLevel = 0.02, eP = 0.10 } = {}) {
   const lMean = nIgn ? mean(ign) : 0, lSd = nIgn ? sd(ign) : 0;
   const lHalf = nIgn > 1 ? tcrit(nIgn) * lSd / Math.sqrt(nIgn) : Infinity;   // undefined CI from <2 points
   const overall = n ? mean(vals) : 0;
+  const overallSd = sd(vals);
+  const meanCIhalf = n > 1 ? tcrit(n) * overallSd / Math.sqrt(n) : Infinity;
 
+  // Sufficiency is judged on the OVERALL mean dome — the value the figures actually plot — NOT on the
+  // ignite/degree regime split, which manufactured boundaries wherever the dome cluster straddled `thr`
+  // (a tight ~0.09 cell would read 8 "no-ignite" / 2 "ignite" and demand hundreds of reps to pin a
+  // 2-point sub-mean). regime / p / level below are kept for reporting only; they no longer gate.
   const regime = p >= 0.95 ? 'interior' : p <= 0.05 ? 'wild' : 'boundary';
-  const pOK = regime !== 'boundary' || wHalf <= eP;            // p only needs a tight CI at the boundary
-  const lvlOK = p <= 0.05 ? true : lHalf <= eLevel;            // level matters wherever anything ignites
-  const enough = pOK && lvlOK;
-  const nP = regime === 'boundary' ? Math.ceil((Z / eP) ** 2 * Math.max(p * (1 - p), 0.05)) : 0;
-  const nL = (p > 0.05 && lHalf > eLevel) ? Math.ceil((tcrit(Math.max(nIgn, 2)) * lSd / eLevel) ** 2) : 0;
-  const nNeeded = enough ? n : Math.max(nP, nL, n + 1);
+  const enough = n >= 2 && meanCIhalf <= eLevel;
+  const nNeeded = enough ? n : Math.max(Math.ceil((tcrit(Math.max(n, 2)) * overallSd / eLevel) ** 2), n + 1);
 
   return { n, regime, p, pCIhalf: wHalf, pCenter: wCenter, level: lMean, levelSd: lSd, levelCIhalf: lHalf,
-           conflatedMean: overall, enough, nNeeded };
+           conflatedMean: overall, meanCIhalf, enough, nNeeded };
 }

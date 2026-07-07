@@ -142,7 +142,7 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, {
       counts: c, byType: byType(), workers: ws, offlineWorkers: 0, etaSec: null,
       recent: recent.map(r => ({ id: r.id, host: r.host, dome: r.dome, finished: r.finished, n: r.n, durationMs: r.durationMs, tps: r.tps })),
-      bins: bins.map(b => ({ id: b.id, n: b.domes.length, finished: b.finished, status: b.stalled ? 'stalled' : (b.converged ? 'converged' : 'active'), nNeeded: b.ev ? b.ev.nNeeded : null, ciHalf: b.ev ? b.ev.levelCIhalf : null, dome: b.ev ? +b.ev.conflatedMean.toFixed(3) : null, p: b.ev ? +b.ev.p.toFixed(3) : null })),
+      bins: bins.map(b => ({ id: b.id, n: b.domes.length, finished: b.finished, status: b.stalled ? 'stalled' : (b.converged ? 'converged' : 'active'), nNeeded: b.ev ? b.ev.nNeeded : null, ciHalf: b.ev ? b.ev.meanCIhalf : null, dome: b.ev ? +b.ev.conflatedMean.toFixed(3) : null, p: b.ev ? +b.ev.p.toFixed(3) : null })),
       done: c.done === c.total, startedAt, completed, adaptive: true
     });
   }

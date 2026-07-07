@@ -67,11 +67,15 @@ async function rebuild() {
   console.log(`coordinator2: ${bins.length} settings; rebuilt from ${docs.length} Mongo runs -> ${fin} finished, ${bins.length - fin} active (MIN_N=${MIN_N}, MAX_N=${MAX_N === Infinity ? 'none' : MAX_N})`);
 }
 
-// --- round-robin dispatch over unfinished bins (the dovetail is intrinsic) ---
-let ptr = 0;
+// --- fewest-reps-first dispatch: always serve the shallowest unfinished bin, so coverage stays
+// balanced by rep count at every moment. Self-heals an imbalanced start (e.g. the FIFO flip) and
+// reduces to a plain round-robin once bins are level; list order no longer matters. (~O(bins) per
+// claim; fine at a few hundred bins.) Each /claim bumps dispatched immediately + Node is single-
+// threaded, so concurrent workers never grab the same bin.
 function nextBin() {
-  for (let i = 0; i < bins.length; i++) { const b = bins[(ptr + i) % bins.length]; if (!b.finished) { ptr = (ptr + i + 1) % bins.length; return b; } }
-  return null;                                    // all finished
+  let best = null;
+  for (const b of bins) { if (b.finished) continue; if (!best || b.dispatched < best.dispatched) best = b; }
+  return best;                                     // null when all finished
 }
 
 const workers = new Map(); const recent = []; const startedAt = Date.now(); let completed = 0;
@@ -97,7 +101,7 @@ const server = http.createServer(async (req, res) => {
     if (!bin) return json(res, 200, { done: true });
     bin.dispatched++;
     const id = repId(bin, bin.dispatched), w = u.searchParams.get('worker');
-    if (w) { const prev = workers.get(w) || {}; workers.set(w, { ...prev, worker: w, host: u.searchParams.get('host'), runId: id, lastBeat: Date.now() }); }
+    if (w) { const prev = workers.get(w) || {}; workers.set(w, { ...prev, worker: w, host: u.searchParams.get('host'), runId: id, runStart: Date.now(), lastBeat: Date.now() }); }
     return json(res, 200, { id, config: bin.config });
   }
   if (req.method === 'POST' && p === '/complete') {
@@ -108,18 +112,25 @@ const server = http.createServer(async (req, res) => {
     let dome = null;
     if (data) { dome = data.dome != null ? data.dome : domeOf(data); if (bin && dome != null) { bin.domes.push(dome); assess(bin); } }
     completed++;
-    recent.unshift({ id: b.id, host: b.host, dome, finished: bin ? bin.finished : false, n: bin ? bin.domes.length : null });
+    const wk = workers.get(b.worker); const durationMs = wk && wk.runStart ? Date.now() - wk.runStart : null;
+    const tps = durationMs && wk && wk.totalTicks ? Math.round(wk.totalTicks / (durationMs / 1000)) : null;
+    recent.unshift({ id: b.id, host: b.host, dome, finished: bin ? bin.finished : false, n: bin ? bin.domes.length : null, durationMs, tps });
     recent.length = Math.min(recent.length, 20);
     return json(res, 200, { ok: true, cleanup: true });   // Mongo mode: worker can drop its local outfile
   }
   if (req.method === 'POST' && p === '/error') { return json(res, 200, { ok: true }); }   // failed rep: skip; bin stays active and gets another rep
-  if (req.method === 'POST' && p === '/heartbeat') { const b = await readBody(req); workers.set(b.worker, { ...b, lastBeat: Date.now() }); return json(res, 200, { ok: true }); }
+  if (req.method === 'POST' && p === '/heartbeat') {
+    const b = await readBody(req); const prev = workers.get(b.worker) || {};
+    const runStart = (prev.runId === b.runId && prev.runStart) ? prev.runStart : Date.now();   // keep the run's start across beats; reset on a new run
+    workers.set(b.worker, { ...prev, ...b, runStart, lastBeat: Date.now() });
+    return json(res, 200, { ok: true });
+  }
   if (req.method === 'GET' && p === '/status') {
     const c = counts();
-    const ws = [...workers.values()].filter(w => Date.now() - w.lastBeat < 120000).map(w => ({ worker: w.worker, host: w.host || '', runId: w.runId, tick: w.tick || 0, totalTicks: w.totalTicks || 0, age: Math.round((Date.now() - w.lastBeat) / 1000), onRunSec: 0 }));
+    const ws = [...workers.values()].filter(w => Date.now() - w.lastBeat < 120000).map(w => ({ worker: w.worker, host: w.host || '', runId: w.runId, tick: w.tick || 0, totalTicks: w.totalTicks || 0, age: Math.round((Date.now() - w.lastBeat) / 1000), onRunSec: w.runStart ? Math.round((Date.now() - w.runStart) / 1000) : 0 }));
     return json(res, 200, {
       counts: c, byType: byType(), workers: ws, offlineWorkers: 0, etaSec: null,
-      recent: recent.map(r => ({ id: r.id, host: r.host, dome: r.dome, finished: r.finished, n: r.n })),
+      recent: recent.map(r => ({ id: r.id, host: r.host, dome: r.dome, finished: r.finished, n: r.n, durationMs: r.durationMs, tps: r.tps })),
       bins: bins.map(b => ({ id: b.id, n: b.domes.length, finished: b.finished, nNeeded: b.ev ? b.ev.nNeeded : null, ciHalf: b.ev ? b.ev.levelCIhalf : null, dome: b.ev ? +b.ev.conflatedMean.toFixed(3) : null })),
       done: c.done === c.total, startedAt, completed, adaptive: true
     });

@@ -35,6 +35,7 @@ ASSET_MANAGER.downloadAll(function () {
 
 	gameEngine.init(ctx);
 
+	populatePresets();
 	reset();
 
 	gameEngine.start();

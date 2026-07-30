@@ -25,9 +25,10 @@ class Histogram {
                 this.fill(this.data[i + start][j] / maxVal, i, 19 - j);
             }
         }
+        this.ctx.font = "14px Arial";
         this.ctx.fillStyle = "#000000";
         this.ctx.textAlign = "center";
-        this.ctx.fillText(this.label, this.x + this.xSize / 2, this.y + this.ySize + 10);
+        this.ctx.fillText(this.label, this.x + this.xSize / 2, this.y + this.ySize + 14);
 
         this.ctx.strokeStyle = "#000000";
         this.ctx.lineWidth = 1;

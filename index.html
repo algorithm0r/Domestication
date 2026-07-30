@@ -40,7 +40,11 @@
     <div id="db" class="db-status">Database</div><br />
     <div id="agent">
         <div id="run">wild type 1 - no humans</div><br />
-        <input type="text" id="human_add_rate" value="0" />Human Add Rate<br />
+        <label for="preset">Experiment preset:</label>
+        <select id="preset" onchange="gameEngine.board.applyPreset(this.selectedIndex)"></select><br />
+        <input type="text" id="human_add_rate" value="0" autocomplete="off" onchange="syncPlanters()" />Human Add Rate (population)<br />
+        <input type="range" id="numPlanters" min="0" max="100" value="100" autocomplete="off" oninput="onPlantersInput()" /> <span id="numPlantersVal">100</span> Planters (of population)<br />
+        <input type="text" id="metabolicThreshold" value="30" autocomplete="off" />Metabolic Energy (excursion length)<br />
      <!--   <input type="checkbox" id="seeds_metabolism" />Seeds Impact Metabolism<br />
         <input type="text" id="metabolic_threshold" value="30" />Metabolic Threshold<br />
         <input type="text" id="metabolic_unit" value="5" />Metabolic Unit<br />
@@ -55,16 +59,18 @@
         <select id="seed_selection">
             <option value="none">No Harvest</option>
             <option value="random">Harvest Randomly</option>
-            <option value="weight">Max Seed Weight</option>
+            <option value="weight">Max Seed Dispersal</option>
             <option value="deepRoots">Max Root Depth</option>
-            <option value="fecundity">Max Number of Seeds</option>
+            <option value="fecundity">Max Fecundity</option>
             <option value="fruitEnergy">Max Nutritional Value</option>
-            <option value="dispersal">Max Dispersal</option>
-            <option value="minweight">Min Seed Weight</option>
+            <option value="dispersal">Max Abscission</option>
+            <option value="minweight">Min Seed Dispersal</option>
             <option value="mindeepRoots">Min Root Depth</option>
-            <option value="minfecundity">Min Number of Seeds</option>
+            <option value="minfecundity">Min Fecundity</option>
             <option value="minfruitEnergy">Min Nutritional Value</option>
-            <option value="mindispersal">Min Dispersal</option>
+            <option value="mindispersal">Min Abscission</option>
+            <option value="gsp">Oldest Lineage (wild)</option>
+            <option value="mingsp">Youngest Lineage (planted)</option>
         </select><br />
         <label for="plant_selection">Planting strategy:</label>
         <select id="plant_selection">
@@ -72,16 +78,18 @@
             <option value="random">Random Seeds</option>
             <option value="bottom">First Harvested</option>
             <option value="top">Last Harvested</option>
-            <option value="weight">Max Seed Weight</option>
+            <option value="weight">Max Seed Dispersal</option>
             <option value="deepRoots">Max Root Depth</option>
-            <option value="fecundity">Max Number of Seeds</option>
+            <option value="fecundity">Max Fecundity</option>
             <option value="fruitEnergy">Max Nutritional Value</option>
-            <option value="dispersal">Max Dispersal</option>
-            <option value="minweight">Min Seed Weight</option>
+            <option value="dispersal">Max Abscission</option>
+            <option value="minweight">Min Seed Dispersal</option>
             <option value="mindeepRoots">Min Root Depth</option>
-            <option value="minfecundity">Min Number of Seeds</option>
+            <option value="minfecundity">Min Fecundity</option>
             <option value="minfruitEnergy">Min Nutritional Value</option>
-            <option value="mindispersal">Min Dispersal</option>
+            <option value="mindispersal">Min Abscission</option>
+            <option value="gsp">Oldest Lineage (wild)</option>
+            <option value="mingsp">Youngest Lineage (planted)</option>
         </select><br />
     </div>
 	<br>

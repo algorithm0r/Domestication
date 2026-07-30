@@ -199,6 +199,7 @@ const HARVEST = {
     fecundity:   { key: 'fecundity',   dir:  1 }, minfecundity:   { key: 'fecundity',   dir: -1 },
     dispersal:   { key: 'dispersal',   dir:  1 }, mindispersal:   { key: 'dispersal',   dir: -1 },
     fruitEnergy: { key: 'fruitEnergy', dir:  1 }, minfruitEnergy: { key: 'fruitEnergy', dir: -1 },
+    gsp:         { key: 'gsp',         dir:  1 }, mingsp:         { key: 'gsp',         dir: -1 },  // lineage age (gens-since-planting; 9999=wild). max=harvest wild lineage, min=harvest planted line
 };
 
 // Pick which in-range seeds a human prefers, per params.harvestStrategy:

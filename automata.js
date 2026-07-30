@@ -4,9 +4,9 @@ class Automata {
         this.x = 0;
         this.y = 0;
 
-        this.run = -1;
+        this.run = 0;
 
-        this.reset();
+        this.applyPreset(0);
     }
     buildAutomata() {
 
@@ -131,44 +131,38 @@ class Automata {
         }
     }
 
+    // Reset button: re-run whatever the controls currently say (no preset change).
     reset() {
-        this.nextRun();
         loadParameters();
         this.buildAutomata();
     }
-    nextRun() {
-        const harvest = document.getElementById("seed_selection");
-        const plant = document.getElementById("plant_selection");
-        const human = document.getElementById("human_add_rate");
-        const run = document.getElementById("run");
-        const chance = document.getElementById("plantSelectionChance");
-        const strength = document.getElementById("plantSelectionStrength");
-        const indiv = document.getElementById("individualSeedSeparation");
-        const share = document.getElementById("sharedPlantingSeeds");
-
-
-        // update params
-        this.run = (this.run + 1) % runs.length;
-        Object.assign(params, runs[this.run]);
-
-        // update HTML
-        run.innerHTML = params.runName;
-        harvest.value = params.harvestStrategy;
-        plant.value = params.plantStrategy;
-        human.value = params.humanAddRate;
-        chance.value = params.plantSelectionChance;
-        strength.value = params.plantSelectionStrength;
-        indiv.checked = params.individualSeedSeparation;
-        share.checked = params.sharedPlantingSeeds;
+    // Preset dropdown: apply a named experiment, push its values into the controls, and rebuild.
+    // DEFAULT_RUN first so sticky fields (e.g. plantLineage) revert unless the preset sets them.
+    // numPlanters / metabolicThreshold are deliberately not touched here, so they stay where the user set them.
+    applyPreset(index) {
+        if (index < 0 || index >= runs.length) return;
+        this.run = index;
+        Object.assign(params, DEFAULT_RUN, runs[index]);
+        this.syncControls();
+        loadParameters();
+        this.buildAutomata();
+    }
+    syncControls() {
+        document.getElementById("run").innerHTML = params.runName;
+        document.getElementById("seed_selection").value = params.harvestStrategy;
+        document.getElementById("plant_selection").value = params.plantStrategy;
+        document.getElementById("human_add_rate").value = params.humanAddRate;
+        syncPlanters();   // update the planters slider's max/value to the preset's population
+        document.getElementById("plantSelectionChance").value = params.plantSelectionChance;
+        document.getElementById("plantSelectionStrength").value = params.plantSelectionStrength;
+        document.getElementById("individualSeedSeparation").checked = params.individualSeedSeparation;
+        document.getElementById("sharedPlantingSeeds").checked = params.sharedPlantingSeeds;
+        const sel = document.getElementById("preset");
+        if (sel) sel.selectedIndex = this.run;
     }
     update() {
         this.day++;
         if (this.day === params.humansAdded) this.addHumans(params.humanAddRate);
-
-        if (this.day > params.epoch) {
-            this.dataMan.logData();
-            this.reset();
-        }
 
         // (cells no longer have per-tick work: seeds establish immediately in addSeed, so the old
         // per-cell germinate/decay pass over all dimension^2 cells is gone.)
@@ -227,15 +221,14 @@ class Automata {
             }
         }
 
-        ctx.clearRect(800, 700, 800, 200);
-        ctx.font = "12px Arial";
+        // status readout in the free top-right corner, kept clear of the graphs (was overwriting the bottom row)
+        ctx.clearRect(1690, 0, 230, 66);
+        ctx.font = "14px Arial";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "left";
-        ctx.fillText(`Seeds in Shelter: ${this.shelter.seeds.length}`, 810, 710);
-        ctx.fillText(`Seeds to Plant: ${this.shelter.plantSeeds.length}`, 810, 724);
-        // ctx.fillText(`Water in Shelter: ${this.shelter.water}`, 810, 738);
-        ctx.fillText(`Tick ${gameEngine.clockTick}`, 810, 766);
-        ctx.fillText(`FPS ${gameEngine.timer.ticks.length}`, 810, 780);
+        ctx.fillText(`Time step: ${this.day}`, 1700, 20);
+        ctx.fillText(`Tick ${gameEngine.clockTick}`, 1700, 38);
+        ctx.fillText(`FPS ${gameEngine.timer.ticks.length}`, 1700, 56);
         ctx.font = "10px Arial";
 
     }

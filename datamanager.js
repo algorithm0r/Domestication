@@ -54,40 +54,42 @@ class DataManager {
 
         // graphs
         const seedData = [this.seedPop, this.wildSeedPop, this.domeSeedPop];
-        this.popGraph = new Graph(gameEngine, 810, 0, seedData, "Seed Population");
+        this.popGraph = new Graph(gameEngine, 810, 0, seedData, "Seed population", ["Total", "Wild", "Domesticated"]);
         // const agentData = [this.humanPop];
         // popGraph = new Graph(gameEngine, 810, 150, agentData, "Human Population");
         // gameEngine.addGraph(popGraph);
 
-        this.weightHist = new Histogram(gameEngine, 810, 300, this.weightData, "Dispersal")
-        this.rootHist = new Histogram(gameEngine, 810, 400, this.rootData, "Root Depth");
-        this.seedHist = new Histogram(gameEngine, 810, 500, this.seedData, "Fecundity");
-        this.dispersalHist = new Histogram(gameEngine, 810, 600, this.dispersalData, "Abscision");
-        this.weightHistWild = new Histogram(gameEngine, 1010, 300, this.weightDataWild, "Dispersal - Wild")
-        this.rootHistWild = new Histogram(gameEngine, 1010, 400, this.rootDataWild, "Root Depth - Wild");
-        this.seedHistWild = new Histogram(gameEngine, 1010, 500, this.seedDataWild, "Fecundity - Wild");
-        this.dispersalHistWild = new Histogram(gameEngine, 1010, 600, this.dispersalDataWild, "Abscision - Wild");
-        this.weightHistDomesticated = new Histogram(gameEngine, 1210, 300, this.weightDataDomesticated, "Dispersal - Domesticated")
-        this.rootHistDomesticated = new Histogram(gameEngine, 1210, 400, this.rootsDataDomesticated, "Root Depth - Domesticated");
-        this.seedHistDomesticated = new Histogram(gameEngine, 1210, 500, this.seedDataDomesticated, "Fecundity - Domesticated");
-        this.dispersalHistDomesticated = new Histogram(gameEngine, 1210, 600, this.dispersalDataDomesticated, "Abscision - Domesticated");
+        // gene names follow the paper (weight field = Seed Dispersal, dispersal field = Abscission)
+        this.weightHist = new Histogram(gameEngine, 810, 300, this.weightData, "Seed Dispersal - Full Population")
+        this.rootHist = new Histogram(gameEngine, 810, 400, this.rootData, "Root Depth - Full Population");
+        this.seedHist = new Histogram(gameEngine, 810, 500, this.seedData, "Fecundity - Full Population");
+        this.dispersalHist = new Histogram(gameEngine, 810, 600, this.dispersalData, "Abscission - Full Population");
+        this.weightHistWild = new Histogram(gameEngine, 1020, 300, this.weightDataWild, "Seed Dispersal - Wild")
+        this.rootHistWild = new Histogram(gameEngine, 1020, 400, this.rootDataWild, "Root Depth - Wild");
+        this.seedHistWild = new Histogram(gameEngine, 1020, 500, this.seedDataWild, "Fecundity - Wild");
+        this.dispersalHistWild = new Histogram(gameEngine, 1020, 600, this.dispersalDataWild, "Abscission - Wild");
+        this.weightHistDomesticated = new Histogram(gameEngine, 1230, 300, this.weightDataDomesticated, "Seed Dispersal - Domesticated")
+        this.rootHistDomesticated = new Histogram(gameEngine, 1230, 400, this.rootsDataDomesticated, "Root Depth - Domesticated");
+        this.seedHistDomesticated = new Histogram(gameEngine, 1230, 500, this.seedDataDomesticated, "Fecundity - Domesticated");
+        this.dispersalHistDomesticated = new Histogram(gameEngine, 1230, 600, this.dispersalDataDomesticated, "Abscission - Domesticated");
 
-        // gsp (generations-since-planted / lineage) — population all/wild/dome
-        this.gspHist = new Histogram(gameEngine, 810, 700, this.gspData, "gsp / lineage");
-        this.gspHistWild = new Histogram(gameEngine, 1010, 700, this.gspDataWild, "gsp - Wild");
-        this.gspHistDomesticated = new Histogram(gameEngine, 1210, 700, this.gspDataDomesticated, "gsp - Domesticated");
-        // PLANTED-seed event distributions (what humans sow), stacked: gsp + 4 genes
-        this.plantedGspHist = new Histogram(gameEngine, 1450, 300, this.plantedGspData, "PLANTED gsp");
-        this.plantedWeightHist = new Histogram(gameEngine, 1450, 400, this.plantedWeightData, "PLANTED weight");
-        this.plantedRootHist = new Histogram(gameEngine, 1450, 500, this.plantedRootData, "PLANTED root");
-        this.plantedSeedHist = new Histogram(gameEngine, 1450, 600, this.plantedSeedData, "PLANTED fecundity");
-        this.plantedDispersalHist = new Histogram(gameEngine, 1450, 700, this.plantedDispersalData, "PLANTED dispersal");
-        // HARVESTED-seed event distributions (what humans pluck / "predation")
-        this.harvestedGspHist = new Histogram(gameEngine, 1670, 300, this.harvestedGspData, "HARVESTED gsp");
-        this.harvestedWeightHist = new Histogram(gameEngine, 1670, 400, this.harvestedWeightData, "HARVESTED weight");
-        this.harvestedRootHist = new Histogram(gameEngine, 1670, 500, this.harvestedRootData, "HARVESTED root");
-        this.harvestedSeedHist = new Histogram(gameEngine, 1670, 600, this.harvestedSeedData, "HARVESTED fecundity");
-        this.harvestedDispersalHist = new Histogram(gameEngine, 1670, 700, this.harvestedDispersalData, "HARVESTED dispersal");
+        // lineage age (generations since the lineage was last planted) — standing population all/wild/dome
+        this.gspHist = new Histogram(gameEngine, 810, 700, this.gspData, "Lineage age - Full Population");
+        this.gspHistWild = new Histogram(gameEngine, 1020, 700, this.gspDataWild, "Lineage age - Wild");
+        this.gspHistDomesticated = new Histogram(gameEngine, 1230, 700, this.gspDataDomesticated, "Lineage age - Domesticated");
+        // PLANTED-seed distributions (what humans sow), stacked: lineage age + 4 genes
+        // genes on rows 300-600 (matching the main grid), lineage age on the bottom row (700) so it lines up.
+        // Harvested column on the left (1450), Planted on the right (1670).
+        this.harvestedWeightHist = new Histogram(gameEngine, 1440, 300, this.harvestedWeightData, "Harvested - Seed Dispersal");
+        this.harvestedRootHist = new Histogram(gameEngine, 1440, 400, this.harvestedRootData, "Harvested - Root Depth");
+        this.harvestedSeedHist = new Histogram(gameEngine, 1440, 500, this.harvestedSeedData, "Harvested - Fecundity");
+        this.harvestedDispersalHist = new Histogram(gameEngine, 1440, 600, this.harvestedDispersalData, "Harvested - Abscission");
+        this.harvestedGspHist = new Histogram(gameEngine, 1440, 700, this.harvestedGspData, "Harvested - Lineage age");
+        this.plantedWeightHist = new Histogram(gameEngine, 1650, 300, this.plantedWeightData, "Planted - Seed Dispersal");
+        this.plantedRootHist = new Histogram(gameEngine, 1650, 400, this.plantedRootData, "Planted - Root Depth");
+        this.plantedSeedHist = new Histogram(gameEngine, 1650, 500, this.plantedSeedData, "Planted - Fecundity");
+        this.plantedDispersalHist = new Histogram(gameEngine, 1650, 600, this.plantedDispersalData, "Planted - Abscission");
+        this.plantedGspHist = new Histogram(gameEngine, 1650, 700, this.plantedGspData, "Planted - Lineage age");
     }
 
     _zeros() { var a = []; for (var i = 0; i < 20; i++) a.push(0); return a; }
@@ -246,10 +248,14 @@ class DataManager {
     }
 
     draw(ctx) {
-        ctx.clearRect(ctx.canvas.height, 0, ctx.canvas.height, ctx.canvas.height); // clear graphs only
-    
+        ctx.clearRect(810, 0, ctx.canvas.width - 810, ctx.canvas.height); // clear the whole graph strip (right of the sim)
+
+        ctx.save();
+        ctx.translate(30, 0);   // nudge the whole dashboard right so its left edge clears the simulation square
+
         this.popGraph.draw(ctx);
-    
+        this.drawKey(ctx);
+
         this.weightHist.draw(ctx);
         this.rootHist.draw(ctx);
         this.seedHist.draw(ctx);
@@ -276,5 +282,36 @@ class DataManager {
         this.harvestedRootHist.draw(ctx);
         this.harvestedSeedHist.draw(ctx);
         this.harvestedDispersalHist.draw(ctx);
+        ctx.restore();
+    }
+
+    // A shared key drawn once in the empty band below the population graph: the heat-map colour scale plus a
+    // short note on what the axes mean. The plots sit flush against the simulation, so a single key here reads
+    // better than repeating axis labels on ~30 touching tiles.
+    drawKey(ctx) {
+        ctx.save();
+        ctx.font = "14px Arial";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#000000";
+        var kx = 825, ky = 190;
+        ctx.fillText("Heat-map colour = share of the population at each value:", kx, ky);
+        // colour ramp, using the same mapping as Histogram.fill (log-scaled blues)
+        var rampW = 160, rampH = 12, ry = ky + 8;
+        for (var i = 0; i < rampW; i++) {
+            var c = (i / (rampW - 1)) * 99 + 1;
+            c = 511 - Math.floor(Math.log(c) / Math.log(100) * 512);
+            if (c > 255) { c = c - 256; ctx.fillStyle = rgb(c, c, 255); }
+            else { ctx.fillStyle = rgb(0, 0, c); }
+            ctx.fillRect(kx + i, ry, 1, rampH);
+        }
+        ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.strokeRect(kx, ry, rampW, rampH);
+        ctx.fillStyle = "#000000";
+        ctx.fillText("low", kx, ry + rampH + 13);
+        ctx.textAlign = "right"; ctx.fillText("high", kx + rampW, ry + rampH + 13);
+        ctx.textAlign = "left";
+        var ty = ry + rampH + 34;
+        ctx.fillText("Each heat map: vertical = trait value (low at bottom, high at top),  horizontal = time (older at left, now at right).", kx, ty);
+        ctx.fillText("Lineage-age plots are counted in generations since the lineage was last planted.", kx, ty + 17);
+        ctx.restore();
     }
 }

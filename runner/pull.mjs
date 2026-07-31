@@ -15,7 +15,10 @@ const parseSetting = s => Object.fromEntries(s.split('|').map(kv => { const [k, 
 
 const socket = connect();
 socket.on('connect', async () => {
-  const docs = await findAll(socket, COLL, {}, { dome: 1, setting: 1 });
+  // big page size: records are tiny ({dome,setting}) so a fat page is a small payload, and it cuts the
+  // ~O(rows/500) round-trips (21 at 10k rows) — which was making pull slow enough to time out / stall the
+  // figserver's aggregate refresh as the collection grew.
+  const docs = await findAll(socket, COLL, {}, { dome: 1, setting: 1 }, 5000);
   const bySetting = {};
   for (const d of docs) if (d.setting != null && d.dome != null) (bySetting[d.setting] ||= []).push(d.dome);
 

@@ -164,4 +164,10 @@ mongoSocket.on('connect', async () => {
   await rebuild(); writeConvergence(); setInterval(writeConvergence, 20000);
   server.listen(PORT, '0.0.0.0', () => console.log(`coordinator2 on 0.0.0.0:${PORT}  (adaptive; ${bins.length} settings; floor ${STALL_FLOOR}, converge-budget ${NEED_BUDGET}; ${COLL})`));
 });
-mongoSocket.on('connect_error', e => { console.error('mongo connect_error:', e.message); process.exit(1); });
+// Only bail if we NEVER managed the initial connect (can't rebuild without Mongo). Once bootstrapped,
+// a connect_error is a transient blip — socket.io keeps retrying (reconnection:true), so log and ride it
+// out rather than killing a live batch. (A single timeout used to exit(1) and drop the whole run.)
+mongoSocket.on('connect_error', e => {
+  console.error('mongo connect_error:', e.message);
+  if (!bootstrapped) process.exit(1);
+});

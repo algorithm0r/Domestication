@@ -53,9 +53,68 @@ DataManager.prototype.logData = function () {
 var board = new Automata();
 var epoch = params.epoch;
 var t0 = __perf.now();
-for (var t = 1; t <= epoch; t++) {                    // run to (not past) epoch -> no auto-reset
-  board.update();
-  if (t % 2500 === 0) console.error('PROGRESS ' + t + ' ' + epoch + ' ' + gameEngine.board.seeds.length);
+
+if (params.artificial) {
+  // ---- ARTIFICIAL regime: PERFECT humans (continuous, overlapping turnover) ----
+  // Simulates ideal farmers replacing the old walking/limited humans. Every plant grows to maturity
+  // AS NORMAL; the instant it matures a perfect human plucks ALL its seeds into a PERSISTENT store
+  // (so no plant is left to shatter). Then EVERY tick, every empty cell-slot (up to cellCapacity) is
+  // refilled from the store, planting the MOST RECENTLY harvested seeds first (LIFO). Order each tick:
+  // grow -> harvest -> plant. Each mature plant yields several seeds but frees only one slot, so the
+  // store runs a surplus; that surplus is SAVED tick to tick (LIFO leaves it at the bottom) and the
+  // board stays at max capacity — no boom/bust, no walking, unlimited perfect planting.
+  //   burnin>0        : run the native model (natural dispersal, no humans) for burnin ticks first.
+  //   burnPredation>0 : during burn-in only, run natural predation (=> genuine shattering wild type).
+  // board.update() still drives growth + DataManager sampling, so the stored payload is DB-identical.
+  var B = gameEngine.board, DIM = params.dimension;
+  var burnin = params.burnin || 0;
+  var STORE_CAP = params.storeCap || 40000;                   // bound the store (keeps memory + grain fresh)
+  var SUPPRESS = false;                                        // natural dispersal off during the perfect-human phase
+  var __origSpread = Seed.prototype.spreadSeeds;
+  Seed.prototype.spreadSeeds = function () { if (SUPPRESS) return; return __origSpread.call(this); };
+  if (params.burnPredation > 0) params.predationChance = params.burnPredation;   // predation ON for burn-in
+
+  var store = [];                                             // persistent granary of harvested gene-records
+  var cells = [];                                             // fixed random fill order over non-shelter cells
+  for (var ci0 = 0; ci0 < DIM; ci0++) for (var cj0 = 0; cj0 < DIM; cj0++) { var cc = B.board[ci0][cj0]; if (!cc.shelter) cells.push(cc); }
+  for (var sa = cells.length - 1; sa > 0; sa--) { var sb = randomInt(sa + 1); var tmp = cells[sa]; cells[sa] = cells[sb]; cells[sb] = tmp; }
+
+  function _harvest() {                                        // pluck ALL seeds off every mature plant -> store, free the cell
+    var surv = [];
+    for (var k = 0; k < B.seeds.length; k++) {
+      var s = B.seeds[k];
+      if (s.isMature() && s.seeds > 0) {
+        for (var g = 0; g < s.seeds; g++) store.push({
+          weight:   { value: s.weight.value },   deepRoots: { value: s.deepRoots.value },
+          fecundity:{ value: s.fecundity.value }, dispersal:{ value: s.dispersal.value },
+          gsp: (typeof s.gsp === 'number' ? s.gsp : 9999) });
+        s.cell.removeSeed(s);                                  // pull off the board WITHOUT spreadSeeds
+      } else surv.push(s);
+    }
+    B.seeds = surv;
+    if (store.length > STORE_CAP) store.splice(0, store.length - (STORE_CAP >> 1));   // over cap: batch-drop oldest SAVED grain to half-cap (amortized O(1); LIFO never reaches these)
+  }
+  function _fill() {                                           // fill every empty cell-slot, planting the MOST RECENTLY harvested seeds first (LIFO)
+    for (var ci = 0; ci < cells.length && store.length > 0; ci++) {
+      var c = cells[ci];
+      while (c.seeds.length < params.cellCapacity && store.length > 0) {
+        var rec = store.pop();                                 // LIFO: newest grain planted first; surplus stays saved at the bottom for lean ticks
+        rec.cell = c; c.addSeed(rec, 0, true);                 // planted -> gsp=0, one mutation
+      }
+    }
+  }
+
+  for (var t = 1; t <= epoch; t++) {
+    if (t === burnin + 1) { SUPPRESS = true; params.predationChance = 0; }   // perfect-human phase begins; kill predation
+    board.update();                                            // plants grow (and die) as normal
+    if (t > burnin) { _harvest(); _fill(); }                   // harvest -> plant, every tick
+    if (t % 2500 === 0) console.error('PROGRESS ' + t + ' ' + epoch + ' ' + B.seeds.length);
+  }
+} else {
+  for (var t = 1; t <= epoch; t++) {                    // run to (not past) epoch -> no auto-reset
+    board.update();
+    if (t % 2500 === 0) console.error('PROGRESS ' + t + ' ' + epoch + ' ' + gameEngine.board.seeds.length);
+  }
 }
 board.dataMan.logData();                               // capture final time-series
 var ms = __perf.now() - t0;

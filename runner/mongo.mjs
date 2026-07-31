@@ -28,6 +28,10 @@ export function settingKey(params) {
   // lineage experiment adds an optional segment; omitted when "off"/absent so every
   // pre-existing run keeps its exact key (no regrouping of the in-flight batch).
   if (params.plantLineage && params.plantLineage !== 'off') k += `|plantLineage=${params.plantLineage}`;
+  // artificial-harvest side experiment: appended only when set, so every pre-existing key is byte-identical.
+  // burnPredation is deliberately NOT keyed (it is 0 in the final params after burn-in); the artificial tag
+  // carries the regime distinction so the bin key (from config) matches the stored-doc key (from final params).
+  if (params.artificial) k += `|artificial=${params.artificial}|burnin=${params.burnin ?? 0}`;
   return k;
 }
 

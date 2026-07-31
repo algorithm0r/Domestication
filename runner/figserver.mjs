@@ -30,8 +30,15 @@ const figCache = {};                                    // coll -> { ts, version
 async function regen(coll) {
   const c = figCache[coll] || (figCache[coll] = { ts: 0, version: 0, regenerating: false });
   if (c.regenerating) return; c.regenerating = true;
-  try { await run(['pull.mjs', coll]); await run(['mongo-figs.mjs', coll]); await run(['paper-figs.mjs', coll]);
-    if (Date.now() - (c.divTs || 0) > 180000) { await run(['div-figs.mjs', coll]); await run(['collapse-fig.mjs', coll]); c.divTs = Date.now(); }   // divergence + collapse figs are heavy (per-cell gsp) — throttle to 3 min
+  try {
+    // cheap + live: dome heatmaps read aggregate.json (pull uses a {dome,setting} projection — no big arrays).
+    await run(['pull.mjs', coll]); await run(['mongo-figs.mjs', coll]);
+    // heavy + slow-changing: div/collapse do ~O(cells) SERIAL Mongo gsp-array pulls (minutes on a large grid);
+    // paper-figs spawns a python render burst. These barely move mid-run, so throttle HARD (15 min) — at the old
+    // 3-min-in-a-30s-loop cadence the server ran them essentially back-to-back and thrashed CPU/Mongo, which is
+    // brutal while a compute batch shares the box. Dome still refreshes every cycle; divergence lags 15 min.
+    if (Date.now() - (c.divTs || 0) > 300000) {   // 5 min — div-figs/collapse now use a rep-count cache: cheap unless cells actually changed
+      await run(['paper-figs.mjs', coll]); await run(['div-figs.mjs', coll]); await run(['collapse-fig.mjs', coll]); await run(['compose-figs.mjs', coll]); c.divTs = Date.now(); }
     c.ts = Date.now(); c.version = Math.round(c.ts / 1000); }
   finally { c.regenerating = false; }
 }
@@ -48,16 +55,33 @@ function readFigs(coll) {
   return { coll, version: (figCache[coll] && figCache[coll].version) || 0, sweeps, paper, collapse };
 }
 
+// ---- the PAPER FIGURES view: the FINAL regenerated figures (real matplotlib PDFs -> PNG + the sweep/
+//      collapse PNGs) produced by regen-paper.mjs into data/<coll>/final/. This is the manuscript review
+//      surface — what actually drops into the .tex. ----
+function readFinal(coll) {
+  const mp = path.join(HERE, 'data', coll, 'final', 'manifest.json');
+  if (!fs.existsSync(mp)) return { coll, figs: [], mtime: 0 };
+  try { const m = JSON.parse(fs.readFileSync(mp, 'utf8')); return { coll, figs: m.figs || [], mtime: Math.round(fs.statSync(mp).mtimeMs / 1000) }; }
+  catch { return { coll, figs: [], mtime: 0 }; }
+}
+
 // ---- run/setting detail: list settings that have data, and render one setting's distributions ----
 let idMap = null;
-function buildIdMap() { try { const s = JSON.parse(fs.readFileSync(path.join(HERE, 'settings.json'), 'utf8')); idMap = {}; for (const x of s) idMap[settingKey(x.config)] = x.id; } catch { idMap = {}; } }
+function buildIdMap() {   // merge the live batch AND any side-experiment settings files, so their ids label the runs
+  idMap = {};
+  for (const f of ['settings.json', 'artificial-settings.json']) {
+    try { const s = JSON.parse(fs.readFileSync(path.join(HERE, f), 'utf8')); for (const x of s) idMap[settingKey(x.config)] = x.id; } catch {}
+  }
+}
 function settingsFor(coll) {
   const p = path.join(HERE, 'data', coll, 'aggregate.json');
   if (!fs.existsSync(p)) return [];
   let agg; try { agg = JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return []; }
   if (!idMap) buildIdMap();
   return agg.map(e => { const pr = e.params || {}; const key = e.setting || settingKey(pr);
-    const label = idMap[key] || `pop${pr.humanAddRate} mt${pr.metabolicThreshold} pl${pr.numPlanters} sv${pr.plantSelectionStrength} sc${pr.plantSelectionChance} ${pr.plantStrategy}/${pr.harvestStrategy}`;
+    // artificial side experiment: self-describing label so the 3 regimes aren't all "pop0 … none/none".
+    const artLabel = pr.artificial ? `ARTIFICIAL · ${pr.artificial}` + (pr.burnin ? ` · burn-in ${pr.burnin}` : '') + (pr.burnPredation ? ` · predation ${pr.burnPredation}` : '') : null;
+    const label = idMap[key] || artLabel || `pop${pr.humanAddRate} mt${pr.metabolicThreshold} pl${pr.numPlanters} sv${pr.plantSelectionStrength} sc${pr.plantSelectionChance} ${pr.plantStrategy}/${pr.harvestStrategy}`;
     return { key, label, n: e.n || 0, dome: e.conflatedMean != null ? +e.conflatedMean.toFixed(3) : null }; })
     .sort((a, b) => a.label.localeCompare(b.label));
 }
@@ -106,6 +130,7 @@ const page = () => `<!doctype html><html><head><meta charset=utf-8><title>Domest
 </style></head><body>
 <header>
  <h1>Domestication</h1>
+ <a href="/paper" style="color:#6cf;text-decoration:none;font-weight:600">Paper figures →</a>
  <span id=counts class=muted>loading…</span>
  <div class=bar><div id=prog style=width:0%></div></div>
  <span id=eta class=muted></span>
@@ -179,8 +204,65 @@ pollFigs();setInterval(pollFigs,15000);
 pollSettings();setInterval(pollSettings,60000);
 </script></body></html>`;
 
+const paperPage = (coll) => `<!doctype html><html><head><meta charset=utf-8><title>Paper figures — ${coll}</title>
+<style>
+ body{font:14px system-ui,Segoe UI,sans-serif;margin:0;background:#0f1115;color:#e6e6e6}
+ header{position:sticky;top:0;z-index:10;background:#161a20;border-bottom:1px solid #2a2f38;padding:10px 20px;display:flex;gap:16px;align-items:center}
+ h1{font-size:16px;margin:0} a{color:#6cf;text-decoration:none}
+ button{background:#245;color:#cfe;border:1px solid #37506e;border-radius:5px;padding:5px 11px;cursor:pointer;font:inherit;font-size:12px}
+ button:hover{background:#2c5f8f}
+ h2.sec{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#9fb3c8;margin:34px 20px 4px;border-bottom:1px solid #2a2f38;padding-bottom:6px}
+ .figblock{margin:18px 20px 30px;max-width:1180px}
+ .fignum{font-size:11.5px;color:#7d8794;font-weight:700;letter-spacing:.03em}
+ .figttl{font-size:15px;font-weight:700;margin:2px 0 8px;color:#eef2f6}
+ .card{background:#fff;border-radius:6px;padding:8px;display:inline-block;max-width:100%;overflow-x:auto}
+ .card img{display:block;max-width:100%;height:auto}
+ .cap{font-size:12.5px;color:#b3bdc7;margin-top:9px;line-height:1.55;max-width:940px}
+ .pair{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+ .pair .lab{font-size:11px;color:#9fb3c8;margin:0 0 4px 2px}
+ .muted{color:#8a93a0}
+</style></head><body>
+<header><h1>Paper figures</h1><a href="/">← dashboard</a><span class=muted id=coll>${coll}</span><button onclick="regen()">↻ regenerate from data</button><span class=muted id=ago></span></header>
+<div id=root class=muted style="padding:24px 20px">loading…</div>
+<script>
+var COLL=${JSON.stringify(coll)};
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function png(f){return '/finalpng?coll='+encodeURIComponent(COLL)+'&f='+encodeURIComponent(f)}
+async function regen(){document.getElementById('ago').textContent=' · regenerating (matplotlib — ~1 min)…';await fetch('/regenpaper?coll='+encodeURIComponent(COLL),{method:'POST'});setTimeout(load,6000);}
+async function load(){
+ try{var m=await (await fetch('/paperfigs?coll='+encodeURIComponent(COLL))).json();
+  document.getElementById('ago').textContent=m.mtime?(' · generated '+(Math.round(Date.now()/1000)-m.mtime)+'s ago'):'';
+  var figs=m.figs||[], n=0, html='';
+  if(!figs.length){document.getElementById('root').innerHTML='<div style="padding:24px 20px" class=muted>No figures yet — click “regenerate from data”.</div>';return;}
+  var dist=figs.filter(function(f){return f.group==='dist'}), sw=figs.filter(function(f){return f.group==='sweep'}), col=figs.filter(function(f){return f.group==='collapse'});
+  html+='<h2 class=sec>Gene distributions</h2>';
+  dist.forEach(function(x){n++;html+='<div class=figblock><div class=fignum>FIGURE '+n+'</div><div class=figttl>'+esc(x.title)+'</div><div class=card><img src="'+png(x.png)+'"></div><div class=cap>'+esc(x.caption)+'</div></div>';});
+  if(sw.length){html+='<h2 class=sec>Parameter sweeps — sensitivity (population × parameter)</h2>';
+   sw.forEach(function(x){n++;html+='<div class=figblock><div class=fignum>FIGURE '+n+'</div><div class=figttl>'+esc(x.title)+'</div><div class=card><img src="'+png(x.png)+'"></div><div class=cap>'+esc(x.caption)+'</div></div>';});}
+  col.forEach(function(x){n++;html+='<h2 class=sec>The collapse</h2><div class=figblock><div class=fignum>FIGURE '+n+'</div><div class=figttl>'+esc(x.title)+'</div><div class=card><img src="'+png(x.png)+'"></div><div class=cap>'+esc(x.caption)+'</div></div>';});
+  document.getElementById('root').innerHTML=html;
+ }catch(e){document.getElementById('root').textContent='error: '+e.message;}
+}
+load();
+</script></body></html>`;
+
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
+  if (u.pathname === '/paper') { res.writeHead(200, { 'Content-Type': 'text/html' }); return res.end(paperPage(u.searchParams.get('coll') || ACTIVE_COLL)); }
+  if (u.pathname === '/paperfigs') {
+    res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(readFinal(u.searchParams.get('coll') || ACTIVE_COLL)));
+  }
+  if (u.pathname === '/finalpng') {
+    const coll = u.searchParams.get('coll') || ACTIVE_COLL, f = path.basename(u.searchParams.get('f') || '');
+    const p = path.join(HERE, 'data', coll, 'final', f);
+    if (f.endsWith('.png') && fs.existsSync(p)) { res.writeHead(200, { 'Content-Type': 'image/png' }); return res.end(fs.readFileSync(p)); }
+    res.writeHead(404); return res.end('not found');
+  }
+  if (u.pathname === '/regenpaper' && req.method === 'POST') {
+    const coll = u.searchParams.get('coll') || ACTIVE_COLL;
+    spawn('node', [path.join(HERE, 'regen-paper.mjs'), coll], { cwd: HERE, detached: true, stdio: 'ignore' }).unref();
+    res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ started: true }));
+  }
   if (u.pathname === '/collections') {
     if (Date.now() - collCache.ts > 60000) await refreshCollections();
     res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(collCache.list));
@@ -202,5 +284,5 @@ const server = http.createServer(async (req, res) => {
   res.end(page());
 });
 server.listen(PORT, '0.0.0.0', () => console.log(`figures on http://localhost:${PORT}/  (batch viewer; active=${ACTIVE_COLL})`));
-regen(ACTIVE_COLL); setInterval(() => regen(ACTIVE_COLL), 30000);   // keep the live batch fresh
+regen(ACTIVE_COLL); setInterval(() => regen(ACTIVE_COLL), 120000);   // dome heatmaps refresh every 2 min (heavy figs self-throttle to 15 min inside regen)
 refreshCollections(); setInterval(refreshCollections, 60000);

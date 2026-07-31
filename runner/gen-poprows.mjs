@@ -16,15 +16,23 @@ const DRY = process.env.DRY === '1';
 const COORD = process.env.COORD || 'http://localhost:8088';
 const BASE = { epoch: 100000, humansAdded: 25000, plantingTime: 50000, predationChance: 0 };
 const A = { harvestStrategy: 'random', plantStrategy: 'bottom', metabolicThreshold: 20, plantSelectionStrength: 0.20, plantSelectionChance: 1.0 };
-const ENERGY = [10, 20, 30, 40, 50];
-const SAVED = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30];
+const ENERGY = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const SAVED = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00];
 const SELECTIVE = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
 const ALL = 1e9;
 const p3 = v => String(v).padStart(3, '0');
 const p4 = v => String(Math.round(v * 1000)).padStart(4, '0');
 
+// MERGE mode: append the deduped settings straight into a settings-driven coordinator file
+// (coordinator2.mjs's flat {id,config} list) instead of FIFO-enqueuing reps. Existing settingKeys
+// are seeded into `seen` first, so only genuinely new cells are appended and the adaptive coordinator
+// tops them to MIN_N on its own. This is the pop-row path for the settings-driven framework.
+const MERGE = process.env.MERGE || '';
+const existing = MERGE ? JSON.parse(fs.readFileSync(MERGE, 'utf8')) : [];
+
 const settings = [];
 const seen = new Map();
+for (const e of existing) seen.set(settingKey(e.config), e.id);   // don't re-add a cell some other id already covers
 function add(id, cfg) {
   const full = { ...BASE, harvestStrategy: 'none', plantStrategy: 'none', humanAddRate: 0, numPlanters: 0, metabolicThreshold: 20, plantSelectionStrength: 0.2, plantSelectionChance: 1.0, ...cfg };
   full.numPlanters = Math.min(full.numPlanters, full.humanAddRate);
@@ -43,7 +51,16 @@ for (const pop of POPS) for (const s of SAVED)     add(`saved_pop${pop}_s${p4(s)
 for (const pop of POPS) for (const c of SELECTIVE) add(`sel_pop${pop}_c${p4(c)}`,   { ...A, humanAddRate: pop, numPlanters: ALL, plantSelectionChance: c });
 
 const bases = settings.filter(s => s.base), plants = settings.filter(s => !s.base);
-console.log(`pops ${POPS.join(',')}: ${settings.length} cells (${bases.length} baseline, ${plants.length} planting)`);
+console.log(`pops ${POPS.join(',')}: ${settings.length} NEW cells (${bases.length} baseline, ${plants.length} planting)`);
+
+if (MERGE) {
+  const merged = existing.concat(settings.map(s => ({ id: s.id, config: s.config })));
+  console.log(`MERGE: ${existing.length} existing + ${settings.length} new = ${merged.length} settings -> ${MERGE}`);
+  if (DRY) { console.log('DRY — not written'); process.exit(0); }
+  fs.writeFileSync(MERGE, JSON.stringify(merged));
+  console.log('written. Restart coordinator2 on this file; it rebuilds bins from Mongo and tops the new cells to MIN_N.');
+  process.exit(0);
+}
 
 const runs = [];   // dovetail: baselines first within each rep
 for (let r = 1; r <= REPS; r++) {

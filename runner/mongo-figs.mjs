@@ -24,7 +24,7 @@ const statusColor = s => s === 'converged' ? '#2e7d32' : s === 'stalled' ? '#ff0
 const dome = {};               // key -> conflatedMean
 const key = p => `${p.humanAddRate}|${p.numPlanters}|${p.metabolicThreshold}|${p.plantSelectionStrength}|${p.plantSelectionChance}|${p.harvestStrategy}|${p.plantStrategy}`;
 for (const s of agg) dome[key(s.params)] = { v: s.conflatedMean, n: s.n };
-const POPS = []; for (let p = 10; p <= 120; p += 10) POPS.push(p);
+const POPS = []; for (let p = 10; p <= 160; p += 10) POPS.push(p);
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const hex = (r, g, b) => '#' + [r, g, b].map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
@@ -96,10 +96,10 @@ function render(file, title, sub, COLS, colLabel, cellParams, correct = true, op
 }
 
 const A = { metabolicThreshold: 20, plantSelectionStrength: 0.2, plantSelectionChance: 1, harvestStrategy: 'random', plantStrategy: 'bottom' };   // anchor energy is now 20
-const PL = []; for (let p = 0; p <= 100; p += 10) PL.push(p);
-const SAVED = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30];
+const PL = []; for (let p = 0; p <= 160; p += 10) PL.push(p);   // planters axis mirrors population (np capped at pop)
+const SAVED = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00];
 const SEL = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-const EN = [10, 20, 30, 40, 50];
+const EN = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 fs.mkdirSync(DIR, { recursive: true });
 const c1 = render('fig_pp.svg', 'Domestication: planting effort × population (corrected)', 'dome − pure-harvester baseline; energy 20',
@@ -112,7 +112,7 @@ const c3 = render('fig_selective.svg', 'selective% × population (corrected)', '
 // 10–140, each row per-cell baseline-corrected — the low-pop rows correct toward ~0, confirming
 // they're WT1 artifact rather than planting-induced (instead of dropping them). Cells without a
 // baseline yet render as pending (…) until the enbase_* runs land.
-const EN_POPS = []; for (let p = 10; p <= 120; p += 10) EN_POPS.push(p);
+const EN_POPS = []; for (let p = 10; p <= 160; p += 10) EN_POPS.push(p);
 const c4 = render('fig_energy.svg', 'energy × population (corrected)', 'all-planting, saved 0.20, selective 1.0; baseline = per-(pop,energy) no-planting',
   EN, 'metabolic energy', (pop, mt) => ({ ...A, humanAddRate: pop, numPlanters: pop, metabolicThreshold: mt }), true,
   { pops: EN_POPS, baseFn: (pop, mt) => baseEnergy(pop, mt), linearCols: true });

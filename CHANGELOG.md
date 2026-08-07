@@ -531,13 +531,21 @@ the `automata.js` regression is cosmetic or additive.
    preset list in `util.js`, not the `params` defaults, and the run configurations live in
    `runner/settings.json`, whose 340 tagged entries are byte-identical at HEAD.
 
+3. **Headless regression data exposure — CLOSED, no impact.** Author confirms all batches completed
+   before 2026-07-30 15:00, when the regression window opened, so no run in
+   `domestication-final-2026` was produced by the broken path and no paper figure is affected. The
+   fix (`e160d9b`) and its guard stand as protection for future runs. If a doubt ever resurfaces, the
+   check is cheap: a corrupted run is identifiable in Mongo by its stored `params` reading
+   `runName: "01. no humans"`, `epoch: 150000`, `humanAddRate: 200` regardless of settingKey.
+
+4. **Version-pointer consistency — DONE.** The paper's supplement had cited a tag named
+   `paper-ARTL-2026-0060`, which never existed in this repository or on the remote. All citations in
+   the manuscript and supplement now read `alife-2026-final`, and the paper's Model section names the
+   tag alongside the repository URL, so a reviewer following R1.12 lands on a tag that resolves.
+
 ### Blocking
 
-1. **Check the batch for runs corrupted by the headless regression.** Any run executed after
-   2026-07-30 15:00 may have silently run preset 0 at the `util.js` defaults. Corrupted runs are
-   identifiable in Mongo by their stored `params`: `runName: "01. no humans"`, `epoch: 150000`,
-   `humanAddRate: 200`, regardless of settingKey. Until this is checked, the data behind the revised
-   figures cannot be called final.
+_None._
 
 ### Closed since the last pending list
 

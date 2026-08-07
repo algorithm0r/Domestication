@@ -27,9 +27,14 @@ const appendix = `
 //==== runner ====
 var gameEngine = new GameEngine();
 
-// neutralize the browser-driven config path; apply our config instead
+// neutralize the browser-driven config path; apply our config instead.
+// Both hooks are overridden because the Automata constructor has called each in turn: it called
+// reset() -> nextRun() before the web-interface overhaul and applyPreset(0) after. Overriding only
+// one lets a constructor change silently drop __CONFIG and run the defaults instead of the config.
+// NB applyPreset builds the board itself (reset() did that for nextRun), so the override must too.
 loadParameters = function () {};
-Automata.prototype.nextRun = function () { this.run = 0; Object.assign(params, __CONFIG); };
+Automata.prototype.nextRun     = function () { this.run = 0; Object.assign(params, __CONFIG); };
+Automata.prototype.applyPreset = function () { this.run = 0; Object.assign(params, __CONFIG); this.buildAutomata(); };
 DataManager.prototype.draw = function () {};   // no canvas headless
 
 // capture logData's payload to a global instead of emitting to a socket
@@ -51,6 +56,18 @@ DataManager.prototype.logData = function () {
 };
 
 var board = new Automata();
+
+// Fail loudly if the config never reached params. The constructor's config hook has moved once
+// already (reset()->nextRun() became applyPreset()), and when it moves the run does not error --
+// it silently executes the default preset, which is indistinguishable from a real result in the DB.
+for (var __k in __CONFIG) {
+  var __want = __CONFIG[__k];
+  if ((typeof __want !== 'object' || __want === null) && params[__k] !== __want) {
+    throw new Error('headless: config key "' + __k + '" not applied (want ' + JSON.stringify(__want) +
+                    ', got ' + JSON.stringify(params[__k]) + ') -- the Automata config hook moved again');
+  }
+}
+
 var epoch = params.epoch;
 var t0 = __perf.now();
 

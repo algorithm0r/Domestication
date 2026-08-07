@@ -513,23 +513,31 @@ the `automata.js` regression is cosmetic or additive.
 
 ## Open items
 
+### Resolved 2026-08-06
+
+1. **Pushed to GitHub — DONE.** Confirmed against the live remote by fetch, not the stale local ref:
+   `Domestication/master` had sat at `6758c48` (2026-06-25) while local was 22 commits ahead, and the
+   remote carried **no tags at all**. Everything reviewer-facing had been local-only — the R1.BUG1
+   fix, the codebase-clarity pass, README, LICENSE, the R2.17 web interface, and the whole figure
+   pipeline — while the paper's Model section gave `https://github.com/algorithm0r/Domestication` as
+   the availability URL. Fast-forwarded to `cdfc5db`; ahead 0 / behind 0.
+
+2. **Version tag (R1.12) — RESOLVED.** `alife-2026-final` → `c48ca6f` is now pushed and is the
+   R1.12 version pointer. The naming confusion is settled: `paper-ARTL-2026-0060`, cited by the
+   2026-06-24 entry at the top of this file and by the paper's reviewer index, **never existed on
+   the remote and does not exist locally**; that entry is wrong on this point. The tag was verified
+   this pass to sit on a build that runs the experiments correctly (see the 2026-08-06 verification
+   entry) — the concern that it predates `b86910f` is answered: `b86910f` changed only the browser
+   preset list in `util.js`, not the `params` defaults, and the run configurations live in
+   `runner/settings.json`, whose 340 tagged entries are byte-identical at HEAD.
+
 ### Blocking
 
-1. **Push to GitHub.** The remote-tracking ref for `Domestication/master` is at `6758c48`,
-   **20 commits behind** local `master` (`c3b9b54`). Everything reviewer-facing is local-only:
-   the R1.BUG1 fix, the codebase-clarity pass, README, LICENSE, the R2.17 web interface, and the
-   whole figure pipeline. The paper's Model section gives
-   `https://github.com/algorithm0r/Domestication` as the availability URL, so a reviewer following
-   it today sees the pre-revision code with the flagged bug still in `cell.js`.
-   *Confirm against GitHub directly — the local remote-tracking ref may simply be stale.*
-
-2. **Version tag (R1.12).** The only tag here is `alife-2026-final`, pointing at `c48ca6f`
-   (2026-07-07). The entries above and the paper's `reviews/reviewer-comment-index.md` both cite a
-   tag named `paper-ARTL-2026-0060`, which does not exist — the 2026-06-24 entry at the top of
-   this file is wrong on that point and should be corrected. `c48ca6f` also predates `b86910f`,
-   which is where `util.js` gained the named experiment presets, so the tag does not point at the
-   source that carries the paper's run configurations. Decide whether to move the tag or add a
-   second one at the head of the model source, then correct both changelogs and the reviewer index.
+1. **Check the batch for runs corrupted by the headless regression.** Any run executed after
+   2026-07-30 15:00 may have silently run preset 0 at the `util.js` defaults. Corrupted runs are
+   identifiable in Mongo by their stored `params`: `runName: "01. no humans"`, `epoch: 150000`,
+   `humanAddRate: 200`, regardless of settingKey. Until this is checked, the data behind the revised
+   figures cannot be called final.
 
 ### Closed since the last pending list
 

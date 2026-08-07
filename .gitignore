@@ -1,2 +1,19 @@
 # Local-only experimental data the authors flagged as tainted — not for publication
 data/jounral (tainted data)/
+
+# Generated figure artifacts under the regen tree.
+# The renderers (*.py) and the data generators (runner/*.mjs) are tracked; their outputs are not.
+data/journal/regen2026/*.pdf
+data/journal/regen2026/*.png
+data/journal/regen2026/*.txt
+data/journal/regen2026/*.json
+data/journal/regen2026/*.bat
+data/journal/regen2026/csvs/
+data/journal/regen2026/csvs_bak/
+data/journal/regen2026/imgs/
+data/journal/regen2026/__pycache__/
+
+# Scratch not published: DB-analysis scratch, and a rasterizer needing a dep not in package.json
+runner/_domediv.mjs
+runner/_raster.mjs
+runner/testrun-figs/

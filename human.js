@@ -149,7 +149,7 @@ Human.prototype.rest = function () {
     }
 
     // fill planting seeds
-    if (this.plants && this.toPlant.length < params.basketSize && shelter.plantSeeds.length > 0) {
+    if (this.plants && this.toPlant.length < params.plantBasketSize && shelter.plantSeeds.length > 0) {
         var diff = Math.min(params.scoopSize, params.plantBasketSize - this.toPlant.length);
         this.toPlant.push(...shelter.plantSeeds.splice(0, diff));
     }

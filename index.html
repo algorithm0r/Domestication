@@ -42,9 +42,9 @@
         <div id="run">wild type 1 - no humans</div><br />
         <label for="preset">Experiment preset:</label>
         <select id="preset" onchange="gameEngine.board.applyPreset(this.selectedIndex)"></select><br />
-        <input type="text" id="human_add_rate" value="0" autocomplete="off" onchange="syncPlanters()" />Human Add Rate (population)<br />
-        <input type="range" id="numPlanters" min="0" max="100" value="100" autocomplete="off" oninput="onPlantersInput()" /> <span id="numPlantersVal">100</span> Planters (of population)<br />
-        <input type="text" id="metabolicThreshold" value="30" autocomplete="off" />Metabolic Energy (excursion length)<br />
+        <input type="text" id="human_add_rate" value="0" autocomplete="off" onchange="syncPlanters()" />Population (humans)<br />
+        <input type="range" id="numPlanters" min="0" max="100" value="100" autocomplete="off" oninput="onPlantersInput()" /> <span id="numPlantersVal">100</span> Planters (humans)<br />
+        <input type="text" id="metabolicThreshold" value="20" autocomplete="off" />Metabolic Threshold (energy units; sets excursion length)<br />
      <!--   <input type="checkbox" id="seeds_metabolism" />Seeds Impact Metabolism<br />
         <input type="text" id="metabolic_threshold" value="30" />Metabolic Threshold<br />
         <input type="text" id="metabolic_unit" value="5" />Metabolic Unit<br />
@@ -53,8 +53,8 @@
         <input type="text" id="basket_size" value="400" />Seed Basket Size<br /> -->
         <input type="checkbox" id="individualSeedSeparation" checked/>Individuals Select Planting Seeds<br />
         <input type="checkbox" id="sharedPlantingSeeds" checked/>Share Planting Seeds<br />
-        <input type="text" id="plantSelectionChance" value="1.0" />% chance to selectively plant<br />
-        <input type="text" id="plantSelectionStrength" value="0.2" />% of seeds to plant<br />
+        <input type="text" id="plantSelectionChance" value="1.0" />Selective Planters (fraction of planting events)<br />
+        <input type="text" id="plantSelectionStrength" value="0.2" />Seeds Saved (fraction of harvest)<br />
         <label for="seed_selection">Harvesting strategy:</label>
         <select id="seed_selection">
             <option value="none">No Harvest</option>

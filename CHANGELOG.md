@@ -511,6 +511,46 @@ the `automata.js` regression is cosmetic or additive.
 
 ---
 
+## [2026-10-11] Basket-cap scan across the threshold sweep — addresses: RR2.6 (round 2) — DONE
+- Context: round-2 Reviewer 2 noted our round-1 letter said the planting-basket cap "was removed",
+  while the ODD gives 400. The 2026-07-06 `_capscan.mjs` check covered only the planting basket and
+  only metabolic threshold 10–50.
+- New: `runner/_capscan2-probe.mjs` + `runner/_capscan2-scan.mjs`. One 100k-tick run per setting,
+  bottom-of-basket planting, shipped caps (harvest 400, planting 400). Records harvest-basket load at
+  each return home and planting-basket load at each departure.
+- Found: the **planting** basket never binds (max carried 120 anywhere). The **harvest** basket binds
+  above threshold 50. A full basket stops harvesting and, once water is full, sends the human home
+  before the threshold. Share of excursions ending with a full harvest basket:
+
+  | threshold | pop 10 | pop 80 | pop 160 |
+  |---|---|---|---|
+  | 20 | 0% | 0% | 0% |
+  | 30 | 0% | 0% | 0% |
+  | 40 | 14.5% | 0.1% | 0.002% |
+  | 50 | 71.5% | 3.2% | 0.2% |
+  | 60 | 92.0% | 23.9% | 3.8% |
+  | 70 | 96.7% | 51.6% | 16.5% |
+  | 80 | 98.0% | 69.3% | 33.7% |
+  | 90 | 99.0% | 79.1% | 49.7% |
+  | 100 | 99.5% | 84.8% | 61.4% |
+
+  At threshold 20 with seeds saved 0.5 or 1.0 the harvest basket peaks at 244 (never binds).
+- Consequence: the anchor experiments and the planters / seeds-saved / selective-planters sweeps are
+  unaffected. The upper half of the threshold sweep is load-limited, and the paper's excursion-length
+  table is an upper bound there. Disclosed in ODD §7.10, the excursion-table caption, and the round-2
+  letter. Not rerun (Chris, 2026-10-11).
+
+## [2026-10-11] Web presets match the paper's 24 experiments — addresses: RR1.1 (round 2) — DONE
+- `util.js` `runs`: the dropdown now lists the paper's 24 experiments with the paper's numbering
+  (Table 2.4) and the `settings.json` values (population 80, seeds saved 0.2). Adds the sickle run,
+  drops the three population variants (now covered by the sweeps). Was population 100.
+- `util.js` defaults: `metabolicThreshold` 30 → 20 and `epoch` 150k → 100k, the paper anchor. Headless
+  runs set both explicitly, so batch results are unaffected.
+- `index.html`: controls renamed to the paper's parameter names (Population, Planters, Metabolic
+  Threshold, Selective Planters, Seeds Saved) with units; threshold box defaults to 20.
+- `human.js:152`: refill test used `basketSize` where it means `plantBasketSize`. Both are 400, so
+  behaviour is unchanged.
+
 ## Open items
 
 ### Resolved 2026-08-06

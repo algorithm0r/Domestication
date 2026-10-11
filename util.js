@@ -71,12 +71,12 @@ var params = {
     // humans
     humanAddRate: 200,
     seedsDiffMetabolism: false,   // FIX: seed.energy was never assigned (commented out in seed.js), so the true-branch of the eat loop did `hunger -= undefined` = NaN, silently disabling hunger as a metabolic drive. false -> `hunger -= 1`.
-    metabolicThreshold: 30,
+    metabolicThreshold: 20,      // paper anchor (was 30)
     metabolicUnit: 5,
     skinSize: 30,
     scoopSize: 5,
-    basketSize: 400,
-    plantBasketSize: 400,    // raised well above the per-trip carry ceiling (~65 at mt50) so the basket cap never binds — removes it as a hidden driver of domestication (was 50)
+    basketSize: 400,         // harvest basket. Binds above metabolic threshold 50 (24% of trips at mt60, 85% at mt100, pop 80); never at mt <= 30. See runner/_capscan2-scan.mjs
+    plantBasketSize: 400,    // raised from 50 so it never binds: max carried 120 across mt 20-100, pop 10-160 (runner/_capscan2-scan.mjs)
     granaryCap: 2000,        // max seeds stored in the shared shelter (food / planting stores)
     runName: "01. no humans",
     plantStrategy: "none",
@@ -93,7 +93,7 @@ var params = {
     // data gathering
     wildDomesticThreshold: 0.6,
     reportingPeriod: 250,
-    epoch: 150000,
+    epoch: 100000,               // paper run length (was 150000)
 
     // database
     ip: 'https://73.19.38.112:8888',
@@ -127,7 +127,7 @@ function loadParameters() {
     params.plantSelectionStrength = parseFloat(document.getElementById("plantSelectionStrength").value);
     params.humanAddRate = parseFloat(document.getElementById("human_add_rate").value);
     params.numPlanters = numCtl("numPlanters", 1e9);
-    params.metabolicThreshold = numCtl("metabolicThreshold", 30);
+    params.metabolicThreshold = numCtl("metabolicThreshold", 20);
     // params.seedsDiffMetabolism = document.getElementById("seeds_metabolism").checked;
     // params.metabolicUnit = parseInt(document.getElementById("metabolic_unit").value);
     // params.skinSize = parseInt(document.getElementById("skin_size").value);
@@ -160,35 +160,34 @@ function onPlantersInput() {
 
 const DEFAULT_RUN = { plantLineage: "off", predationChance: 0 };
 
-// Curated experiment presets for the interface dropdown: the paper's named experiments (01-24) plus the
-// lineage-isolation experiment. Fields not set here fall back to DEFAULT_RUN / params defaults when applied.
+// Experiment presets for the interface dropdown: the paper's 24 experiments (ARTL-2026-0060, Table 2.4),
+// same numbering and settings as runner/settings.json (population 80, metabolic threshold 20, seeds saved 0.2).
+// Fields not set here fall back to DEFAULT_RUN / params defaults when applied.
 const runs = [
-  { runName: "01. Wild Type I - no humans",                  harvestStrategy: "none",         plantStrategy: "none",        humanAddRate: 0,   plantSelectionChance: 0.0, plantSelectionStrength: 0.0 },
-  { runName: "02. Wild Type II - harvest only",              harvestStrategy: "random",       plantStrategy: "none",        humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.0 },
-  { runName: "03. Wild Type III - harvest + random plant",   harvestStrategy: "random",       plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "04. Harvest max Root Depth",                   harvestStrategy: "deepRoots",    plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "05. Harvest max Fecundity",                    harvestStrategy: "fecundity",    plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "06. Harvest max Seed Dispersal",               harvestStrategy: "weight",       plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "07. Harvest max Abscission",                   harvestStrategy: "dispersal",    plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "08. Harvest min Root Depth",                   harvestStrategy: "mindeepRoots", plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "09. Harvest min Fecundity",                    harvestStrategy: "minfecundity", plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "10. Harvest min Seed Dispersal",               harvestStrategy: "minweight",    plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "11. Harvest min Abscission",                   harvestStrategy: "mindispersal", plantStrategy: "random",      humanAddRate: 100, plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
-  { runName: "12. Plant max Root Depth",                     harvestStrategy: "random",       plantStrategy: "deepRoots",    humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "13. Plant max Fecundity",                      harvestStrategy: "random",       plantStrategy: "fecundity",    humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "14. Plant max Seed Dispersal",                 harvestStrategy: "random",       plantStrategy: "weight",       humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "15. Plant max Abscission",                     harvestStrategy: "random",       plantStrategy: "dispersal",    humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "16. Plant min Root Depth",                     harvestStrategy: "random",       plantStrategy: "mindeepRoots", humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "17. Plant min Fecundity",                      harvestStrategy: "random",       plantStrategy: "minfecundity", humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "18. Plant min Seed Dispersal",                 harvestStrategy: "random",       plantStrategy: "minweight",    humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "19. Plant min Abscission",                     harvestStrategy: "random",       plantStrategy: "mindispersal", humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "20. Plant first harvested (bottom of basket)", harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "21. Plant last harvested (top of basket)",     harvestStrategy: "random",       plantStrategy: "top",          humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "22. Plant first harvested - 50 humans",        harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 50,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "23. Plant first harvested - 150 humans",       harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 150, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "24. Plant first harvested - 200 humans",       harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 200, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "25. Lineage age - plant youngest lineage (isolates)", harvestStrategy: "random", plantStrategy: "mingsp", humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "26. Lineage age - plant oldest lineage (control)",     harvestStrategy: "random", plantStrategy: "gsp",    humanAddRate: 100, plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "01. Wild Type I - no humans",                      harvestStrategy: "none",         plantStrategy: "none",         humanAddRate: 0,   plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "02. Wild Type II - harvest only",                  harvestStrategy: "random",       plantStrategy: "none",         humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "03. Wild Type III - harvest + random plant",       harvestStrategy: "random",       plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "04. Harvest max Root Depth",                       harvestStrategy: "deepRoots",    plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "05. Harvest max Fecundity",                        harvestStrategy: "fecundity",    plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "06. Harvest max Seed Dispersal",                   harvestStrategy: "weight",       plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "07. Harvest max Abscission",                       harvestStrategy: "dispersal",    plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "08. Harvest min Root Depth",                       harvestStrategy: "mindeepRoots", plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "09. Harvest min Fecundity",                        harvestStrategy: "minfecundity", plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "10. Harvest min Seed Dispersal",                   harvestStrategy: "minweight",    plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "11. Harvest min Abscission",                       harvestStrategy: "mindispersal", plantStrategy: "random",       humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "12. Sickle - harvest min Abscission, no planting", harvestStrategy: "mindispersal", plantStrategy: "none",         humanAddRate: 80,  plantSelectionChance: 0.0, plantSelectionStrength: 0.2 },
+  { runName: "13. Plant max Root Depth",                         harvestStrategy: "random",       plantStrategy: "deepRoots",    humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "14. Plant max Fecundity",                          harvestStrategy: "random",       plantStrategy: "fecundity",    humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "15. Plant max Seed Dispersal",                     harvestStrategy: "random",       plantStrategy: "weight",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "16. Plant max Abscission",                         harvestStrategy: "random",       plantStrategy: "dispersal",    humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "17. Plant min Root Depth",                         harvestStrategy: "random",       plantStrategy: "mindeepRoots", humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "18. Plant min Fecundity",                          harvestStrategy: "random",       plantStrategy: "minfecundity", humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "19. Plant min Seed Dispersal",                     harvestStrategy: "random",       plantStrategy: "minweight",    humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "20. Plant min Abscission",                         harvestStrategy: "random",       plantStrategy: "mindispersal", humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "21. Plant first harvested (bottom of basket)",     harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "22. Plant last harvested (top of basket)",         harvestStrategy: "random",       plantStrategy: "top",          humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "23. Plant youngest lineage (isolates)",            harvestStrategy: "random",       plantStrategy: "mingsp",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "24. Plant oldest lineage (control)",               harvestStrategy: "random",       plantStrategy: "gsp",          humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
 ];
 
 function populatePresets() {

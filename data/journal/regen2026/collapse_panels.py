@@ -13,7 +13,7 @@ D = json.load(open(sys.argv[1]))
 pts = D["points"]
 SWEEPS = ["planters", "saved%", "selective%", "energy"]
 LABEL = {"planters": "Planters", "saved%": "Seeds saved", "selective%": "Selective planters", "energy": "Metabolic threshold"}
-XLAB = {"tv": "Total variation (planted vs harvested lineage)", "delta": "Mean lineage-age gap (harvested − planted)"}
+XLAB = {"tv": "Total variation (planted vs harvested lineage)", "delta": "Mean gap in generations since planting (harvested − planted)"}
 GREY = "#a3a3a3"
 
 def pearson(xs, ys):

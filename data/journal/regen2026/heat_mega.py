@@ -11,7 +11,7 @@ plt.rcParams["font.size"] = 10
 
 D = json.load(open(sys.argv[1]))
 sweeps = D["sweeps"]
-ALL_METRICS = [("dome", "domestication"), ("div", "lineage divergence"), ("gap", "mean lineage-age gap")]
+ALL_METRICS = [("dome", "Domestication"), ("div", "Lineage Divergence"), ("gap", "Generations Since\nPlanting Gap")]
 sel = sys.argv[3] if len(sys.argv) > 3 else "all"          # "dome" | "div" | "gap" for one row, else all three
 METRICS = [m for m in ALL_METRICS if m[0] == sel] if sel in ("dome", "div", "gap") else ALL_METRICS
 cmap = plt.get_cmap("viridis").copy(); cmap.set_bad("white")
@@ -53,7 +53,7 @@ for r, (mkey, mlabel) in enumerate(METRICS):
         else:
             ax.set_yticks([])
     cb = fig.colorbar(im, ax=list(axes[r, :]), fraction=0.03, pad=0.015)  # one colorbar per metric row
-    cb.set_label(mlabel.title())
+    cb.set_label(mlabel)
     cb.ax.tick_params(length=0)
 
 fig.supylabel("Population", fontsize=10)

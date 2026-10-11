@@ -38,7 +38,7 @@ arg = sys.argv[1]
 MODE = sys.argv[3] if len(sys.argv) > 3 else "first"      # column-title set: original First, or lineage
 TITLES = (["Plant First Harvested", "Plant First Harvested\n        Wild Seeds", "Plant First Harvested\n Domesticated Seeds"]
           if MODE == "first" else
-          ["Plant Freshest Lineage", "Plant Freshest Lineage\n        Wild Seeds", "Plant Freshest Lineage\n Domesticated Seeds"])
+          ["Plant Min Generations\nSince Planting", "\nWild Seeds", "\nDomesticated Seeds"])
 for name in prefixList:
     inFiles.append(name + arg)
     inFiles.append(name + arg + "wild")

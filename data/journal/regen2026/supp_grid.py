@@ -26,9 +26,12 @@ NAMES = {
     "20": "Plant first harvested (bottom of basket)",
     "21": "Plant last harvested (top of basket)",
     "22": "Sickle (harvest non-shattering, no planting)",
-    "40": "Lineage age (plant youngest lineage)",
-    "41": "Lineage age (plant oldest lineage)",
+    "40": "Plant min generations since planting",
+    "41": "Plant max generations since planting",
 }
+# Titles carry the paper's experiment number (ARTL-2026-0060.R1 Table 2.4); the CSVs keep their data ids.
+PAPER_NO = {"22": "12", "12": "13", "13": "14", "14": "15", "15": "16", "16": "17", "17": "18",
+            "18": "19", "19": "20", "20": "21", "21": "22", "40": "23", "41": "24"}
 GENES = [("roots", "Root Depth"), ("seeds", "Fecundity"), ("weight", "Seed Dispersal"), ("disp", "Abscission")]
 COLS = ["Total", "Wild", "Domesticated", "Harvested", "Planted"]
 
@@ -67,8 +70,8 @@ subfigs = np.atleast_1d(fig.subfigures(N, 1, hspace=0.06))
 for sf, exp in zip(subfigs, exps):
     axs = sf.subplots(5, 5)
     sf.subplots_adjust(left=0.125, right=0.995, top=0.85, bottom=0.03, wspace=0.06, hspace=0.14)
-    sf.suptitle(f"Experiment {exp} — {NAMES.get(exp, '')}", fontsize=9, y=0.965)
-    rows = GENES + [("gsp", "Lineage age")]      # 5th row = lineage age (gsp)
+    sf.suptitle(f"Experiment {int(PAPER_NO.get(exp, exp))} — {NAMES.get(exp, '')}", fontsize=9, y=0.965)
+    rows = GENES + [("gsp", "Generations\nsince planting")]      # 5th row = generations since planting (gsp)
     for r, (pfx, rlabel) in enumerate(rows):
         tot = readFile(pfx + exp)                 # total-population denominator for the wild/dome split
         denom = tot.sum(axis=0) if tot is not None else None

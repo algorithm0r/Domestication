@@ -186,8 +186,8 @@ const runs = [
   { runName: "20. Plant min Abscission",                         harvestStrategy: "random",       plantStrategy: "mindispersal", humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
   { runName: "21. Plant first harvested (bottom of basket)",     harvestStrategy: "random",       plantStrategy: "bottom",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
   { runName: "22. Plant last harvested (top of basket)",         harvestStrategy: "random",       plantStrategy: "top",          humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "23. Plant youngest lineage (isolates)",            harvestStrategy: "random",       plantStrategy: "mingsp",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
-  { runName: "24. Plant oldest lineage (control)",               harvestStrategy: "random",       plantStrategy: "gsp",          humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "23. Plant min generations since planting",         harvestStrategy: "random",       plantStrategy: "mingsp",       humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
+  { runName: "24. Plant max generations since planting",         harvestStrategy: "random",       plantStrategy: "gsp",          humanAddRate: 80,  plantSelectionChance: 1.0, plantSelectionStrength: 0.2 },
 ];
 
 function populatePresets() {

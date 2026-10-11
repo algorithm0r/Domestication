@@ -551,6 +551,18 @@ the `automata.js` regression is cosmetic or additive.
 - `human.js:152`: refill test used `basketSize` where it means `plantBasketSize`. Both are 400, so
   behaviour is unchanged.
 
+## [2026-10-11] "Generations since planting" in every figure and preset — addresses: RR1.4c / RR2.1 (round 2) — DONE
+- The paper now calls the gsp counter "generations since planting" (was "lineage age"). Labels changed
+  in `collapse_lens.py`, `collapse_panels.py`, `heat_mega.py`, `heat_pexp.py`, `supp_grid.py`,
+  `hist_first.py`. Before editing, all 11 affected figures were re-rendered with the unchanged scripts
+  and matched the paper's PDFs pixel for pixel, so only labels moved.
+- `supp_grid.py` titles now print the paper's Table 2.4 experiment number (`PAPER_NO`); the CSVs keep
+  their data ids (22 → 12, 12–19 → 13–20, 20/21 → 21/22, 40/41 → 23/24).
+- Recovered invocations (not previously recorded): `supp_grid.py 01,02,03,22 | 04,05,06,07 |
+  08,09,10,11 | 12,13,14,15 | 16,17,18,19 | 20,21,40,41`, `heat_pexp.py pexp-grid.json`,
+  `heat_mega.py megafig-data.json` (all rows) for S1, `hist_first.py 40 lineage.pdf lineage`.
+- Presets 23/24 and the gsp dropdown options renamed to match.
+
 ## Open items
 
 ### Resolved 2026-08-06

@@ -16,7 +16,7 @@ mode = sys.argv[3] if len(sys.argv) > 3 else "both"
 ASPECT = 12.4 / 5.0                       # width/height of the two-panel layout; preserved for any width
 
 XLABEL = {"tv": "Total variation between planted and harvested lineages",
-          "delta": "Mean lineage-age gap (harvested − planted)"}
+          "delta": "Mean gap in generations since planting\n(harvested − planted)"}
 GREY = "#b3b3b3"; DIAMOND = "#333333"; GSP_COL = {"youngest": "#d62728", "oldest": "#2166ac"}
 
 if mode == "both":

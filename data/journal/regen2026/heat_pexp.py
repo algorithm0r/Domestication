@@ -15,6 +15,8 @@ FLAG_COLOR = "#c0504d"   # muted brick red for the excluded artifact cell — ou
 with open(sys.argv[1]) as f:
     D = json.load(f)
 rows, cols = D["rows"], D["cols"]
+# paper term for the lineage counter (ARTL-2026-0060.R1): generations since planting
+cols = [c.replace("lineage age\n(max=old, min=fresh)", "generations since\nplanting (max, min)") for c in cols]
 cmap = plt.get_cmap("viridis").copy()   # perceptually uniform, colorblind-safe (as the sweep figs)
 cmap.set_bad("white")                    # missing cells render white
 
@@ -73,7 +75,7 @@ divMax = max(1e-9, max((v for r in D["div"] for v in r if v is not None), defaul
 gapMax = max(1e-9, max((v for r in gapM for v in r if v is not None), default=1.0))
 panel(axes[0], domeM, "domestication (corrected)", domeMax, flags=flags)
 panel(axes[1], D["div"], "lineage divergence", divMax)   # p07 is normal here (~baseline), so not flagged
-panel(axes[2], gapM, "mean lineage-age gap", gapMax)
+panel(axes[2], gapM, "mean gap in generations\nsince planting", gapMax)
 axes[1].set_yticklabels([])
 axes[2].set_yticklabels([])
 plt.savefig(sys.argv[2])

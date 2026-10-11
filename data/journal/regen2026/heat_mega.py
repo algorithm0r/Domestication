@@ -15,6 +15,9 @@ ALL_METRICS = [("dome", "domestication"), ("div", "lineage divergence"), ("gap",
 sel = sys.argv[3] if len(sys.argv) > 3 else "all"          # "dome" | "div" | "gap" for one row, else all three
 METRICS = [m for m in ALL_METRICS if m[0] == sel] if sel in ("dome", "div", "gap") else ALL_METRICS
 cmap = plt.get_cmap("viridis").copy(); cmap.set_bad("white")
+# axis names match the paper's parameter names (main text Table tab:default), not the data's sweep keys
+COLNAME = {"planters": "Planters", "fraction saved": "Seeds Saved", "fraction selective": "Selective Planters",
+           "energy threshold": "Metabolic Threshold"}
 
 def fmt(v):
     return f"{int(round(v))}" if abs(v - round(v)) < 1e-9 else f"{v:.2f}"
@@ -39,7 +42,7 @@ for r, (mkey, mlabel) in enumerate(METRICS):
             for lbl, ha in zip(ax.get_xticklabels(), ("left", "right")):
                 lbl.set_ha(ha)                       # tuck the first/last value inside the plot
             ax.tick_params(axis="x", pad=2.5)        # small gap between the value labels and the plot
-            ax.set_xlabel(sw["colLabel"].title())
+            ax.set_xlabel(COLNAME.get(sw["colLabel"], sw["colLabel"].title()))
         else:
             ax.set_xticks([])
         # y ticks (population), rotated vertical, only on the left column
@@ -53,5 +56,5 @@ for r, (mkey, mlabel) in enumerate(METRICS):
     cb.set_label(mlabel.title())
     cb.ax.tick_params(length=0)
 
-fig.supylabel("Human Population", fontsize=10)
+fig.supylabel("Population", fontsize=10)
 plt.savefig(sys.argv[2])

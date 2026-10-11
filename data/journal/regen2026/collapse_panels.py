@@ -12,7 +12,7 @@ plt.rcParams["font.size"] = 9
 D = json.load(open(sys.argv[1]))
 pts = D["points"]
 SWEEPS = ["planters", "saved%", "selective%", "energy"]
-LABEL = {"planters": "Planting effort", "saved%": "Seeds saved", "selective%": "Planting selectivity", "energy": "Metabolic energy"}
+LABEL = {"planters": "Planters", "saved%": "Seeds saved", "selective%": "Selective planters", "energy": "Metabolic threshold"}
 XLAB = {"tv": "Total variation (planted vs harvested lineage)", "delta": "Mean lineage-age gap (harvested − planted)"}
 GREY = "#a3a3a3"
 

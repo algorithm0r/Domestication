@@ -563,6 +563,22 @@ the `automata.js` regression is cosmetic or additive.
   `heat_mega.py megafig-data.json` (all rows) for S1, `hist_first.py 40 lineage.pdf lineage`.
 - Presets 23/24 and the gsp dropdown options renamed to match.
 
+## [2026-10-20] Publish the data and figures behind the accepted paper — addresses: MIT Press data policy (final files) — DONE
+- The paper (accepted 2026-10-19) says the data are at this repository, but the `.gitignore` had kept
+  the regenerated figure data and the sweep summaries out. Now tracked: `data/journal/regen2026/`
+  (639 CSVs, the `*.txt` graph data, rendered PDFs/PNGs, `imgs/`) and
+  `runner/data/domestication-final-2026/` (summary JSONs including `aggregate.json` for all 927
+  conditions, `sweepdata/`, `final/` PNGs). 16.6 MB. The SVG renders (~95 MB), `csvs_bak/` and the
+  tainted local data stay out.
+- Figure 1 (environment) was redrawn as vector from a fresh snapshot: `runner/_fig1-env.mjs` dumps the
+  board (baseline condition: 80 humans, bottom planting, tick 60,000), and the paper repo's
+  `tools/fig1_env.py` draws it with the colors from `cell.js`, `seed.js` and `human.js`. The snapshot
+  and PDF are in `data/journal/regen2026/fig1_environment_board.json` / `.pdf`.
+- `.gitattributes` marks PDF/PNG/TTF/ZIP as binary: the generated Figure 1 PDF has no NUL bytes, and
+  git treated it as text (a Windows checkout would rewrite its line endings).
+- Commits: `08655b5`, `24c627f` (pushed; files spot-checked at raw.githubusercontent.com). Model
+  code unchanged; experiments ran at `alife-2026-final` (`c48ca6f`).
+
 ## Open items
 
 ### Resolved 2026-08-06

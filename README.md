@@ -70,7 +70,19 @@ So the two crossed pairs are: paper **Seed Dispersal** = code `weight`, and pape
 | `paper-figs.mjs` | Renders the per-experiment **gene-distribution histograms** (`paper_*.svg`) directly from the raw Mongo runs. |
 | `figserver.mjs` | Local dashboard (port 8089): live batch progress + a viewer that renders any collection's figures. |
 | `adaptive.mjs` | Alternative enqueue-and-top-up replication driver (round of N0 reps, then tops up under-precision settings). |
-| Other `gen-*.mjs`, `_*.mjs`, `*.json`, `*.png/svg` | One-off calibration probes, generated queues, and intermediate outputs from the exploratory phase. Not required to reproduce the paper; the `.gitignore` deliberately keeps only `settings.json` and the npm manifests. |
+| `_fig1-env.mjs` | Dumps one board snapshot (baseline condition, tick 60,000) for the paper's environment figure (Figure 1). |
+| Other `gen-*.mjs`, `_*.mjs`, `*.json`, `*.png/svg` | One-off calibration probes, generated queues, and intermediate outputs from the exploratory phase. Not required to reproduce the paper. The `.gitignore` keeps generated `*.json` out except `settings.json`, the npm manifests and the published paper data below. |
+
+### Published data behind the paper
+
+| Path | What it is |
+|------|------------|
+| `runner/data/domestication-final-2026/*.json` | Per-condition summaries from `pull.mjs` and the figure scripts. `aggregate.json` covers all 927 conditions (744 swept settings, 160 no-planting controls and 23 discrete experiments); also the collapse, convergence and sweep data behind Figures 7 and 10 and Supplement S2 and S4. |
+| `runner/data/domestication-final-2026/sweepdata/`, `final/` | Per-sweep data, and the rendered figure PNGs with their manifest. |
+| `data/journal/regen2026/csvs/`, `*.txt`, `*.json` | Gene-distribution time series behind the heat-map figures (Figures 2–6, 8, 9; Supplement S3), and the Figure 1 board snapshot. |
+| `data/journal/regen2026/*.pdf`, `*.png`, `imgs/` | The rendered figures (the `*.py` renderers in the same folder produce them). |
+
+The large `paper_*.svg` / `compose_*.svg` renders are not tracked; they duplicate the published PDFs. Individual runs live in the authors' MongoDB backend (see below), not in the repository.
 
 ## How to run
 

@@ -1,0 +1,89 @@
+{
+ "group": {},
+ "figs": [
+  {
+   "group": "dist",
+   "id": "control",
+   "title": "Wild Types",
+   "caption": "Natural selection (I), predation (II), and non-selective planting (III). Abscission shifts to shattering once humans harvest.",
+   "png": "control.png"
+  },
+  {
+   "group": "dist",
+   "id": "prelims",
+   "title": "Genes Under Selection",
+   "caption": "Selective harvesting drives a trait down; selective planting drives it up. Rows = genes, columns = harvest/plant × max/min.",
+   "png": "prelims.png"
+  },
+  {
+   "group": "dist",
+   "id": "domesticated",
+   "title": "Domesticated Variants",
+   "caption": "The domesticated (non-shattering) subpopulation from the five selective-planting experiments that produced one; red box = directly-selected gene.",
+   "png": "domesticated.png"
+  },
+  {
+   "group": "dist",
+   "id": "wild",
+   "title": "Wild Variants",
+   "caption": "Three selective-planting experiments that stayed wild; selecting the shattering (max abscission) trait is indistinguishable from wild, so no isolation begins.",
+   "png": "wild.png"
+  },
+  {
+   "group": "dist",
+   "id": "sickles",
+   "title": "Sickle Theory",
+   "caption": "Harvesting non-shattering seeds (a sickle) does not domesticate: vs Wild Type II (no planting) and Wild Type III (+ random planting), the sickle barely shifts the population from wild.",
+   "png": "sickles.png"
+  },
+  {
+   "group": "dist",
+   "id": "first",
+   "title": "Unintended Selective Planting",
+   "caption": "Replanting the first-harvested seeds domesticates via geographic selection: total / wild / domesticated.",
+   "png": "first.png"
+  },
+  {
+   "group": "dist",
+   "id": "lineage",
+   "title": "Lineage-Age Planting",
+   "caption": "Planting the freshest lineage (no trait selection) reproductively isolates and domesticates the crop: total / wild / domesticated — the isolation mechanism in isolation.",
+   "png": "lineage.png"
+  },
+  {
+   "group": "sweep",
+   "id": "sweep_pp",
+   "title": "Planting effort × population",
+   "caption": "Domestication (left) beside lineage divergence (right): human population × swept parameter. Divergence = TV distance between the planted and harvested lineage-age distributions.",
+   "png": "sweep_pp.png"
+  },
+  {
+   "group": "sweep",
+   "id": "sweep_saved",
+   "title": "Seeds saved × population",
+   "caption": "Domestication (left) beside lineage divergence (right): human population × swept parameter. Divergence = TV distance between the planted and harvested lineage-age distributions.",
+   "png": "sweep_saved.png"
+  },
+  {
+   "group": "sweep",
+   "id": "sweep_selective",
+   "title": "Selective planters × population",
+   "caption": "Domestication (left) beside lineage divergence (right): human population × swept parameter. Divergence = TV distance between the planted and harvested lineage-age distributions.",
+   "png": "sweep_selective.png"
+  },
+  {
+   "group": "sweep",
+   "id": "sweep_energy",
+   "title": "Metabolic energy × population",
+   "caption": "Domestication (left) beside lineage divergence (right): human population × swept parameter. Divergence = TV distance between the planted and harvested lineage-age distributions.",
+   "png": "sweep_energy.png"
+  },
+  {
+   "group": "collapse",
+   "id": "collapse",
+   "title": "The collapse — domestication vs lineage divergence",
+   "caption": "Each point is one setting: corrected domestication vs lineage divergence (TV between planted and harvested lineage-age distributions), colored by sweep. Colored lines are per-sweep binned means (legend gives each sweep’s Pearson r); the black line is the pooled binned mean. All sweeps trend together — energy is the weakest.",
+   "png": "collapse.png"
+  }
+ ]
+}

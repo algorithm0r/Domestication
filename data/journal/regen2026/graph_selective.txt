@@ -1,0 +1,7 @@
+Selectively Planting, Time, % of Domesticated Seed Population
+./csvs/population20.csv, 100% humans are selective
+./csvs/population26.csv, 90% humans are selective
+./csvs/population27.csv, 80% humans are selective
+./csvs/population28.csv, 70% humans are selective
+./csvs/population29.csv, 60% humans are selective
+./csvs/population30.csv, 50% humans are selective

@@ -1,0 +1,122 @@
+[
+ {
+  "id": "p01_nohumans",
+  "svg": "paper_p01_nohumans.svg",
+  "n": 4
+ },
+ {
+  "id": "p02_wt2_predation",
+  "svg": "paper_p02_wt2_predation.svg",
+  "n": 4
+ },
+ {
+  "id": "p03_wt3_plantrandom",
+  "svg": "paper_p03_wt3_plantrandom.svg",
+  "n": 4
+ },
+ {
+  "id": "p04_harv_maxRoots",
+  "svg": "paper_p04_harv_maxRoots.svg",
+  "n": 4
+ },
+ {
+  "id": "p05_harv_maxFecundity",
+  "svg": "paper_p05_harv_maxFecundity.svg",
+  "n": 4
+ },
+ {
+  "id": "p06_harv_maxWeight",
+  "svg": "paper_p06_harv_maxWeight.svg",
+  "n": 4
+ },
+ {
+  "id": "p07_harv_maxDispersal",
+  "svg": "paper_p07_harv_maxDispersal.svg",
+  "n": 4
+ },
+ {
+  "id": "p08_harv_minRoots",
+  "svg": "paper_p08_harv_minRoots.svg",
+  "n": 11
+ },
+ {
+  "id": "p09_harv_minFecundity",
+  "svg": "paper_p09_harv_minFecundity.svg",
+  "n": 11
+ },
+ {
+  "id": "p10_harv_minWeight",
+  "svg": "paper_p10_harv_minWeight.svg",
+  "n": 4
+ },
+ {
+  "id": "p11_harv_minDispersal",
+  "svg": "paper_p11_harv_minDispersal.svg",
+  "n": 4
+ },
+ {
+  "id": "p12_plant_maxRoots",
+  "svg": "paper_p12_plant_maxRoots.svg",
+  "n": 4
+ },
+ {
+  "id": "p13_plant_maxFecundity",
+  "svg": "paper_p13_plant_maxFecundity.svg",
+  "n": 6
+ },
+ {
+  "id": "p14_plant_maxWeight",
+  "svg": "paper_p14_plant_maxWeight.svg",
+  "n": 4
+ },
+ {
+  "id": "p15_plant_maxDispersal",
+  "svg": "paper_p15_plant_maxDispersal.svg",
+  "n": 4
+ },
+ {
+  "id": "p16_plant_minRoots",
+  "svg": "paper_p16_plant_minRoots.svg",
+  "n": 4
+ },
+ {
+  "id": "p17_plant_minFecundity",
+  "svg": "paper_p17_plant_minFecundity.svg",
+  "n": 4
+ },
+ {
+  "id": "p18_plant_minWeight",
+  "svg": "paper_p18_plant_minWeight.svg",
+  "n": 4
+ },
+ {
+  "id": "p19_plant_minDispersal",
+  "svg": "paper_p19_plant_minDispersal.svg",
+  "n": 4
+ },
+ {
+  "id": "p20_plant_bottom",
+  "svg": "paper_p20_plant_bottom.svg",
+  "n": 5
+ },
+ {
+  "id": "p21_plant_top",
+  "svg": "paper_p21_plant_top.svg",
+  "n": 4
+ },
+ {
+  "id": "lin_mingsp_pop80",
+  "svg": "paper_lin_mingsp_pop80.svg",
+  "n": 4
+ },
+ {
+  "id": "lin_maxgsp_pop80",
+  "svg": "paper_lin_maxgsp_pop80.svg",
+  "n": 4
+ },
+ {
+  "id": "p22_sickle_noplant",
+  "svg": "paper_p22_sickle_noplant.svg",
+  "n": 6
+ }
+]

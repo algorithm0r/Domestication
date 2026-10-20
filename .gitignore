@@ -1,16 +1,11 @@
 # Local-only experimental data the authors flagged as tainted — not for publication
 data/jounral (tainted data)/
 
-# Generated figure artifacts under the regen tree.
-# The renderers (*.py) and the data generators (runner/*.mjs) are tracked; their outputs are not.
-data/journal/regen2026/*.pdf
-data/journal/regen2026/*.png
-data/journal/regen2026/*.txt
-data/journal/regen2026/*.json
+# Regen tree: the figure data (csvs/, *.txt, *.json) and the rendered figures (*.pdf, *.png, imgs/)
+# behind the published paper are tracked (ARTL-2026-0060, published for transparency 2026-10-20).
+# Only the backup copy, the local launcher and Python caches stay out.
 data/journal/regen2026/*.bat
-data/journal/regen2026/csvs/
 data/journal/regen2026/csvs_bak/
-data/journal/regen2026/imgs/
 data/journal/regen2026/__pycache__/
 
 # Scratch not published: DB-analysis scratch, and a rasterizer needing a dep not in package.json

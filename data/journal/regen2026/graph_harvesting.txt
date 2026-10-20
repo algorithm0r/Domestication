@@ -1,0 +1,9 @@
+Selectively Harvesting, Time, Domesticated Seed Population
+./csvs/population04.csv, Max Roots
+./csvs/population05.csv, Max Fecundity
+./csvs/population06.csv, Max Weight
+./csvs/population07.csv, Max Dispersal
+./csvs/population08.csv, Min Roots
+./csvs/population09.csv, Min Fecundity
+./csvs/population10.csv, Min Weight
+./csvs/population11.csv, Min Dispersal

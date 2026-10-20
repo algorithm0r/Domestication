@@ -1,0 +1,260 @@
+{
+ "rows": [
+  "harvest max",
+  "harvest min",
+  "plant max",
+  "plant min"
+ ],
+ "cols": [
+  "Root Depth",
+  "Fecundity",
+  "Seed Dispersal",
+  "Abscission",
+  "position\n(max=top, min=bottom)",
+  "lineage age\n(max=old, min=fresh)"
+ ],
+ "rowLabel": "selection",
+ "colLabel": "gene / mechanism",
+ "baseline": {
+  "id": "p03_wt3_plantrandom",
+  "dome": 0.035,
+  "div": 0.017,
+  "gap": -0.278
+ },
+ "dome": [
+  [
+   0.021,
+   0.027,
+   0.037,
+   1,
+   null,
+   null
+  ],
+  [
+   0.09,
+   0.094,
+   0.027,
+   0.006,
+   null,
+   null
+  ],
+  [
+   0.517,
+   0.174,
+   0.383,
+   0.011,
+   0.024,
+   0.024
+  ],
+  [
+   0.024,
+   0.026,
+   0.424,
+   0.532,
+   0.484,
+   0.512
+  ]
+ ],
+ "domeCorrected": [
+  [
+   -0.014,
+   -0.008,
+   0.002,
+   0.965,
+   null,
+   null
+  ],
+  [
+   0.055,
+   0.058,
+   -0.008,
+   -0.029,
+   null,
+   null
+  ],
+  [
+   0.482,
+   0.139,
+   0.348,
+   -0.024,
+   -0.011,
+   -0.012
+  ],
+  [
+   -0.011,
+   -0.009,
+   0.389,
+   0.496,
+   0.448,
+   0.477
+  ]
+ ],
+ "div": [
+  [
+   0.016,
+   0.017,
+   0.017,
+   0.016,
+   null,
+   null
+  ],
+  [
+   0.023,
+   0.018,
+   0.017,
+   0.016,
+   null,
+   null
+  ],
+  [
+   0.549,
+   0.088,
+   0.425,
+   0.042,
+   0.038,
+   0.105
+  ],
+  [
+   0.045,
+   0.099,
+   0.513,
+   0.561,
+   0.474,
+   0.599
+  ]
+ ],
+ "gap": [
+  [
+   -0.266,
+   -0.255,
+   -0.28,
+   -0.28,
+   null,
+   null
+  ],
+  [
+   -0.366,
+   -0.287,
+   -0.27,
+   -0.261,
+   null,
+   null
+  ],
+  [
+   6.922,
+   1.205,
+   5.705,
+   0.548,
+   -0.62,
+   -1.223
+  ],
+  [
+   0.588,
+   1.188,
+   6.888,
+   7.161,
+   6.155,
+   8.225
+  ]
+ ],
+ "meta": [
+  [
+   {
+    "id": "p04_harv_maxRoots",
+    "n": 10
+   },
+   {
+    "id": "p05_harv_maxFecundity",
+    "n": 10
+   },
+   {
+    "id": "p06_harv_maxWeight",
+    "n": 10
+   },
+   {
+    "id": "p07_harv_maxDispersal",
+    "n": 10
+   },
+   null,
+   null
+  ],
+  [
+   {
+    "id": "p08_harv_minRoots",
+    "n": 11
+   },
+   {
+    "id": "p09_harv_minFecundity",
+    "n": 11
+   },
+   {
+    "id": "p10_harv_minWeight",
+    "n": 10
+   },
+   {
+    "id": "p11_harv_minDispersal",
+    "n": 10
+   },
+   null,
+   null
+  ],
+  [
+   {
+    "id": "p12_plant_maxRoots",
+    "n": 10
+   },
+   {
+    "id": "p13_plant_maxFecundity",
+    "n": 10
+   },
+   {
+    "id": "p14_plant_maxWeight",
+    "n": 10
+   },
+   {
+    "id": "p15_plant_maxDispersal",
+    "n": 10
+   },
+   {
+    "id": "p21_plant_top",
+    "n": 10
+   },
+   {
+    "id": "lin_maxgsp_pop80",
+    "n": 10
+   }
+  ],
+  [
+   {
+    "id": "p16_plant_minRoots",
+    "n": 10
+   },
+   {
+    "id": "p17_plant_minFecundity",
+    "n": 10
+   },
+   {
+    "id": "p18_plant_minWeight",
+    "n": 10
+   },
+   {
+    "id": "p19_plant_minDispersal",
+    "n": 10
+   },
+   {
+    "id": "p20_plant_bottom",
+    "n": 10
+   },
+   {
+    "id": "lin_mingsp_pop80",
+    "n": 10
+   }
+  ]
+ ],
+ "flags": [
+  [
+   0,
+   3
+  ]
+ ]
+}

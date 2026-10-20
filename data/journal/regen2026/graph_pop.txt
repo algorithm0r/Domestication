@@ -1,0 +1,6 @@
+Selectively Planting, Time, Domesticated Seed Population
+./csvs/population22.csv, 50 Humans
+./csvs/population20.csv, 100 Humans
+./csvs/population23.csv, 150 Humans
+./csvs/population24.csv, 200 Humans
+./csvs/population25.csv, 250 Humans

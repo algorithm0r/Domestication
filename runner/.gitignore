@@ -16,3 +16,17 @@ test_out.json
 !settings.json
 !package.json
 !package-lock.json
+
+# Published with the paper (ARTL-2026-0060): the per-condition summaries behind Figures 7 and 10 and
+# Supplement S2/S4 (aggregate.json holds all 927 conditions), the sweep data, and the final figure PNGs.
+# The large SVG renders in the same folder stay out (they duplicate the published PDFs).
+!data/
+data/*
+!data/domestication-final-2026/
+data/domestication-final-2026/*
+!data/domestication-final-2026/*.json
+!data/domestication-final-2026/sweepdata/
+!data/domestication-final-2026/sweepdata/*.json
+!data/domestication-final-2026/final/
+!data/domestication-final-2026/final/*.png
+!data/domestication-final-2026/final/*.json

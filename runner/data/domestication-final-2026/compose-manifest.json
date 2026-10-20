@@ -1,0 +1,58 @@
+[
+ {
+  "id": "control",
+  "file": "compose_control.svg",
+  "fig": "Wild Types",
+  "title": "Wild Types — natural selection, predation, and non-selective planting",
+  "caption": "Gene distributions in the three control (“wild type”) scenarios: (I) no humans, plants under natural selection only; (II) humans harvest non-selectively (predation); (III) humans harvest and plant, both non-selectively. Value low→high bottom→top, time→right; pooled over replicates.",
+  "n": 5
+ },
+ {
+  "id": "prelims",
+  "file": "compose_prelims.svg",
+  "fig": "Genes Under Selection",
+  "title": "Genes under selection — selective harvesting vs selective planting",
+  "caption": "Each row is one gene; each column applies a selection pressure to that gene. Columns 1–2 harvest the maximum / minimum value of the gene (planting is non-selective); columns 3–4 plant the maximum / minimum value (harvesting is non-selective). Selective harvesting drives a trait DOWN; selective planting drives it UP.",
+  "n": null
+ },
+ {
+  "id": "split",
+  "file": "compose_split.svg",
+  "fig": "Domestication Syndrome",
+  "title": "Domestication syndrome — selectively planting non-shattering seeds",
+  "caption": "Selective planting of the non-shattering (minimum abscission) variant splits the population into a wild (abscission ≥ 0.6) and a domesticated (abscission < 0.6) subpopulation. Separating on abscission also separates the other genes — the correlated multi-gene shift that defines domestication syndrome.",
+  "n": 5
+ },
+ {
+  "id": "domesticated",
+  "file": "compose_domesticated.svg",
+  "fig": "Domesticated Variants",
+  "title": "Domesticated variants across five selective-planting experiments",
+  "caption": "The domesticated (abscission < 0.6) subpopulation from the five selective-planting experiments that produced one. Red box marks the gene under direct selection; the other genes shift by indirect selection (syndrome). The last column is the non-shattering case of the previous figure.",
+  "n": 5
+ },
+ {
+  "id": "wild",
+  "file": "compose_wild.svg",
+  "fig": "Wild Variants",
+  "title": "No domestication — three selective-planting experiments that stayed wild",
+  "caption": "Three selective-planting experiments where no domesticated subpopulation emerged; the total population resembles Wild Type III. Red box marks the selected gene. Selecting the shattering (max abscission) variant fails because it is indistinguishable from the wild population, so no reproductive isolation can begin.",
+  "n": 5
+ },
+ {
+  "id": "first",
+  "file": "compose_first.svg",
+  "fig": "Unintended Selective Planting",
+  "title": "Unintended selective planting — replanting the first-harvested seeds",
+  "caption": "Humans replant the first seeds harvested each day (the “bottom of the basket”), which are disproportionately from the arid region near the shelters. This unintentional, geography-based selection domesticates the crop with no trait-based choice at all: total / wild / domesticated subpopulations.",
+  "n": 5
+ },
+ {
+  "id": "lineage",
+  "file": "compose_lineage.svg",
+  "fig": "Lineage-Age Selection",
+  "title": "Lineage-age planting — the reproductive-isolation mechanism, isolated",
+  "caption": "Planting purely by lineage age (generations since a seed’s line was last sown) with no trait selection. Planting the FRESHEST lineage (recently-sown offspring) reproductively isolates the planted crop and domesticates it (dome ≈ 0.51); planting the OLDEST lineage does not (dome ≈ 0.03). A direct, controlled test of reproductive isolation as the driver.",
+  "n": 4
+ }
+]
